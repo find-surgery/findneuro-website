@@ -1696,12 +1696,12 @@
                 aliceStart = clock.getElapsedTime();
                 if (!isBrainVisible) { setBrainFloating(true); clock.getDelta(); animate(); }
             });
-            solCardCN.addEventListener('mouseleave', () => { aliceMode = 0; setBrainFloating(false); onResize(); });
+            solCardCN.addEventListener('mouseleave', () => { aliceMode = 0; setBrainFloating(false); });
             solCardMMVT.addEventListener('mouseenter', () => {
                 aliceMode = 3;
                 if (!isBrainVisible) { setBrainFloating(true); clock.getDelta(); animate(); }
             });
-            solCardMMVT.addEventListener('mouseleave', () => { aliceMode = 0; setBrainFloating(false); onResize(); });
+            solCardMMVT.addEventListener('mouseleave', () => { aliceMode = 0; setBrainFloating(false); });
         }
     }
 
@@ -2394,9 +2394,23 @@
     }
 
     let aliceTimeouts = [];
+    const canvasOriginalParent = canvas.parentNode;
+    const canvasNextSibling = canvas.nextSibling;
     function setBrainFloating(on) {
-        canvas.classList.toggle('hero__brain-canvas--floating', on);
-        if (on) renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+        if (on) {
+            document.body.appendChild(canvas);
+            canvas.classList.add('hero__brain-canvas--floating');
+            // Wait one frame for CSS to apply before resizing
+            requestAnimationFrame(() => {
+                renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+            });
+        } else {
+            canvas.classList.remove('hero__brain-canvas--floating');
+            canvasOriginalParent.insertBefore(canvas, canvasNextSibling);
+            onResize();
+        }
     }
     function stopAliceVisualization() {
         aliceTimeouts.forEach(t => clearTimeout(t));
@@ -2406,7 +2420,6 @@
         aliceFocus = [];
         aliceTargets = [];
         setBrainFloating(false);
-        onResize();
     }
 
     const aliceObserver = new IntersectionObserver(entries => {
