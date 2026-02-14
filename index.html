@@ -97,13 +97,16 @@
            FIXED ELEMENTS
            ═══════════════════════════════════════ */
         #brain-canvas {
-            position: fixed; top: 0; left: 0;
-            width: 50vw; height: 100vh;
-            z-index: 1;
-            cursor: grab;
-            transition: opacity 0.6s ease;
+            display: none;
         }
-        #brain-canvas:active { cursor: grabbing; }
+        .hero__brain-canvas {
+            width: clamp(100px, 16vw, 180px);
+            height: clamp(100px, 16vw, 180px);
+            cursor: grab;
+            flex-shrink: 0;
+            pointer-events: auto;
+        }
+        .hero__brain-canvas:active { cursor: grabbing; }
         .logo-fixed {
             position: fixed; top: 20px; left: 40px; z-index: 100;
             text-decoration: none;
@@ -203,13 +206,17 @@
         .hero {
             position: relative; z-index: 2;
             min-height: 100vh;
-            display: flex; align-items: center; justify-content: flex-end;
+            display: flex; align-items: center; justify-content: center;
             pointer-events: none;
         }
         .hero__content {
-            text-align: center; max-width: 540px; padding: 0 60px 0 0;
-            width: 50%;
+            text-align: center; max-width: 900px; padding: 0 40px;
             opacity: 0; animation: hero-in 1.2s 1.8s var(--ease) forwards;
+        }
+        .hero__title-row {
+            display: flex; align-items: center; justify-content: center;
+            gap: clamp(16px, 3vw, 32px);
+            margin-bottom: 32px;
         }
         .hero__content a, .hero__content button { pointer-events: auto; }
         @keyframes hero-in {
@@ -237,8 +244,8 @@
             0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
         }
         .hero__logo {
-            display: block; margin: 0 auto 32px;
-            max-width: clamp(280px, 45vw, 520px);
+            display: block;
+            max-width: clamp(240px, 38vw, 460px);
             height: auto;
             filter: drop-shadow(0 0 60px rgba(0,212,255,0.15));
         }
@@ -864,10 +871,9 @@
             .mobile-toggle { display: flex; }
             .logo-fixed { left: 24px; top: 20px; }
             .logo-fixed img { height: 28px; }
-            .hero__logo { max-width: clamp(200px, 60vw, 340px); }
-            #brain-canvas { width: 100vw; height: 50vh; top: 0; }
-            .hero { flex-direction: column; justify-content: center; }
-            .hero__content { width: 100%; padding: 0 24px; max-width: 600px; }
+            .hero__logo { max-width: clamp(180px, 50vw, 300px); }
+            .hero__brain-canvas { width: clamp(70px, 14vw, 110px); height: clamp(70px, 14vw, 110px); }
+            .hero__title-row { gap: 12px; }
             .solution__cards { grid-template-columns: 1fr; }
             .metrics-strip { grid-template-columns: 1fr; }
             .ms-item { border-right: none; border-bottom: 1px solid var(--border); }
@@ -947,7 +953,10 @@
             <span class="hero__badge-dot"></span>
             MGH &amp; Harvard Medical School Spin-Out
         </div>
-        <img src="assests/White_500px.png" alt="FIND Neuro" class="hero__logo">
+        <div class="hero__title-row">
+            <canvas id="hero-brain" class="hero__brain-canvas"></canvas>
+            <img src="assests/White_500px.png" alt="FIND Neuro" class="hero__logo">
+        </div>
         <p class="hero__sub">
             The foundational decision-support platform for precision neurology. Transforming epilepsy surgery through AI-powered brain network analysis.
         </p>
@@ -1410,7 +1419,7 @@
     /* ═════════════════════════════════════════
        3D BRAIN — Real Colin27 Mesh
        ═════════════════════════════════════════ */
-    const canvas = document.getElementById('brain-canvas');
+    const canvas = document.getElementById('hero-brain');
     const isMobile = window.innerWidth < 768;
 
     let scene, camera, renderer, brain, clock;
@@ -1438,7 +1447,7 @@
         clock = new THREE.Clock();
 
         camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-        camera.position.set(0, 0, isMobile ? 3.2 : 2.8);
+        camera.position.set(0, 0, isMobile ? 3.0 : 2.6);
 
         renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
