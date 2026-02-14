@@ -600,6 +600,13 @@
             border: 1px solid rgba(124,58,237,0.12);
             border-radius: 20px; padding: 48px;
         }
+        .story--featured {
+            background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(0,212,255,0.06));
+            border: 1px solid rgba(124,58,237,0.2);
+            padding: 56px; text-align: center;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .story__icon { margin-bottom: 20px; }
         .story__eyebrow {
             font-family: var(--font-mono); font-size: 0.62rem;
             color: var(--violet); letter-spacing: 0.15em;
@@ -609,9 +616,20 @@
             font-family: var(--font-display); font-weight: 700;
             font-size: 1.5rem; margin-bottom: 14px;
         }
+        .story--featured .story__title {
+            font-size: 2rem; margin-bottom: 24px;
+        }
         .story__text {
             color: var(--text-dim); font-size: 0.92rem;
             line-height: 1.7; max-width: 560px;
+        }
+        .story__text--large {
+            font-size: 1.1rem; line-height: 1.8; margin-bottom: 12px;
+        }
+        .story__text--large strong { color: var(--text); }
+        .story__highlight {
+            color: var(--accent);
+            font-size: 1.2rem;
         }
 
         /* ═══════════════════════════════════════
@@ -953,10 +971,6 @@
 <!-- ─────────────── HERO ─────────────── -->
 <section class="hero" id="hero">
     <div class="hero__content">
-        <div class="hero__badge">
-            <span class="hero__badge-dot"></span>
-            MGH &amp; Harvard Medical School Spin-Out
-        </div>
         <div class="hero__title-row">
             <canvas id="hero-brain" class="hero__brain-canvas"></canvas>
             <img src="assests/White_500px.png" alt="FIND Neuro" class="hero__logo">
@@ -1146,11 +1160,17 @@
             </div>
         </div>
 
-        <div class="story r r-d4">
+        <div class="story story--featured r r-d4">
+            <div class="story__icon">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="23" stroke="url(#storyGrad)" stroke-width="2"/><path d="M24 14c-4 0-7 3.5-7 7.5 0 7.5 7 12.5 7 12.5s7-5 7-12.5c0-4-3-7.5-7-7.5z" fill="url(#storyGrad)"/><defs><linearGradient id="storyGrad" x1="0" y1="0" x2="48" y2="48"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs></svg>
+            </div>
             <div class="story__eyebrow">Patient Impact</div>
             <h3 class="story__title">Alice's Story</h3>
-            <p class="story__text">
-                At six years old, Alice experienced up to 50 seizures daily. Traditional treatments offered only 20&ndash;50% success rates. Using FIND's network analysis, clinicians identified precise surgical targets. Today, Alice is seizure-free.
+            <p class="story__text story__text--large">
+                At six years old, <strong>Alice experienced up to 50 seizures daily.</strong> Traditional treatments offered only 20&ndash;50% success rates.
+            </p>
+            <p class="story__text story__text--large">
+                Using FIND's network analysis, clinicians identified precise surgical targets. <strong class="story__highlight">Today, Alice is seizure-free.</strong>
             </p>
         </div>
     </div>
@@ -1228,6 +1248,10 @@
     <div class="container">
         <div class="section__eyebrow r">Leadership</div>
         <h2 class="section__heading r r-d1">Our Team</h2>
+        <div class="hero__badge r r-d1" style="margin: 0 auto 24px;">
+            <span class="hero__badge-dot"></span>
+            MGH &amp; Harvard Medical School Spin-Out
+        </div>
         <p class="section__lead r r-d2">
             World-class neuroscience expertise combined with proven entrepreneurial and regulatory leadership.
         </p>
