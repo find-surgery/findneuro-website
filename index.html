@@ -74,11 +74,9 @@
             transition: opacity 0.8s ease, visibility 0.8s ease;
         }
         #loader.hidden { opacity: 0; visibility: hidden; }
-        .loader__text {
-            font-family: var(--font-display); font-weight: 700;
-            font-size: 1.8rem; letter-spacing: 0.15em;
-            background: linear-gradient(90deg, var(--accent), var(--violet));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        .loader__logo {
+            max-width: clamp(180px, 30vw, 320px); height: auto;
+            filter: drop-shadow(0 0 40px rgba(0,212,255,0.2));
             background-clip: text;
         }
         .loader__bar {
@@ -929,7 +927,7 @@
 
 <!-- Loader -->
 <div id="loader">
-    <div class="loader__text">FIND NEURO</div>
+    <img src="assests/White_500px.png" alt="FIND Neuro" class="loader__logo">
     <div class="loader__bar"><div class="loader__fill"></div></div>
 </div>
 
