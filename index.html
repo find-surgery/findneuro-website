@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FIND Neuro | Precision Neurosurgery Decision Support</title>
     <meta name="description" content="FIND Neuro builds the foundational decision-support platform for precision neurology, transforming epilepsy surgery through AI-powered brain network analysis.">
-    <meta property="og:title" content="FIND Neuro | Precision Neurosurgery Decision Support">
+    <meta property="og:title" content="FIND Neuro | AI-Driven Epilepsy Surgery Planning">
     <meta property="og:description" content="The operating system for precision neurology. Spun out of MGH & Harvard Medical School.">
     <meta property="og:image" content="https://findneuro.com/assets/social-preview.jpg">
     <meta property="og:type" content="website">
@@ -371,6 +371,7 @@
             font-family: var(--font-display); font-weight: 800;
             font-size: clamp(5rem, 14vw, 11rem);
             line-height: 0.85; letter-spacing: -0.04em;
+            color: var(--text);
             background: linear-gradient(180deg, var(--text) 30%, var(--text-muted) 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -1662,6 +1663,19 @@
         canvas.addEventListener('touchend', () => { isDragging = false; }, { passive: true });
 
         animate();
+
+        /* ── INTERACTIVE CARDS: Link DOM to 3D Brain ── */
+        const solCardCN = document.querySelector('.sol-card--cn');
+        const solCardMMVT = document.querySelector('.sol-card--mmvt');
+        if (solCardCN && solCardMMVT) {
+            solCardCN.addEventListener('mouseenter', () => {
+                aliceMode = 1;
+                aliceStart = clock.getElapsedTime();
+            });
+            solCardCN.addEventListener('mouseleave', () => { aliceMode = 0; });
+            solCardMMVT.addEventListener('mouseenter', () => { aliceMode = 3; });
+            solCardMMVT.addEventListener('mouseleave', () => { aliceMode = 0; });
+        }
     }
 
     /* Particle glow texture */
