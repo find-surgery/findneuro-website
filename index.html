@@ -100,12 +100,12 @@
             display: none;
         }
         .hero__brain-canvas {
-            width: clamp(140px, 20vw, 240px);
-            height: clamp(140px, 20vw, 240px);
+            width: clamp(160px, 22vw, 280px);
+            height: clamp(160px, 22vw, 280px);
             cursor: grab;
             flex-shrink: 0;
             pointer-events: auto;
-            overflow: visible;
+            background: transparent;
         }
         .hero__brain-canvas:active { cursor: grabbing; }
         .logo-fixed {
@@ -1451,7 +1451,7 @@
         clock = new THREE.Clock();
 
         camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-        camera.position.set(0, 0, isMobile ? 3.0 : 2.6);
+        camera.position.set(0, 0, isMobile ? 4.2 : 3.8);
 
         renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
