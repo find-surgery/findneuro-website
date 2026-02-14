@@ -112,8 +112,18 @@
             flex-shrink: 0;
             pointer-events: auto;
             background: transparent;
+            transition: width 0.4s ease, height 0.4s ease;
         }
         .hero__brain-canvas:active { cursor: grabbing; }
+        .hero__brain-canvas--floating {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(60vw, 420px);
+            height: min(60vw, 420px);
+            z-index: 200;
+            pointer-events: none;
+        }
         .logo-fixed {
             position: fixed; top: 20px; left: 40px; z-index: 100;
             text-decoration: none;
@@ -1307,7 +1317,7 @@
             <div class="t-card r r-d3">
                 <div class="t-card__avatar" style="background-image:url('assets/team/adam_lerner.jpg')"></div>
                 <div class="t-card__name">Adam P. Lerner, JD</div>
-                <div class="t-card__role">COO</div>
+                <div class="t-card__role">COO &amp; Head of Legal</div>
                 <div class="t-card__bio">Former VP Legal &amp; IP at VC-backed life sciences companies</div>
             </div>
             <div class="t-card r r-d4">
@@ -1671,14 +1681,14 @@
             solCardCN.addEventListener('mouseenter', () => {
                 aliceMode = 1;
                 aliceStart = clock.getElapsedTime();
-                if (!isBrainVisible) { clock.getDelta(); animate(); }
+                if (!isBrainVisible) { setBrainFloating(true); clock.getDelta(); animate(); }
             });
-            solCardCN.addEventListener('mouseleave', () => { aliceMode = 0; });
+            solCardCN.addEventListener('mouseleave', () => { aliceMode = 0; setBrainFloating(false); onResize(); });
             solCardMMVT.addEventListener('mouseenter', () => {
                 aliceMode = 3;
-                if (!isBrainVisible) { clock.getDelta(); animate(); }
+                if (!isBrainVisible) { setBrainFloating(true); clock.getDelta(); animate(); }
             });
-            solCardMMVT.addEventListener('mouseleave', () => { aliceMode = 0; });
+            solCardMMVT.addEventListener('mouseleave', () => { aliceMode = 0; setBrainFloating(false); onResize(); });
         }
     }
 
@@ -2324,8 +2334,12 @@
         aliceTriggered = true;
         aliceMode = 1;
         aliceStart = clock.getElapsedTime();
-        // Restart render loop if it was paused (scrolled off-screen)
-        if (!isBrainVisible) { clock.getDelta(); animate(); }
+        // Float the brain to center of viewport if scrolled past hero
+        if (!isBrainVisible) {
+            setBrainFloating(true);
+            clock.getDelta();
+            animate();
+        }
 
         // Pick a spatial cluster of ~15 nodes as the seizure focus
         const seed = Math.floor(Math.random() * NET_NODES);
@@ -2367,6 +2381,10 @@
     }
 
     let aliceTimeouts = [];
+    function setBrainFloating(on) {
+        canvas.classList.toggle('hero__brain-canvas--floating', on);
+        if (on) renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    }
     function stopAliceVisualization() {
         aliceTimeouts.forEach(t => clearTimeout(t));
         aliceTimeouts = [];
@@ -2374,6 +2392,8 @@
         aliceTriggered = false;
         aliceFocus = [];
         aliceTargets = [];
+        setBrainFloating(false);
+        onResize();
     }
 
     const aliceObserver = new IntersectionObserver(entries => {
