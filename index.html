@@ -1671,9 +1671,13 @@
             solCardCN.addEventListener('mouseenter', () => {
                 aliceMode = 1;
                 aliceStart = clock.getElapsedTime();
+                if (!isBrainVisible) { clock.getDelta(); animate(); }
             });
             solCardCN.addEventListener('mouseleave', () => { aliceMode = 0; });
-            solCardMMVT.addEventListener('mouseenter', () => { aliceMode = 3; });
+            solCardMMVT.addEventListener('mouseenter', () => {
+                aliceMode = 3;
+                if (!isBrainVisible) { clock.getDelta(); animate(); }
+            });
             solCardMMVT.addEventListener('mouseleave', () => { aliceMode = 0; });
         }
     }
@@ -2320,6 +2324,8 @@
         aliceTriggered = true;
         aliceMode = 1;
         aliceStart = clock.getElapsedTime();
+        // Restart render loop if it was paused (scrolled off-screen)
+        if (!isBrainVisible) { clock.getDelta(); animate(); }
 
         // Pick a spatial cluster of ~15 nodes as the seizure focus
         const seed = Math.floor(Math.random() * NET_NODES);
@@ -2387,16 +2393,16 @@
     }
 
     function animate() {
-        if (!isBrainVisible) return;
+        if (!isBrainVisible && aliceMode === 0) return;
         requestAnimationFrame(animate);
 
         const dt = Math.min(clock.getDelta(), 0.05);
         const elapsed = clock.getElapsedTime();
 
-        // Scroll-driven transforms
-        const brainOpacity = Math.max(0, 1 - scrollPct * 0.45);
+        // Scroll-driven transforms - override when Alice is active
+        const brainOpacity = aliceMode > 0 ? 1 : Math.max(0, 1 - scrollPct * 0.45);
         canvas.style.opacity = brainOpacity;
-        const scale = 1 - Math.min(scrollPct * 0.07, 0.25);
+        const scale = aliceMode > 0 ? 1 : 1 - Math.min(scrollPct * 0.07, 0.25);
         brain.scale.setScalar(scale);
         brain.position.x = 0;
 
