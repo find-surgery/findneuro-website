@@ -2393,12 +2393,9 @@
         // Phase 3: seizure-free calm (after 6s)
         aliceTimeouts.push(setTimeout(() => { aliceMode = 3; }, 6000));
 
-        // Reset after 10s
+        // Stay in seizure-free calm state after sequence completes
         aliceTimeouts.push(setTimeout(() => {
-            aliceMode = 0;
             aliceTriggered = false;
-            aliceFocus = [];
-            aliceTargets = [];
         }, 10000));
     }
 
