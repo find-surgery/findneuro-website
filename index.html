@@ -2267,6 +2267,14 @@
             const { from, to } = netEdgeData[i];
             let r = 0.006, g = 0.01, b = 0.018;
 
+            // Red pulsing lines between seizure focus nodes during chaos
+            if (aliceMode === 1 && isFocus && isFocus.has(from) && isFocus.has(to)) {
+                const pulse = Math.sin(elapsed * 6 + i * 0.5) * 0.3 + 0.7;
+                r += pulse * 1.2;
+                g += pulse * 0.05;
+                b += pulse * 0.02;
+            }
+
             for (const s of netSpikes) {
                 const aF = s.arrivals[from], aT = s.arrivals[to];
                 if (aF < 0 || aT < 0) continue;
