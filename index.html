@@ -97,7 +97,9 @@
            FIXED ELEMENTS
            ═══════════════════════════════════════ */
         #brain-canvas {
-            position: fixed; inset: 0; z-index: 1;
+            position: fixed; top: 0; left: 0;
+            width: 50vw; height: 100vh;
+            z-index: 1;
             cursor: grab;
             transition: opacity 0.6s ease;
         }
@@ -201,11 +203,12 @@
         .hero {
             position: relative; z-index: 2;
             min-height: 100vh;
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; justify-content: flex-end;
             pointer-events: none;
         }
         .hero__content {
-            text-align: center; max-width: 900px; padding: 0 40px;
+            text-align: center; max-width: 540px; padding: 0 60px 0 0;
+            width: 50%;
             opacity: 0; animation: hero-in 1.2s 1.8s var(--ease) forwards;
         }
         .hero__content a, .hero__content button { pointer-events: auto; }
@@ -862,6 +865,9 @@
             .logo-fixed { left: 24px; top: 20px; }
             .logo-fixed img { height: 28px; }
             .hero__logo { max-width: clamp(200px, 60vw, 340px); }
+            #brain-canvas { width: 100vw; height: 50vh; top: 0; }
+            .hero { flex-direction: column; justify-content: center; }
+            .hero__content { width: 100%; padding: 0 24px; max-width: 600px; }
             .solution__cards { grid-template-columns: 1fr; }
             .metrics-strip { grid-template-columns: 1fr; }
             .ms-item { border-right: none; border-bottom: 1px solid var(--border); }
@@ -1432,7 +1438,7 @@
         clock = new THREE.Clock();
 
         camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-        camera.position.set(0, -0.1, isMobile ? 3.2 : 2.5);
+        camera.position.set(0, 0, isMobile ? 3.2 : 2.8);
 
         renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
@@ -2104,9 +2110,8 @@
         const brainOpacity = Math.max(0, 1 - scrollPct * 0.45);
         canvas.style.opacity = brainOpacity;
         const scale = 1 - Math.min(scrollPct * 0.07, 0.25);
-        const shiftX = Math.min(scrollPct * 0.12, 0.5);
         brain.scale.setScalar(scale);
-        brain.position.x = shiftX;
+        brain.position.x = 0;
 
         if (brainOpacity < 0.01) return;
 
