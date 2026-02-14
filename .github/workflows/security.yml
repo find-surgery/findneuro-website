@@ -1,0 +1,47 @@
+name: Security Scan
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1' # Weekly Monday 6am UTC
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for secrets in code
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --only-verified --results=verified
+      - name: Check CDN dependencies for vulnerabilities
+        run: |
+          echo "Checking Three.js r134..."
+          # Check if known CVEs exist for Three.js r134
+          curl -s "https://api.osv.dev/v1/query" \
+            -H "Content-Type: application/json" \
+            -d '{"package":{"name":"three","ecosystem":"npm"},"version":"0.134.0"}' \
+            | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          vulns = data.get('vulns', [])
+          if vulns:
+              print(f'::warning::Found {len(vulns)} vulnerabilities in Three.js r134')
+              for v in vulns:
+                  print(f'  - {v.get(\"id\")}: {v.get(\"summary\",\"\")}')
+          else:
+              print('No known vulnerabilities for Three.js r134')
+          "
+      - name: Verify SRI hashes
+        run: |
+          # Extract SRI hash from index.html and verify against live CDN
+          EXPECTED=$(grep -oP 'integrity="sha384-[^"]+' index.html | head -1 | cut -d'"' -f2)
+          ACTUAL="sha384-$(curl -s https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js | openssl dgst -sha384 -binary | openssl base64 -A)"
+          if [ "$EXPECTED" = "$ACTUAL" ]; then
+            echo "SRI hash verified for Three.js CDN"
+          else
+            echo "::error::SRI hash mismatch! CDN may be compromised"
+            echo "Expected: $EXPECTED"
+            echo "Actual: $ACTUAL"
+            exit 1
+          fi

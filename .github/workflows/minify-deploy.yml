@@ -1,0 +1,35 @@
+name: Minify & Deploy
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'brain_data.js'
+
+jobs:
+  minify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install minifiers
+        run: npm install -g html-minifier-terser
+      - name: Minify HTML
+        run: |
+          html-minifier-terser \
+            --collapse-whitespace \
+            --remove-comments \
+            --minify-css true \
+            --minify-js true \
+            index.html -o index.min.html
+          SIZE_ORIG=$(wc -c < index.html)
+          SIZE_MIN=$(wc -c < index.min.html)
+          echo "Original: $SIZE_ORIG bytes"
+          echo "Minified: $SIZE_MIN bytes"
+          echo "Saved: $((SIZE_ORIG - SIZE_MIN)) bytes"
