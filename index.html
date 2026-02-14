@@ -143,13 +143,20 @@
         }
         .hero__brain-canvas:active { cursor: grabbing; }
         .hero__brain-canvas--floating {
-            position: fixed;
-            top: 50%; right: 5vw;
-            transform: translateY(-50%);
             width: 120px;
             height: 120px;
-            z-index: 200;
             pointer-events: none;
+            flex-shrink: 0;
+        }
+        .story__photo-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .story__photo-row .story__photo {
+            margin-bottom: 0;
         }
         .logo-fixed {
             position: fixed; top: 20px; left: 40px; z-index: 100;
@@ -1222,7 +1229,9 @@
         </div>
 
         <div class="story story--featured r r-d4" id="alice-story">
-            <div class="story__photo" style="background-image:url('assets/alice-photo.jpg')"></div>
+            <div class="story__photo-row" id="alice-photo-row">
+                <div class="story__photo" style="background-image:url('assets/alice-photo.jpg')"></div>
+            </div>
             <div class="story__eyebrow">Patient Impact</div>
             <h3 class="story__title">Alice's Story</h3>
             <p class="story__text story__text--large">
@@ -2396,14 +2405,14 @@
     let aliceTimeouts = [];
     const canvasOriginalParent = canvas.parentNode;
     const canvasNextSibling = canvas.nextSibling;
+    const alicePhotoRow = document.getElementById('alice-photo-row');
     function setBrainFloating(on) {
-        if (on) {
-            document.body.appendChild(canvas);
+        if (on && alicePhotoRow) {
+            alicePhotoRow.insertBefore(canvas, alicePhotoRow.firstChild);
             canvas.classList.add('hero__brain-canvas--floating');
-            // Wait one frame for CSS to apply before resizing
             requestAnimationFrame(() => {
-                renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                renderer.setSize(120, 120);
+                camera.aspect = 1;
                 camera.updateProjectionMatrix();
             });
         } else {
