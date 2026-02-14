@@ -820,6 +820,24 @@
         /* ═══════════════════════════════════════
            CONTACT
            ═══════════════════════════════════════ */
+        .contact__cta-pills {
+            display: flex; gap: 10px; justify-content: center;
+            margin-bottom: 40px; flex-wrap: wrap;
+        }
+        .contact__pill {
+            font-family: var(--font-display); font-weight: 600;
+            font-size: 0.82rem; letter-spacing: 0.03em;
+            padding: 10px 24px; border-radius: 100px;
+            border: 1px solid var(--border); background: transparent;
+            color: var(--text-dim); cursor: pointer;
+            transition: all 0.3s var(--ease);
+        }
+        .contact__pill:hover { border-color: var(--border-accent); color: var(--text); }
+        .contact__pill--active {
+            background: var(--accent); color: var(--bg-deep);
+            border-color: var(--accent);
+        }
+        .contact__pill--active:hover { background: #33ddff; border-color: #33ddff; }
         .contact__grid {
             display: grid; grid-template-columns: 1fr 1fr;
             gap: 56px; align-items: start;
@@ -1007,11 +1025,11 @@
             The foundational decision-support platform for precision neurology. Transforming epilepsy surgery through AI-powered brain network analysis.
         </p>
         <div class="hero__cta-row">
-            <a href="#solution" class="btn btn--glow">
-                Explore the Platform
+            <a href="#contact" class="btn btn--glow" onclick="document.querySelector('[name=cta-type]').value='demo'">
+                Request a Demo
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m-4-4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
-            <a href="#evidence" class="btn btn--outline">Clinical Evidence</a>
+            <a href="#contact" class="btn btn--outline" onclick="document.querySelector('[name=cta-type]').value='deck'">Request Investor Deck</a>
         </div>
     </div>
     <div class="hero__scroll-hint">
@@ -1350,11 +1368,16 @@
     <div class="container">
         <div class="section__eyebrow r">Get In Touch</div>
         <h2 class="section__heading r r-d1">Contact Us</h2>
+        <div class="contact__cta-pills r r-d1">
+            <button class="contact__pill contact__pill--active" data-cta="demo" onclick="setCTA('demo')">Request a Demo</button>
+            <button class="contact__pill" data-cta="deck" onclick="setCTA('deck')">Request Investor Deck</button>
+            <button class="contact__pill" data-cta="general" onclick="setCTA('general')">General Inquiry</button>
+        </div>
         <div class="contact__grid">
             <div class="r r-d2">
                 <div class="contact__title">Let's discuss how FIND Neuro can support your clinical program.</div>
                 <p class="contact__text">
-                    Whether you're a clinician, investor, or potential partner -we'd love to hear from you.
+                    Whether you're a clinician, investor, or potential partner - we'd love to hear from you.
                 </p>
                 <div class="contact__detail">
                     <div class="contact__detail-icon">
@@ -1369,7 +1392,8 @@
                     Boston, Massachusetts
                 </div>
             </div>
-            <form class="contact__form r r-d3" onsubmit="event.preventDefault();this.querySelector('.btn').textContent='Sent!';this.querySelector('.btn').style.background='#059669';">
+            <form class="contact__form r r-d3" onsubmit="event.preventDefault();this.querySelector('.btn--submit').textContent='Sent!';this.querySelector('.btn--submit').style.background='#059669';">
+                <input type="hidden" name="cta-type" value="demo">
                 <div class="fg"><label>Name</label><input type="text" placeholder="Your name" required></div>
                 <div class="fg"><label>Email</label><input type="email" placeholder="your@email.com" required></div>
                 <div class="fg"><label>Organization</label><input type="text" placeholder="Hospital, institution, or company"></div>
@@ -1378,7 +1402,7 @@
                     <select><option value="">Select role</option><option>Clinician / Epileptologist</option><option>Neurosurgeon</option><option>Hospital Administrator</option><option>Investor</option><option>Researcher</option><option>Industry Partner</option><option>Other</option></select>
                 </div>
                 <div class="fg"><label>Message</label><textarea placeholder="Tell us about your interest..."></textarea></div>
-                <button type="submit" class="btn btn--glow btn--full">Send Message</button>
+                <button type="submit" class="btn btn--glow btn--full btn--submit">Request a Demo</button>
             </form>
         </div>
     </div>
@@ -1410,6 +1434,18 @@
     window.addEventListener('load', () => {
         setTimeout(() => document.getElementById('loader').classList.add('hidden'), 2200);
     });
+
+    /* ── CTA SWITCHER ── */
+    const ctaLabels = { demo: 'Request a Demo', deck: 'Request Investor Deck', general: 'Send Message' };
+    window.setCTA = function(type) {
+        document.querySelectorAll('.contact__pill').forEach(p => {
+            p.classList.toggle('contact__pill--active', p.dataset.cta === type);
+        });
+        const hidden = document.querySelector('[name=cta-type]');
+        if (hidden) hidden.value = type;
+        const btn = document.querySelector('.btn--submit');
+        if (btn) btn.textContent = ctaLabels[type] || 'Send Message';
+    };
 
     /* ── MOBILE MENU ── */
     const mobileToggle = document.getElementById('mobile-toggle');
