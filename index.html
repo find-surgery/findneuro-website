@@ -606,7 +606,13 @@
             padding: 56px; text-align: center;
             display: flex; flex-direction: column; align-items: center;
         }
-        .story__icon { margin-bottom: 20px; }
+        .story__photo {
+            width: 120px; height: 120px; border-radius: 50%;
+            background-size: cover; background-position: center;
+            margin-bottom: 24px;
+            border: 3px solid rgba(124,58,237,0.25);
+            box-shadow: 0 0 40px rgba(124,58,237,0.15);
+        }
         .story__eyebrow {
             font-family: var(--font-mono); font-size: 0.62rem;
             color: var(--violet); letter-spacing: 0.15em;
@@ -1161,9 +1167,7 @@
         </div>
 
         <div class="story story--featured r r-d4">
-            <div class="story__icon">
-                <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="23" stroke="url(#storyGrad)" stroke-width="2"/><path d="M24 14c-4 0-7 3.5-7 7.5 0 7.5 7 12.5 7 12.5s7-5 7-12.5c0-4-3-7.5-7-7.5z" fill="url(#storyGrad)"/><defs><linearGradient id="storyGrad" x1="0" y1="0" x2="48" y2="48"><stop stop-color="#7c3aed"/><stop offset="1" stop-color="#00d4ff"/></linearGradient></defs></svg>
-            </div>
+            <div class="story__photo" style="background-image:url('assests/alice-photo.jpg')"></div>
             <div class="story__eyebrow">Patient Impact</div>
             <h3 class="story__title">Alice's Story</h3>
             <p class="story__text story__text--large">
