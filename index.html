@@ -1417,8 +1417,8 @@
         </div>
         <div class="contact__grid">
             <div class="r r-d2">
-                <div class="contact__title">Let's discuss how FIND Neuro can support your clinical program.</div>
-                <p class="contact__text">
+                <div class="contact__title" id="contact-title">Let's discuss how FIND Neuro can support your clinical program.</div>
+                <p class="contact__text" id="contact-text">
                     Whether you're a clinician, investor, or potential partner - we'd love to hear from you.
                 </p>
                 <div class="contact__detail">
@@ -1484,6 +1484,16 @@
 
     /* ── CTA SWITCHER ── */
     const ctaLabels = { demo: 'Request a Demo', deck: 'Request Investor Deck', general: 'Send Message' };
+    const ctaTitles = {
+        demo: "Let's discuss how FIND Neuro can support your clinical program.",
+        deck: "Interested in investing in the future of precision neurosurgery?",
+        general: "We'd love to hear from you."
+    };
+    const ctaTexts = {
+        demo: "Schedule a personalized demo to see how our platform integrates into your epilepsy surgery workflow.",
+        deck: "Request our investor deck to learn about our technology, market opportunity, and growth strategy.",
+        general: "Whether you're a clinician, researcher, or potential partner - reach out and let's start a conversation."
+    };
     window.setCTA = function(type) {
         document.querySelectorAll('.contact__pill').forEach(p => {
             p.classList.toggle('contact__pill--active', p.dataset.cta === type);
@@ -1492,6 +1502,10 @@
         if (hidden) hidden.value = type;
         const btn = document.querySelector('.btn--submit');
         if (btn) btn.textContent = ctaLabels[type] || 'Send Message';
+        const title = document.getElementById('contact-title');
+        if (title) title.textContent = ctaTitles[type] || ctaTitles.general;
+        const text = document.getElementById('contact-text');
+        if (text) text.textContent = ctaTexts[type] || ctaTexts.general;
     };
 
     /* ── FORM SUBMISSION (Formspree) ── */
