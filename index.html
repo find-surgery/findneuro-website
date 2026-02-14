@@ -2337,34 +2337,54 @@
 
         // Fire rapid chaotic spikes from focus nodes
         for (let k = 0; k < 6; k++) {
-            setTimeout(() => {
+            aliceTimeouts.push(setTimeout(() => {
                 if (aliceMode === 1) {
                     const node = aliceFocus[Math.floor(Math.random() * aliceFocus.length)];
                     triggerSpike(node);
                 }
-            }, k * 400);
+            }, k * 400));
         }
 
         // Phase 2: targets identified (after 3s)
-        setTimeout(() => { aliceMode = 2; }, 3000);
+        aliceTimeouts.push(setTimeout(() => { aliceMode = 2; }, 3000));
 
         // Phase 3: seizure-free calm (after 6s)
-        setTimeout(() => { aliceMode = 3; }, 6000);
+        aliceTimeouts.push(setTimeout(() => { aliceMode = 3; }, 6000));
 
         // Reset after 10s
-        setTimeout(() => {
+        aliceTimeouts.push(setTimeout(() => {
             aliceMode = 0;
             aliceTriggered = false;
             aliceFocus = [];
             aliceTargets = [];
-        }, 10000);
+        }, 10000));
+    }
+
+    let aliceTimeouts = [];
+    function stopAliceVisualization() {
+        aliceTimeouts.forEach(t => clearTimeout(t));
+        aliceTimeouts = [];
+        aliceMode = 0;
+        aliceTriggered = false;
+        aliceFocus = [];
+        aliceTargets = [];
     }
 
     const aliceObserver = new IntersectionObserver(entries => {
         if (entries[0].isIntersecting) startAliceVisualization();
     }, { threshold: 0.4 });
     const aliceEl = document.getElementById('alice-story');
-    if (aliceEl) aliceObserver.observe(aliceEl);
+    if (aliceEl) {
+        aliceObserver.observe(aliceEl);
+        aliceEl.style.cursor = 'pointer';
+        aliceEl.addEventListener('mouseenter', () => {
+            stopAliceVisualization();
+            startAliceVisualization();
+        });
+        aliceEl.addEventListener('mouseleave', () => {
+            stopAliceVisualization();
+        });
+    }
 
     function animate() {
         if (!isBrainVisible) return;
