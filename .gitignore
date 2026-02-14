@@ -2,3 +2,8 @@ docs/
 __pycache__/
 *.pyc
 .DS_Store
+.env
+.claude/
+gtm/
+clin/
+clinical-pipeline-integration/

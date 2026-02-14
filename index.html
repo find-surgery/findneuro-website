@@ -14,6 +14,7 @@
     <meta name="twitter:title" content="FIND Neuro | Precision Neurosurgery Decision Support">
     <meta name="twitter:description" content="The operating system for precision neurology. Transforming epilepsy surgery through AI-powered brain network analysis.">
     <meta name="twitter:image" content="https://findneuro.com/assests/social-preview.jpg">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://formspree.io; upgrade-insecure-requests;">
     <link rel="icon" type="image/png" href="assests/White_500px.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1402,6 +1403,7 @@
             <form class="contact__form r r-d3" id="contact-form">
                 <input type="hidden" name="cta-type" value="demo">
                 <input type="hidden" name="_subject" value="New inquiry from findneuro.com">
+                <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
                 <div class="fg"><label>Name</label><input type="text" name="name" placeholder="Your name" required></div>
                 <div class="fg"><label>Email</label><input type="email" name="email" placeholder="your@email.com" required></div>
                 <div class="fg"><label>Organization</label><input type="text" name="organization" placeholder="Hospital, institution, or company"></div>
@@ -1433,11 +1435,13 @@
 <!-- ═══════════════════════════════════════════
      THREE.JS + INTERACTIONS
      ═══════════════════════════════════════════ -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" integrity="sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9" crossorigin="anonymous"></script>
 <script src="brain_data.js"></script>
 <script>
 (function() {
     'use strict';
+    /* Clickjacking protection */
+    if (window.top !== window.self) { window.top.location = window.self.location; }
 
     /* ── LOADER ── */
     window.addEventListener('load', () => {
@@ -2035,7 +2039,7 @@
         /* Interaction hint */
         const hint = document.createElement('div');
         hint.id = 'brain-hint';
-        hint.innerHTML = '\u25C6 Click brain to trigger seizure network \u25C6';
+        hint.textContent = '\u25C6 Click brain to trigger seizure network \u25C6';
         hint.style.cssText = 'position:absolute;bottom:11%;left:50%;transform:translateX(-50%);color:rgba(0,212,255,0.3);font-family:var(--font-body);font-size:0.8rem;letter-spacing:0.07em;pointer-events:none;z-index:5;text-transform:uppercase;animation:hintPulse 3s ease-in-out infinite;';
         const hero = document.getElementById('hero');
         if (hero) { hero.style.position = 'relative'; hero.appendChild(hint); }
