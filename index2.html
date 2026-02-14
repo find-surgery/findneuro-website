@@ -7,7 +7,7 @@
     <meta name="description" content="FIND Neuro builds the foundational decision-support platform for precision neurology, transforming epilepsy surgery through AI-powered brain network analysis.">
     <meta property="og:title" content="FIND Neuro | Precision Neurosurgery Decision Support">
     <meta property="og:description" content="The operating system for precision neurology. Spun out of MGH & Harvard Medical School.">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23050a18' stroke='%2300d4ff' stroke-width='2'/><text x='16' y='21' font-size='13' fill='%2300d4ff' text-anchor='middle' font-family='sans-serif' font-weight='700'>FN</text></svg>">
+    <link rel="icon" type="image/png" href="assests/White_500px.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -106,8 +106,10 @@
             position: fixed; top: 20px; left: 40px; z-index: 100;
             text-decoration: none;
             mix-blend-mode: difference;
-            transition: opacity 0.3s ease;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
+        .logo-fixed.visible { opacity: 1; }
         .logo-fixed img {
             height: 36px; width: auto;
             display: block;
@@ -200,11 +202,13 @@
             position: relative; z-index: 2;
             min-height: 100vh;
             display: flex; align-items: center; justify-content: center;
+            pointer-events: none;
         }
         .hero__content {
             text-align: center; max-width: 900px; padding: 0 40px;
             opacity: 0; animation: hero-in 1.2s 1.8s var(--ease) forwards;
         }
+        .hero__content a, .hero__content button { pointer-events: auto; }
         @keyframes hero-in {
             from { opacity: 0; transform: translateY(40px); }
             to { opacity: 1; transform: translateY(0); }
@@ -229,18 +233,11 @@
         @keyframes blink {
             0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
         }
-        .hero__title {
-            font-family: var(--font-display); font-weight: 800;
-            font-size: clamp(3.2rem, 8vw, 7rem);
-            line-height: 0.95; letter-spacing: -0.03em;
-            margin-bottom: 28px;
-        }
-        .hero__title-line1 { display: block; color: var(--text); }
-        .hero__title-line2 {
-            display: block;
-            background: linear-gradient(135deg, var(--accent) 0%, #66e0ff 40%, var(--violet) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .hero__logo {
+            display: block; margin: 0 auto 32px;
+            max-width: clamp(280px, 45vw, 520px);
+            height: auto;
+            filter: drop-shadow(0 0 60px rgba(0,212,255,0.15));
         }
         .hero__sub {
             font-family: var(--font-display); font-weight: 400;
@@ -864,7 +861,7 @@
             .mobile-toggle { display: flex; }
             .logo-fixed { left: 24px; top: 20px; }
             .logo-fixed img { height: 28px; }
-            .hero__title { font-size: clamp(2.6rem, 10vw, 4.5rem); }
+            .hero__logo { max-width: clamp(200px, 60vw, 340px); }
             .solution__cards { grid-template-columns: 1fr; }
             .metrics-strip { grid-template-columns: 1fr; }
             .ms-item { border-right: none; border-bottom: 1px solid var(--border); }
@@ -944,10 +941,7 @@
             <span class="hero__badge-dot"></span>
             MGH &amp; Harvard Medical School Spin-Out
         </div>
-        <h1 class="hero__title">
-            <span class="hero__title-line1">FIND</span>
-            <span class="hero__title-line2">NEURO</span>
-        </h1>
+        <img src="assests/White_500px.png" alt="FIND Neuro" class="hero__logo">
         <p class="hero__sub">
             The foundational decision-support platform for precision neurology. Transforming epilepsy surgery through AI-powered brain network analysis.
         </p>
@@ -1438,7 +1432,7 @@
         clock = new THREE.Clock();
 
         camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-        camera.position.set(0, 0.3, 3.6);
+        camera.position.set(0, 0.2, isMobile ? 3.6 : 3.0);
 
         renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
@@ -1482,6 +1476,9 @@
         });
         window.addEventListener('scroll', () => {
             scrollPct = window.scrollY / window.innerHeight;
+            /* Show logo when user scrolls past the hero/brain */
+            const logo = document.querySelector('.logo-fixed');
+            if (logo) logo.classList.toggle('visible', scrollPct > 0.6);
         });
 
         /* Drag-to-rotate handlers */
@@ -1583,18 +1580,23 @@
         }
         meshGeo.setAttribute('color', new THREE.BufferAttribute(meshColors, 3));
 
-        /* Layer 1: Solid brain mesh */
+        /* Layer 1: Solid brain mesh (highly transparent to see subcortical) */
         const solidMat = new THREE.MeshPhongMaterial({
             vertexColors: true,
             transparent: true,
-            opacity: 0.38,
+            opacity: 0.18,
             side: THREE.DoubleSide,
             specular: new THREE.Color(0x00aadd),
             shininess: 18,
             emissive: new THREE.Color(0x000a14),
-            depthWrite: true
+            depthWrite: false
         });
         brain.add(new THREE.Mesh(meshGeo, solidMat));
+
+        /* Subcortical structures */
+        if (B.sub && B.sub.length > 0) {
+            buildSubcortical(B.sub);
+        }
 
         /* Layer 2: Wireframe overlay */
         const wireMat = new THREE.MeshBasicMaterial({
@@ -1636,6 +1638,61 @@
             transparent: true, opacity: 0.04,
             blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
         })));
+    }
+
+    /* ── SUBCORTICAL STRUCTURES ── */
+    function buildSubcortical(structures) {
+        /* Color map: structure name → [r, g, b] emissive color */
+        const colorMap = {
+            'Left-Hippocampus':       [1.0, 0.45, 0.1],
+            'Right-Hippocampus':      [1.0, 0.45, 0.1],
+            'Left-Amygdala':          [0.95, 0.25, 0.2],
+            'Right-Amygdala':         [0.95, 0.25, 0.2],
+            'Left-Thalamus-Proper':   [0.55, 0.25, 0.9],
+            'Right-Thalamus-Proper':  [0.55, 0.25, 0.9],
+            'Left-Caudate':           [0.15, 0.75, 0.45],
+            'Right-Caudate':          [0.15, 0.75, 0.45],
+            'Left-Putamen':           [0.1, 0.65, 0.75],
+            'Right-Putamen':          [0.1, 0.65, 0.75],
+            'Left-Pallidum':          [0.4, 0.7, 0.95],
+            'Right-Pallidum':         [0.4, 0.7, 0.95],
+            'Brain-Stem':             [0.45, 0.42, 0.55]
+        };
+
+        for (const s of structures) {
+            const sv = new Float32Array(s.v);
+            const sf = new Uint32Array(s.f);
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(sv, 3));
+            geo.setIndex(new THREE.BufferAttribute(sf, 1));
+            geo.computeVertexNormals();
+
+            const c = colorMap[s.n] || [0.5, 0.5, 0.5];
+
+            /* Solid subcortical mesh - visible through transparent cortex */
+            const mat = new THREE.MeshPhongMaterial({
+                color: new THREE.Color(c[0] * 0.6, c[1] * 0.6, c[2] * 0.6),
+                emissive: new THREE.Color(c[0] * 0.15, c[1] * 0.15, c[2] * 0.15),
+                transparent: true,
+                opacity: 0.75,
+                side: THREE.DoubleSide,
+                specular: new THREE.Color(0.3, 0.3, 0.3),
+                shininess: 25,
+                depthWrite: true
+            });
+            brain.add(new THREE.Mesh(geo, mat));
+
+            /* Subtle wireframe for depth cue */
+            const wire = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(c[0], c[1], c[2]),
+                wireframe: true,
+                transparent: true,
+                opacity: 0.06,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            brain.add(new THREE.Mesh(geo, wire));
+        }
     }
 
     /* ── FALLBACK (no brain data loaded) ── */
