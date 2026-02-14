@@ -98,16 +98,19 @@
            ═══════════════════════════════════════ */
         #brain-canvas {
             position: fixed; inset: 0; z-index: 1;
-            pointer-events: none;
+            cursor: grab;
             transition: opacity 0.6s ease;
         }
+        #brain-canvas:active { cursor: grabbing; }
         .logo-fixed {
-            position: fixed; top: 28px; left: 40px; z-index: 100;
-            font-family: var(--font-display); font-weight: 700;
-            font-size: 0.95rem; letter-spacing: 0.12em;
-            color: var(--text); text-decoration: none;
+            position: fixed; top: 20px; left: 40px; z-index: 100;
+            text-decoration: none;
             mix-blend-mode: difference;
             transition: opacity 0.3s ease;
+        }
+        .logo-fixed img {
+            height: 36px; width: auto;
+            display: block;
         }
         .nav-fixed {
             position: fixed; top: 28px; right: 40px; z-index: 100;
@@ -700,17 +703,18 @@
         }
         .t-card:hover { border-color: var(--border-accent); transform: translateY(-4px); }
         .t-card__avatar {
-            width: 64px; height: 64px; border-radius: 50%;
+            width: 80px; height: 80px; border-radius: 50%;
             margin: 0 auto 16px;
             display: flex; align-items: center; justify-content: center;
             font-family: var(--font-display); font-weight: 700;
-            font-size: 1rem; color: #fff;
+            font-size: 1.1rem; color: #fff;
+            background-size: cover; background-position: center;
+            border: 2px solid var(--border);
+            transition: border-color 0.3s ease;
         }
-        .t-card__avatar--1 { background: linear-gradient(135deg, #00d4ff, #0066cc); }
-        .t-card__avatar--2 { background: linear-gradient(135deg, #7c3aed, #c084fc); }
-        .t-card__avatar--3 { background: linear-gradient(135deg, #0066cc, #7c3aed); }
-        .t-card__avatar--4 { background: linear-gradient(135deg, #059669, #00d4ff); }
-        .t-card__avatar--5 { background: linear-gradient(135deg, #c084fc, #f472b6); }
+        .t-card:hover .t-card__avatar { border-color: var(--border-accent); }
+        .t-card__avatar--fallback-1 { background: linear-gradient(135deg, #059669, #00d4ff); }
+        .t-card__avatar--fallback-2 { background: linear-gradient(135deg, #c084fc, #f472b6); }
         .t-card__name {
             font-family: var(--font-display); font-weight: 700;
             font-size: 0.92rem; margin-bottom: 2px;
@@ -742,6 +746,11 @@
             width: 8px; height: 8px; border-radius: 50%;
             background: var(--purple); flex-shrink: 0;
         }
+        .adv-card__photo {
+            width: 44px; height: 44px; border-radius: 50%;
+            background-size: cover; background-position: center top;
+            flex-shrink: 0; border: 1.5px solid var(--border);
+        }
         .adv-card__name {
             font-family: var(--font-display); font-weight: 600;
             font-size: 0.82rem;
@@ -750,36 +759,7 @@
             font-size: 0.72rem; color: var(--text-dim); line-height: 1.4;
         }
 
-        /* ═══════════════════════════════════════
-           PARTNERS
-           ═══════════════════════════════════════ */
-        .partners__grid {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
-        }
-        .p-badge {
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border);
-            padding: 28px 24px;
-            display: flex; align-items: center; gap: 14px;
-            transition: all 0.25s ease;
-        }
-        .p-badge:hover {
-            background: rgba(0,212,255,0.02);
-            border-color: var(--border-accent);
-        }
-        .p-badge__dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: var(--accent); flex-shrink: 0; opacity: 0.5;
-        }
-        .p-badge__name {
-            font-family: var(--font-display); font-weight: 500;
-            font-size: 0.88rem;
-        }
-        .p-badge__type {
-            font-size: 0.68rem; color: var(--text-muted);
-            font-family: var(--font-mono); letter-spacing: 0.03em;
-        }
+        /* Partners section removed */
 
         /* ═══════════════════════════════════════
            CONTACT
@@ -882,7 +862,8 @@
             .section { padding: 100px 0; }
             .nav-fixed, .dot-nav { display: none; }
             .mobile-toggle { display: flex; }
-            .logo-fixed { font-size: 0.82rem; left: 24px; top: 28px; }
+            .logo-fixed { left: 24px; top: 20px; }
+            .logo-fixed img { height: 28px; }
             .hero__title { font-size: clamp(2.6rem, 10vw, 4.5rem); }
             .solution__cards { grid-template-columns: 1fr; }
             .metrics-strip { grid-template-columns: 1fr; }
@@ -894,7 +875,6 @@
             .evidence__pubs { grid-template-columns: 1fr; }
             .team__grid { grid-template-columns: repeat(2, 1fr); }
             .team__advisors-grid { grid-template-columns: 1fr; }
-            .partners__grid { grid-template-columns: 1fr; }
             .contact__grid { grid-template-columns: 1fr; }
             .problem__grid { grid-template-columns: 1fr; }
             .problem__big-number { font-size: clamp(4rem, 18vw, 8rem); }
@@ -920,7 +900,7 @@
 <canvas id="brain-canvas"></canvas>
 
 <!-- Fixed: Logo -->
-<a href="#" class="logo-fixed">FIND NEURO</a>
+<a href="#" class="logo-fixed"><img src="assests/White_500px.png" alt="FIND Neuro"></a>
 
 <!-- Fixed: Navigation -->
 <nav class="nav-fixed">
@@ -1240,31 +1220,31 @@
         </p>
         <div class="team__grid">
             <div class="t-card r r-d1">
-                <div class="t-card__avatar t-card__avatar--1">NP</div>
+                <div class="t-card__avatar" style="background-image:url('assests/team/noam_team.jpg')"></div>
                 <div class="t-card__name">Noam Peled, PhD</div>
                 <div class="t-card__role">CEO</div>
                 <div class="t-card__bio">Former Director of Visualization, Martinos Center, MGH &amp; Harvard</div>
             </div>
             <div class="t-card r r-d2">
-                <div class="t-card__avatar t-card__avatar--2">AY</div>
+                <div class="t-card__avatar" style="background-image:url('assests/team/avi_team.jpg')"></div>
                 <div class="t-card__name">Avi Yaron</div>
                 <div class="t-card__role">Executive Chairman</div>
                 <div class="t-card__bio">Serial neurotech investor. Founded 3 venture funds ($50M AUM each)</div>
             </div>
             <div class="t-card r r-d3">
-                <div class="t-card__avatar t-card__avatar--3">AL</div>
+                <div class="t-card__avatar" style="background-image:url('assests/team/adam_team-Copy.jpg')"></div>
                 <div class="t-card__name">Adam P. Lerner, JD</div>
                 <div class="t-card__role">COO</div>
                 <div class="t-card__bio">Former VP Legal &amp; IP at VC-backed life sciences companies</div>
             </div>
             <div class="t-card r r-d4">
-                <div class="t-card__avatar t-card__avatar--4">DS</div>
+                <div class="t-card__avatar t-card__avatar--fallback-1">DS</div>
                 <div class="t-card__name">Dekel Shapira, PhD</div>
                 <div class="t-card__role">VP R&amp;D</div>
                 <div class="t-card__bio">Healthcare sector development leader</div>
             </div>
             <div class="t-card r r-d5">
-                <div class="t-card__avatar t-card__avatar--5">AR</div>
+                <div class="t-card__avatar t-card__avatar--fallback-2">AR</div>
                 <div class="t-card__name">Alex Rockhill, PhD</div>
                 <div class="t-card__role">Senior Scientist</div>
                 <div class="t-card__bio">Expert in invasive EEG &amp; network-guided neuromodulation, MGH</div>
@@ -1274,14 +1254,14 @@
         <div class="team__advisors-label r">Scientific Advisory Board</div>
         <div class="team__advisors-grid">
             <div class="adv-card r r-d1">
-                <div class="adv-card__dot"></div>
+                <div class="adv-card__photo" style="background-image:url('assests/team/steve_team.jpg')"></div>
                 <div>
                     <div class="adv-card__name">Prof. Steven Stufflebeam, MD</div>
                     <div class="adv-card__title">Co-Founder &bull; Neuroradiologist HMS &bull; Medical Director Martinos Center</div>
                 </div>
             </div>
             <div class="adv-card r r-d2">
-                <div class="adv-card__dot"></div>
+                <div class="adv-card__photo" style="background-image:url('assests/team/NEU-Surgeon-H-Weiner.jpg')"></div>
                 <div>
                     <div class="adv-card__name">Prof. Howard L. Weiner, MD</div>
                     <div class="adv-card__title">Chief of Neurosurgery, Texas Children's Hospital</div>
@@ -1315,28 +1295,6 @@
                     <div class="adv-card__title">Founded Geo-Centers Inc. (1,400 employees, $200M revenue)</div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- ─────────────── PARTNERS ─────────────── -->
-<section class="section section--alt" id="partners">
-    <div class="container">
-        <div class="section__eyebrow r">Clinical Network</div>
-        <h2 class="section__heading r r-d1">Institutional Partners</h2>
-        <p class="section__lead r r-d2">
-            Validated across leading academic medical centers. Prospective studies underway.
-        </p>
-        <div class="partners__grid">
-            <div class="p-badge r r-d1"><span class="p-badge__dot"></span><div><div class="p-badge__name">Massachusetts General Hospital</div><div class="p-badge__type">Harvard Medical School</div></div></div>
-            <div class="p-badge r r-d2"><span class="p-badge__dot"></span><div><div class="p-badge__name">Boston Children's Hospital</div><div class="p-badge__type">Active Deployment</div></div></div>
-            <div class="p-badge r r-d3"><span class="p-badge__dot"></span><div><div class="p-badge__name">Texas Children's Hospital</div><div class="p-badge__type">Validation Site</div></div></div>
-            <div class="p-badge r r-d4"><span class="p-badge__dot"></span><div><div class="p-badge__name">Oregon Health &amp; Science University</div><div class="p-badge__type">Prospective Study</div></div></div>
-            <div class="p-badge r r-d5"><span class="p-badge__dot"></span><div><div class="p-badge__name">National Institutes of Health</div><div class="p-badge__type">Training Site</div></div></div>
-            <div class="p-badge r r-d6"><span class="p-badge__dot"></span><div><div class="p-badge__name">Montefiore Medical Center</div><div class="p-badge__type">Prospective Study</div></div></div>
-            <div class="p-badge r r-d1"><span class="p-badge__dot"></span><div><div class="p-badge__name">Helen DeVos Children's Hospital</div><div class="p-badge__type">Prospective Study</div></div></div>
-            <div class="p-badge r r-d2"><span class="p-badge__dot"></span><div><div class="p-badge__name">Univ. of Minnesota Medical Center</div><div class="p-badge__type">Training Site</div></div></div>
-            <div class="p-badge r r-d3"><span class="p-badge__dot"></span><div><div class="p-badge__name">Hospital of the Univ. of Pennsylvania</div><div class="p-badge__type">Validation Site</div></div></div>
         </div>
     </div>
 </section>
@@ -1462,6 +1420,12 @@
     let mx = 0, my = 0, scrollPct = 0;
     let numVerts = 0;
 
+    /* Interactive drag rotation */
+    let isDragging = false;
+    let lastDragX = 0, lastDragY = 0;
+    let userRotZ = 0, userRotX = 0;
+    let dragVelZ = 0, dragVelX = 0;
+
     /* Epileptogenic network */
     let netNodes = [], netAdj = [], netSpikes = [];
     let netNodeColors, netEdgeColors, netNodePoints, netEdgeLines;
@@ -1474,7 +1438,7 @@
         clock = new THREE.Clock();
 
         camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-        camera.position.set(0, 0.4, 4.8);
+        camera.position.set(0, 0.3, 3.6);
 
         renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
         renderer.setSize(canvas.clientWidth, canvas.clientHeight);
@@ -1519,6 +1483,48 @@
         window.addEventListener('scroll', () => {
             scrollPct = window.scrollY / window.innerHeight;
         });
+
+        /* Drag-to-rotate handlers */
+        canvas.addEventListener('pointerdown', e => {
+            isDragging = true;
+            lastDragX = e.clientX;
+            lastDragY = e.clientY;
+            dragVelZ = dragVelX = 0;
+        });
+        window.addEventListener('pointermove', e => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastDragX;
+            const dy = e.clientY - lastDragY;
+            dragVelZ = dx * 0.004;
+            dragVelX = dy * 0.004;
+            userRotZ += dragVelZ;
+            userRotX += dragVelX;
+            lastDragX = e.clientX;
+            lastDragY = e.clientY;
+        });
+        window.addEventListener('pointerup', () => { isDragging = false; });
+
+        /* Touch drag support */
+        canvas.addEventListener('touchstart', e => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                lastDragX = e.touches[0].clientX;
+                lastDragY = e.touches[0].clientY;
+                dragVelZ = dragVelX = 0;
+            }
+        }, { passive: true });
+        canvas.addEventListener('touchmove', e => {
+            if (!isDragging || e.touches.length !== 1) return;
+            const dx = e.touches[0].clientX - lastDragX;
+            const dy = e.touches[0].clientY - lastDragY;
+            dragVelZ = dx * 0.004;
+            dragVelX = dy * 0.004;
+            userRotZ += dragVelZ;
+            userRotX += dragVelX;
+            lastDragX = e.touches[0].clientX;
+            lastDragY = e.touches[0].clientY;
+        }, { passive: true });
+        canvas.addEventListener('touchend', () => { isDragging = false; }, { passive: true });
 
         animate();
     }
@@ -1581,7 +1587,7 @@
         const solidMat = new THREE.MeshPhongMaterial({
             vertexColors: true,
             transparent: true,
-            opacity: 0.55,
+            opacity: 0.38,
             side: THREE.DoubleSide,
             specular: new THREE.Color(0x00aadd),
             shininess: 18,
@@ -1832,7 +1838,6 @@
 
         /* Raycaster for click interaction */
         raycaster = new THREE.Raycaster();
-        canvas.style.cursor = 'crosshair';
         canvas.addEventListener('click', onBrainClick);
         canvas.addEventListener('touchend', onBrainTouch, { passive: true });
 
@@ -2048,11 +2053,20 @@
 
         if (brainOpacity < 0.01) return;
 
-        // Rotation: slow auto-rotate + mouse parallax
-        brain.rotation.z = elapsed * 0.08 + mx * 0.18;
+        // Interactive rotation with inertia + slow auto-rotate
+        if (!isDragging) {
+            // Inertia damping
+            dragVelZ *= 0.94;
+            dragVelX *= 0.94;
+            userRotZ += dragVelZ;
+            userRotX += dragVelX;
+            // Slow auto-rotate when not dragging
+            userRotZ += dt * 0.06;
+        }
         const baseXRot = -Math.PI / 2;
-        brain.rotation.x = baseXRot + Math.sin(elapsed * 0.05) * 0.04 + my * 0.08;
-        brain.rotation.y = Math.sin(elapsed * 0.03) * 0.03;
+        brain.rotation.z = userRotZ;
+        brain.rotation.x = baseXRot + userRotX;
+        brain.rotation.y = 0;
 
         // Epileptogenic network: auto-trigger spikes periodically
         spikeAutoTimer += dt;
