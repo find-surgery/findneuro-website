@@ -1189,7 +1189,7 @@
             </div>
         </div>
 
-        <div class="story story--featured r r-d4">
+        <div class="story story--featured r r-d4" id="alice-story">
             <div class="story__photo" style="background-image:url('assests/alice-photo.jpg')"></div>
             <div class="story__eyebrow">Patient Impact</div>
             <h3 class="story__title">Alice's Story</h3>
@@ -2083,6 +2083,9 @@
         }
 
         /* Update network node colors */
+        const isFocus = aliceMode > 0 ? new Set(aliceFocus) : null;
+        const isTarget = aliceMode >= 2 ? new Set(aliceTargets) : null;
+
         for (let i = 0; i < NET_NODES; i++) {
             let r = 0.0, g = 0.05, b = 0.1;
 
@@ -2090,6 +2093,40 @@
             const pulse = Math.sin(elapsed * 1.5 + i * 0.31) * 0.015 + 0.015;
             g += pulse;
             b += pulse * 1.5;
+
+            /* Alice mode: persistent node coloring */
+            if (aliceMode >= 2 && isTarget && isTarget.has(i)) {
+                // Ablation targets glow bright green
+                const targetPulse = Math.sin(elapsed * 3 + i * 0.5) * 0.15 + 0.85;
+                r = 0.05;
+                g = targetPulse * 1.2;
+                b = targetPulse * 0.4;
+
+                // Green glow on brain surface
+                if (meshColors) {
+                    const nearby = netNodeMeshVerts[i];
+                    if (nearby) {
+                        for (let k = 0; k < nearby.length; k++) {
+                            const { vi, f } = nearby[k];
+                            const glow = f * targetPulse * 0.4;
+                            meshColors[vi*3]   += glow * 0.05;
+                            meshColors[vi*3+1] += glow * 0.7;
+                            meshColors[vi*3+2] += glow * 0.25;
+                        }
+                    }
+                }
+            } else if (aliceMode === 1 && isFocus && isFocus.has(i)) {
+                // Seizure focus nodes glow angry red
+                const chaos = Math.sin(elapsed * 8 + i * 1.7) * 0.3 + 0.7;
+                r += chaos * 0.9;
+                g += chaos * 0.08;
+                b += 0.02;
+            } else if (aliceMode === 3) {
+                // Seizure-free: calm blue-cyan glow
+                const calm = Math.sin(elapsed * 1.2 + i * 0.4) * 0.04 + 0.06;
+                g += calm;
+                b += calm * 2;
+            }
 
             for (const s of netSpikes) {
                 const arr = s.arrivals[i];
@@ -2099,7 +2136,7 @@
 
                 const intensity = Math.exp(-age * s.decay);
 
-                /* Peak: hot white-orange → decay: orange-red */
+                /* Peak: hot white-orange - decay: orange-red */
                 r += intensity * 1.4;
                 g += intensity * 0.45;
                 b += intensity * 0.1;
@@ -2207,6 +2244,64 @@
         if (el) narrativeObserver.observe(el);
     });
 
+    /* ── Alice's Story Visualization ── */
+    let aliceMode = 0;       // 0=off, 1=seizure chaos, 2=targets identified, 3=seizure-free
+    let aliceStart = 0;
+    let aliceFocus = [];      // ~15 seizure focus nodes
+    let aliceTargets = [];    // ~5 ablation target nodes (subset of focus)
+    let aliceTriggered = false;
+
+    function startAliceVisualization() {
+        if (aliceTriggered || netNodes.length === 0) return;
+        aliceTriggered = true;
+        aliceMode = 1;
+        aliceStart = clock.getElapsedTime();
+
+        // Pick a spatial cluster of ~15 nodes as the seizure focus
+        const seed = Math.floor(Math.random() * NET_NODES);
+        const dists = [];
+        for (let i = 0; i < NET_NODES; i++) {
+            const dx = netNodes[i].x - netNodes[seed].x;
+            const dy = netNodes[i].y - netNodes[seed].y;
+            const dz = netNodes[i].z - netNodes[seed].z;
+            dists.push({ i, d: dx*dx + dy*dy + dz*dz });
+        }
+        dists.sort((a, b) => a.d - b.d);
+        aliceFocus = dists.slice(0, 15).map(d => d.i);
+        // Pick 5 of those as ablation targets
+        aliceTargets = aliceFocus.slice(0, 5);
+
+        // Fire rapid chaotic spikes from focus nodes
+        for (let k = 0; k < 6; k++) {
+            setTimeout(() => {
+                if (aliceMode === 1) {
+                    const node = aliceFocus[Math.floor(Math.random() * aliceFocus.length)];
+                    triggerSpike(node);
+                }
+            }, k * 400);
+        }
+
+        // Phase 2: targets identified (after 3s)
+        setTimeout(() => { aliceMode = 2; }, 3000);
+
+        // Phase 3: seizure-free calm (after 6s)
+        setTimeout(() => { aliceMode = 3; }, 6000);
+
+        // Reset after 10s
+        setTimeout(() => {
+            aliceMode = 0;
+            aliceTriggered = false;
+            aliceFocus = [];
+            aliceTargets = [];
+        }, 10000);
+    }
+
+    const aliceObserver = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) startAliceVisualization();
+    }, { threshold: 0.4 });
+    const aliceEl = document.getElementById('alice-story');
+    if (aliceEl) aliceObserver.observe(aliceEl);
+
     function animate() {
         if (!isBrainVisible) return;
         requestAnimationFrame(animate);
@@ -2238,11 +2333,13 @@
         brain.rotation.x = baseXRot + userRotX;
         brain.rotation.y = 0;
 
-        // Epileptogenic network: auto-trigger spikes periodically
-        spikeAutoTimer += dt;
-        if (spikeAutoTimer > 4.5) {
-            triggerSpike(Math.floor(Math.random() * NET_NODES));
-            spikeAutoTimer = 0;
+        // Epileptogenic network: auto-trigger spikes periodically (paused during Alice mode)
+        if (aliceMode === 0) {
+            spikeAutoTimer += dt;
+            if (spikeAutoTimer > 4.5) {
+                triggerSpike(Math.floor(Math.random() * NET_NODES));
+                spikeAutoTimer = 0;
+            }
         }
 
         // Update network spike propagation + mesh surface glow
