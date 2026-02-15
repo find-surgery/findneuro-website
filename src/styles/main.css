@@ -940,11 +940,6 @@ body::after {
     font-family: var(--font-display); font-weight: 600;
     font-size: 0.95rem; margin-top: 16px;
 }
-.cover-card__date {
-    font-family: var(--font-mono); font-size: 0.7rem;
-    color: var(--text-muted); margin-top: 4px;
-    letter-spacing: 0.05em;
-}
 
 /* ===================================================
    ROADMAP
