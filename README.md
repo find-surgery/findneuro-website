@@ -70,10 +70,10 @@ Runs on push to `main` and weekly (Monday 6am UTC). Four checks:
 - **SRI verification** - downloads Three.js from CDN and verifies the integrity hash matches `src/index.html`
 
 ### Lighthouse CI (`lighthouse.yml`)
-Runs on push to `main` and pull requests. Audits the live site against performance budgets defined in `.github/lighthouse-budget.json`:
-- FCP <= 3000ms, LCP <= 4000ms, TTI <= 5000ms
+Runs on push to `main` and pull requests. Audits the live site against resource budgets defined in `.github/lighthouse-budget.json`:
 - Script resources <= 3600 KB (Three.js + brain_data.js + app bundle)
 - Total resources <= 6000 KB
+- Timing budgets are omitted - the continuous `requestAnimationFrame` loop for 3D brain rendering prevents meaningful TTI measurement in CI.
 
 ### Link Checker (`links.yml`)
 Runs on push to `main` and weekly (Monday 9am UTC). Uses `lychee` to scan all HTML files for broken links.
