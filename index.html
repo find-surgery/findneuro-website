@@ -2631,11 +2631,11 @@
         if (targetEl) {
             targetEl.insertBefore(canvas, targetEl.firstChild);
             canvas.classList.add('hero__brain-canvas--floating');
-            if (size > 150) {
-                canvas.style.width = size + 'px';
-                canvas.style.height = size + 'px';
-                canvas.style.pointerEvents = 'auto';
-            }
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
+            canvas.style.pointerEvents = 'auto';
+            canvas.style.cursor = 'grab';
+            canvas.style.touchAction = 'none';
             requestAnimationFrame(() => {
                 renderer.setSize(size, size);
                 camera.aspect = 1;
@@ -2646,6 +2646,8 @@
             canvas.style.width = '';
             canvas.style.height = '';
             canvas.style.pointerEvents = '';
+            canvas.style.cursor = '';
+            canvas.style.touchAction = '';
             canvasOriginalParent.insertBefore(canvas, canvasNextSibling);
             onResize();
         }
