@@ -2686,19 +2686,24 @@
     const cnBrainSize = isMobile ? 280 : 360;
 
     // sEEG electrode geometry
-    const CN_ELECTRODES = 8;
+    const CN_ELECTRODES = 12;
     const CN_CONTACTS_PER = 12;
-    const CN_TOTAL = CN_ELECTRODES * CN_CONTACTS_PER; // 96
-    let cnElectrodeGroup = null;   // THREE.Group holding electrode lines + contact points
-    let cnContactPoints = null;    // THREE.Points for all 48 contacts
-    let cnContactPositions = [];   // [{x,y,z}, ...] for each contact
-    let cnContactColors = null;    // Float32Array for vertex colors
-    let cnConnectionLines = null;  // THREE.LineSegments for Phase 2 connections
+    const CN_TOTAL = CN_ELECTRODES * CN_CONTACTS_PER; // 144
+    let cnElectrodeGroup = null;
+    let cnContactPoints = null;
+    let cnContactPositions = [];
+    let cnContactColors = null;
+    let cnConnectionLines = null;
     let cnConnectionColors = null;
-    let cnHighlightContact = 0;    // index of the one red contact in Phase 2
-    let cnConnectedContacts = [];  // indices connected to highlight contact
-    let cnCritScores = [];         // per-contact criticality (0-1)
-    let cnCritSubset = [];         // subset of contacts shown in Phase 3
+    let cnHighlightContact = 0;
+    let cnConnectedContacts = [];
+    let cnCritScores = [];
+    let cnCritSubset = [];         // 6 spatially close contacts for Phase 3
+    // Phase 2 cycling state
+    const CN_MAX_CONN = 12;       // max connections to draw
+    let cnCycleTimer = 0;
+    let cnCycleIndex = 0;
+    let cnCyclePairs = [];        // pre-built array of {highlight, connected[]} pairs
 
     function initCNData() {
         if (cnInitialized) return;
@@ -2711,30 +2716,26 @@
         cnContactPositions = [];
         const tex = makeTexture(64, 0.15);
 
-        // Create 8 sEEG depth electrodes penetrating into brain
-        const electrodeAngles = [0.3, 1.1, 1.9, 2.7, 3.4, 4.2, 5.0, 5.7];
-        const electrodeZ = [-0.2, 0.2, -0.1, 0.3, 0.0, 0.15, -0.15, 0.25];
-
+        // Create 12 sEEG depth electrodes penetrating into brain
         for (let e = 0; e < CN_ELECTRODES; e++) {
-            const angle = electrodeAngles[e];
-            const zBase = electrodeZ[e];
+            const angle = (e / CN_ELECTRODES) * Math.PI * 2 + (e % 2) * 0.25;
+            const zBase = -0.25 + (e / CN_ELECTRODES) * 0.5 + ((e % 3) - 1) * 0.1;
             const outerR = 1.6;
             const innerR = 0.15;
 
             const start = new THREE.Vector3(
                 Math.cos(angle) * outerR,
                 Math.sin(angle) * outerR,
-                zBase + (Math.random() - 0.5) * 0.2
+                zBase + (Math.random() - 0.5) * 0.15
             );
             const end = new THREE.Vector3(
                 Math.cos(angle) * innerR,
                 Math.sin(angle) * innerR,
-                zBase + (Math.random() - 0.5) * 0.15
+                zBase + (Math.random() - 0.5) * 0.1
             );
 
             // Electrode shaft - thick cylinder
-            const shaftDir = new THREE.Vector3().subVectors(end, start);
-            const shaftLen = shaftDir.length();
+            const shaftLen = start.distanceTo(end);
             const shaftCylGeo = new THREE.CylinderGeometry(0.012, 0.012, shaftLen, 6, 1);
             shaftCylGeo.rotateX(Math.PI / 2);
             const shaftMesh = new THREE.Mesh(shaftCylGeo, new THREE.MeshBasicMaterial({
@@ -2761,7 +2762,6 @@
             positions[i*3]   = cnContactPositions[i].x;
             positions[i*3+1] = cnContactPositions[i].y;
             positions[i*3+2] = cnContactPositions[i].z;
-            // Default: dim cyan
             cnContactColors[i*3]   = 0.0;
             cnContactColors[i*3+1] = 0.5;
             cnContactColors[i*3+2] = 0.8;
@@ -2783,22 +2783,29 @@
             blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
         })));
 
-        // Phase 2: pick one highlight contact and its connections
-        // Pick a contact near the middle of electrode 1 (index ~5)
-        cnHighlightContact = 5;
-        // Connect it to 10 other contacts across different electrodes
-        cnConnectedContacts = [2, 9, 16, 22, 31, 40, 51, 63, 75, 88];
-
-        // Build connection line geometry
-        const nConn = cnConnectedContacts.length;
-        const connPos = new Float32Array(nConn * 6);
-        cnConnectionColors = new Float32Array(nConn * 6);
-        const hc = cnContactPositions[cnHighlightContact];
-        for (let i = 0; i < nConn; i++) {
-            const tc = cnContactPositions[cnConnectedContacts[i]];
-            connPos[i*6]   = hc.x; connPos[i*6+1] = hc.y; connPos[i*6+2] = hc.z;
-            connPos[i*6+3] = tc.x; connPos[i*6+4] = tc.y; connPos[i*6+5] = tc.z;
+        // Phase 2: build cycling pairs - each pair is a random contact with connections to others
+        cnCyclePairs = [];
+        for (let p = 0; p < 10; p++) {
+            const hi = Math.floor(Math.random() * CN_TOTAL);
+            // Pick 6-10 connected contacts from different electrodes
+            const conns = [];
+            const hiElectrode = Math.floor(hi / CN_CONTACTS_PER);
+            for (let attempt = 0; attempt < 40 && conns.length < 8; attempt++) {
+                const ci = Math.floor(Math.random() * CN_TOTAL);
+                const ciElectrode = Math.floor(ci / CN_CONTACTS_PER);
+                if (ci !== hi && ciElectrode !== hiElectrode && !conns.includes(ci)) {
+                    conns.push(ci);
+                }
+            }
+            cnCyclePairs.push({ highlight: hi, connected: conns });
         }
+        cnCycleIndex = 0;
+        cnHighlightContact = cnCyclePairs[0].highlight;
+        cnConnectedContacts = cnCyclePairs[0].connected;
+
+        // Build connection line geometry (max size to accommodate cycling)
+        const connPos = new Float32Array(CN_MAX_CONN * 6);
+        cnConnectionColors = new Float32Array(CN_MAX_CONN * 6);
         const connGeo = new THREE.BufferGeometry();
         connGeo.setAttribute('position', new THREE.BufferAttribute(connPos, 3));
         connGeo.setAttribute('color', new THREE.BufferAttribute(cnConnectionColors, 3));
@@ -2809,30 +2816,56 @@
         cnConnectionLines.visible = false;
         cnElectrodeGroup.add(cnConnectionLines);
 
-        // Phase 3: assign criticality scores and pick a visible subset
+        // Phase 3: find a cluster of 6 spatially close contacts
+        // Pick a seed contact and find its 5 nearest neighbors
+        const seed = Math.floor(CN_TOTAL * 0.3); // pick from a middle electrode
+        const dists = [];
+        for (let i = 0; i < CN_TOTAL; i++) {
+            const dx = cnContactPositions[i].x - cnContactPositions[seed].x;
+            const dy = cnContactPositions[i].y - cnContactPositions[seed].y;
+            const dz = cnContactPositions[i].z - cnContactPositions[seed].z;
+            dists.push({ i, d: dx*dx + dy*dy + dz*dz });
+        }
+        dists.sort((a, b) => a.d - b.d);
+        cnCritSubset = dists.slice(0, 6).map(d => d.i);
+
+        // Assign criticality scores: spread from 1.0 (red) to 0.0 (yellow) across the 6
         cnCritScores = new Float32Array(CN_TOTAL);
-        for (let i = 0; i < CN_TOTAL; i++) {
-            cnCritScores[i] = Math.random();
+        for (let k = 0; k < cnCritSubset.length; k++) {
+            cnCritScores[cnCritSubset[k]] = 1.0 - (k / (cnCritSubset.length - 1));
         }
-        // Make the highlight contact and its connections score high
-        cnCritScores[cnHighlightContact] = 0.95;
-        for (const ci of cnConnectedContacts) {
-            cnCritScores[ci] = 0.4 + Math.random() * 0.55;
-        }
-        // Subset: ~35 contacts with varied scores
-        cnCritSubset = [cnHighlightContact, ...cnConnectedContacts];
-        // Add extra contacts for coverage
-        for (let i = 0; i < CN_TOTAL; i++) {
-            if (!cnCritSubset.includes(i) && cnCritSubset.length < 35) {
-                cnCritScores[i] = Math.random() * 0.5;
-                cnCritSubset.push(i);
+    }
+
+    function cnUpdateConnectionGeometry() {
+        if (!cnConnectionLines || !cnContactPositions.length) return;
+        const pos = cnConnectionLines.geometry.attributes.position.array;
+        const col = cnConnectionLines.geometry.attributes.color.array;
+        const hc = cnContactPositions[cnHighlightContact];
+        for (let i = 0; i < CN_MAX_CONN; i++) {
+            if (i < cnConnectedContacts.length) {
+                const tc = cnContactPositions[cnConnectedContacts[i]];
+                pos[i*6]   = hc.x; pos[i*6+1] = hc.y; pos[i*6+2] = hc.z;
+                pos[i*6+3] = tc.x; pos[i*6+4] = tc.y; pos[i*6+5] = tc.z;
+                col[i*6] = col[i*6+3] = 0.7;
+                col[i*6+1] = col[i*6+4] = 0.08;
+                col[i*6+2] = col[i*6+5] = 0.04;
+            } else {
+                // Hide unused line segments by collapsing to zero-length
+                pos[i*6] = pos[i*6+1] = pos[i*6+2] = 0;
+                pos[i*6+3] = pos[i*6+4] = pos[i*6+5] = 0;
+                col[i*6] = col[i*6+1] = col[i*6+2] = 0;
+                col[i*6+3] = col[i*6+4] = col[i*6+5] = 0;
             }
         }
+        cnConnectionLines.geometry.attributes.position.needsUpdate = true;
+        cnConnectionLines.geometry.attributes.color.needsUpdate = true;
+        cnConnectionLines.geometry.setDrawRange(0, cnConnectedContacts.length * 2);
     }
 
     function setCNStep(step) {
         if (aliceMode > 0) stopAliceVisualization();
         cnMode = step;
+        cnCycleTimer = 0;
 
         // Update step buttons
         document.querySelectorAll('.cn-step').forEach(btn => {
@@ -2870,6 +2903,7 @@
             });
             if (cnElectrodeGroup) cnElectrodeGroup.visible = true;
             if (cnConnectionLines) cnConnectionLines.visible = (step === 2);
+            if (step === 2) cnUpdateConnectionGeometry();
         }
     }
 
@@ -2911,23 +2945,29 @@
             }
 
         } else if (cnMode === 2) {
-            // Phase 2: One contact red, connections shown
+            // Phase 2: Cycle through different contacts every 2 seconds
+            cnCycleTimer += dt;
+            if (cnCycleTimer > 2.0) {
+                cnCycleTimer = 0;
+                cnCycleIndex = (cnCycleIndex + 1) % cnCyclePairs.length;
+                cnHighlightContact = cnCyclePairs[cnCycleIndex].highlight;
+                cnConnectedContacts = cnCyclePairs[cnCycleIndex].connected;
+                cnUpdateConnectionGeometry();
+            }
+
             const connSet = new Set(cnConnectedContacts);
             for (let i = 0; i < CN_TOTAL; i++) {
                 if (i === cnHighlightContact) {
-                    // Bright red with pulse
                     const pulse = Math.sin(elapsed * 3) * 0.15 + 0.85;
                     cnContactColors[i*3]   = pulse * 1.4;
                     cnContactColors[i*3+1] = pulse * 0.08;
                     cnContactColors[i*3+2] = pulse * 0.02;
                 } else if (connSet.has(i)) {
-                    // Connected contacts: dim warm
                     const pulse = Math.sin(elapsed * 2 + i * 0.5) * 0.1 + 0.9;
                     cnContactColors[i*3]   = pulse * 0.4;
                     cnContactColors[i*3+1] = pulse * 0.25;
                     cnContactColors[i*3+2] = pulse * 0.1;
                 } else {
-                    // Others: very dim
                     cnContactColors[i*3]   = 0.0;
                     cnContactColors[i*3+1] = 0.08;
                     cnContactColors[i*3+2] = 0.15;
@@ -2938,7 +2978,6 @@
             if (cnConnectionLines && cnConnectionColors) {
                 for (let i = 0; i < cnConnectedContacts.length; i++) {
                     const pulse = Math.sin(elapsed * 2.5 + i * 0.7) * 0.2 + 0.7;
-                    // Both endpoints same color
                     cnConnectionColors[i*6]   = cnConnectionColors[i*6+3] = pulse * 0.9;
                     cnConnectionColors[i*6+1] = cnConnectionColors[i*6+4] = pulse * 0.1;
                     cnConnectionColors[i*6+2] = cnConnectionColors[i*6+5] = pulse * 0.05;
@@ -2947,18 +2986,17 @@
             }
 
         } else if (cnMode === 3) {
-            // Phase 3: Subset of contacts with red-to-yellow colormap by criticality
+            // Phase 3: 6 spatially close contacts, red (high criticality) to yellow (low)
             const subsetSet = new Set(cnCritSubset);
             for (let i = 0; i < CN_TOTAL; i++) {
                 if (subsetSet.has(i)) {
-                    const score = cnCritScores[i];
-                    const pulse = Math.sin(elapsed * 1.5 + i * 0.3) * 0.08 + 0.92;
-                    // Red (score=1) to yellow (score=0): R stays high, G increases as score drops
-                    cnContactColors[i*3]   = pulse * (0.8 + score * 0.6);
-                    cnContactColors[i*3+1] = pulse * (1.0 - score) * 0.85;
-                    cnContactColors[i*3+2] = pulse * 0.02;
+                    const score = cnCritScores[i]; // 1.0 = most critical, 0.0 = least
+                    const pulse = Math.sin(elapsed * 1.5 + i * 0.3) * 0.06 + 0.94;
+                    // Pure red at score=1, bright yellow at score=0
+                    cnContactColors[i*3]   = pulse * 1.3;
+                    cnContactColors[i*3+1] = pulse * (1.0 - score) * 1.0;
+                    cnContactColors[i*3+2] = 0.0;
                 } else {
-                    // Hidden: nearly invisible
                     cnContactColors[i*3]   = 0.0;
                     cnContactColors[i*3+1] = 0.03;
                     cnContactColors[i*3+2] = 0.06;
