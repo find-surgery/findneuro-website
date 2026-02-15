@@ -50,61 +50,61 @@
 </noscript>
 
 <!-- Loader -->
-<div id="loader">
+<div id="loader" role="status" aria-label="Loading">
     <img src="/assets/White_500px.png" alt="FIND Neuro" class="loader__logo">
     <div class="loader__bar"><div class="loader__fill"></div></div>
 </div>
 
-<!-- Fixed: 3D Canvas -->
-<canvas id="brain-canvas"></canvas>
+<header>
+    <!-- Fixed: Logo -->
+    <a href="#" class="logo-fixed"><img src="/assets/White_500px.png" alt="FIND Neuro"></a>
 
-<!-- Fixed: Logo -->
-<a href="#" class="logo-fixed"><img src="/assets/White_500px.png" alt="FIND Neuro"></a>
+    <!-- Fixed: Navigation -->
+    <nav class="nav-fixed" aria-label="Main">
+        <a href="#problem">Problem</a>
+        <a href="#solution">Solution</a>
+        <a href="#cn-how">How CN Works</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#team">Team</a>
+        <a href="#contact">Contact</a>
+    </nav>
 
-<!-- Fixed: Navigation -->
-<nav class="nav-fixed">
-    <a href="#problem">Problem</a>
-    <a href="#solution">Solution</a>
-    <a href="#cn-how">How CN Works</a>
-    <a href="#evidence">Evidence</a>
-    <a href="#roadmap">Roadmap</a>
-    <a href="#team">Team</a>
-    <a href="#contact">Contact</a>
-</nav>
+    <!-- Fixed: Dot Navigation -->
+    <nav class="dot-nav" id="dot-nav" aria-label="Section navigation">
+        <div class="dot-nav__item active" data-section="hero" data-label="Home"></div>
+        <div class="dot-nav__item" data-section="problem" data-label="Problem"></div>
+        <div class="dot-nav__item" data-section="solution" data-label="Solution"></div>
+        <div class="dot-nav__item" data-section="cn-how" data-label="How CN Works"></div>
+        <div class="dot-nav__item" data-section="evidence" data-label="Evidence"></div>
+        <div class="dot-nav__item" data-section="roadmap" data-label="Roadmap"></div>
+        <div class="dot-nav__item" data-section="vision" data-label="Vision"></div>
+        <div class="dot-nav__item" data-section="team" data-label="Team"></div>
+        <div class="dot-nav__item" data-section="contact" data-label="Contact"></div>
+    </nav>
 
-<!-- Fixed: Dot Navigation -->
-<div class="dot-nav" id="dot-nav">
-    <div class="dot-nav__item active" data-section="hero" data-label="Home"></div>
-    <div class="dot-nav__item" data-section="problem" data-label="Problem"></div>
-    <div class="dot-nav__item" data-section="solution" data-label="Solution"></div>
-    <div class="dot-nav__item" data-section="cn-how" data-label="How CN Works"></div>
-    <div class="dot-nav__item" data-section="evidence" data-label="Evidence"></div>
-    <div class="dot-nav__item" data-section="roadmap" data-label="Roadmap"></div>
-    <div class="dot-nav__item" data-section="vision" data-label="Vision"></div>
-    <div class="dot-nav__item" data-section="team" data-label="Team"></div>
-    <div class="dot-nav__item" data-section="contact" data-label="Contact"></div>
-</div>
+    <!-- Mobile -->
+    <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+    </button>
+    <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile">
+        <a href="#problem">Problem</a>
+        <a href="#solution">Solution</a>
+        <a href="#cn-how">How CN Works</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#roadmap">Roadmap</a>
+        <a href="#team">Team</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
 
-<!-- Mobile -->
-<button class="mobile-toggle" id="mobile-toggle">
-    <span></span><span></span><span></span>
-</button>
-<div class="mobile-menu" id="mobile-menu">
-    <a href="#problem">Problem</a>
-    <a href="#solution">Solution</a>
-    <a href="#cn-how">How CN Works</a>
-    <a href="#evidence">Evidence</a>
-    <a href="#roadmap">Roadmap</a>
-    <a href="#team">Team</a>
-    <a href="#contact">Contact</a>
-</div>
-
+<main>
 <!-- HERO -->
 <section class="hero" id="hero">
     <div class="hero__content">
         <div class="hero__title-row">
-            <canvas id="hero-brain" class="hero__brain-canvas"></canvas>
-            <img src="/assets/White_500px.png" alt="FIND Neuro" class="hero__logo">
+            <canvas id="hero-brain" class="hero__brain-canvas" aria-hidden="true"></canvas>
+            <h1 class="hero__logo-heading"><img src="/assets/White_500px.png" alt="FIND Neuro" class="hero__logo"></h1>
         </div>
         <p class="hero__sub">
             The foundational decision-support platform for precision neurology. Transforming epilepsy surgery through AI-powered brain network analysis.
@@ -526,8 +526,8 @@
                 <div class="fg"><label>Email</label><input type="email" name="email" placeholder="your@email.com" required></div>
                 <div class="fg"><label>Organization</label><input type="text" name="organization" placeholder="Hospital, institution, or company"></div>
                 <div class="fg">
-                    <label>I am a...</label>
-                    <select name="role"><option value="">Select role</option><option>Clinician / Epileptologist</option><option>Neurosurgeon</option><option>Hospital Administrator</option><option>Investor</option><option>Researcher</option><option>Industry Partner</option><option>Other</option></select>
+                    <label for="role-select">I am a...</label>
+                    <select name="role" id="role-select"><option value="">Select role</option><option>Clinician / Epileptologist</option><option>Neurosurgeon</option><option>Hospital Administrator</option><option>Investor</option><option>Researcher</option><option>Industry Partner</option><option>Other</option></select>
                 </div>
                 <div class="fg"><label>Message</label><textarea name="message" placeholder="Tell us about your interest..."></textarea></div>
                 <button type="submit" class="btn btn--glow btn--full btn--submit">Request a Demo</button>
@@ -536,6 +536,8 @@
         </div>
     </div>
 </section>
+
+</main>
 
 <!-- Footer -->
 <footer class="footer">

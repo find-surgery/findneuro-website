@@ -12,7 +12,7 @@
     --violet: #a78bfa;
     --text: #e8edf5;
     --text-dim: #8892a7;
-    --text-muted: #4a5568;
+    --text-muted: #6b7a8f;
     --border: rgba(255,255,255,0.05);
     --border-accent: rgba(0,212,255,0.15);
     --font-display: 'Syne', sans-serif;
@@ -80,9 +80,6 @@ body::after {
 /* ===================================================
    FIXED ELEMENTS
    =================================================== */
-#brain-canvas {
-    display: none;
-}
 .hero__brain-canvas {
     width: clamp(160px, 22vw, 280px);
     height: clamp(160px, 22vw, 280px);
@@ -248,6 +245,9 @@ body::after {
 }
 @keyframes blink {
     0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+}
+.hero__logo-heading {
+    margin: 0; padding: 0; line-height: 1;
 }
 .hero__logo {
     display: block;
