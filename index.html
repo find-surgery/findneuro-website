@@ -2077,7 +2077,9 @@
                 shininess: 25,
                 depthWrite: true
             });
-            brain.add(new THREE.Mesh(geo, mat));
+            const solidMesh = new THREE.Mesh(geo, mat);
+            solidMesh.userData.subcortical = true;
+            brain.add(solidMesh);
 
             /* Subtle wireframe for depth cue */
             const wire = new THREE.MeshBasicMaterial({
@@ -2088,7 +2090,9 @@
                 blending: THREE.AdditiveBlending,
                 depthWrite: false
             });
-            brain.add(new THREE.Mesh(geo, wire));
+            const wireMesh = new THREE.Mesh(geo, wire);
+            wireMesh.userData.subcortical = true;
+            brain.add(wireMesh);
         }
     }
 
@@ -2682,9 +2686,9 @@
     const cnBrainSize = isMobile ? 280 : 360;
 
     // sEEG electrode geometry
-    const CN_ELECTRODES = 4;
+    const CN_ELECTRODES = 8;
     const CN_CONTACTS_PER = 12;
-    const CN_TOTAL = CN_ELECTRODES * CN_CONTACTS_PER; // 48
+    const CN_TOTAL = CN_ELECTRODES * CN_CONTACTS_PER; // 96
     let cnElectrodeGroup = null;   // THREE.Group holding electrode lines + contact points
     let cnContactPoints = null;    // THREE.Points for all 48 contacts
     let cnContactPositions = [];   // [{x,y,z}, ...] for each contact
@@ -2707,9 +2711,9 @@
         cnContactPositions = [];
         const tex = makeTexture(64, 0.15);
 
-        // Create 4 sEEG depth electrodes penetrating into brain
-        const electrodeAngles = [0.4, 1.6, 2.8, 4.3]; // spread around the brain
-        const electrodeZ = [-0.15, 0.25, -0.05, 0.35]; // different depths
+        // Create 8 sEEG depth electrodes penetrating into brain
+        const electrodeAngles = [0.3, 1.1, 1.9, 2.7, 3.4, 4.2, 5.0, 5.7];
+        const electrodeZ = [-0.2, 0.2, -0.1, 0.3, 0.0, 0.15, -0.15, 0.25];
 
         for (let e = 0; e < CN_ELECTRODES; e++) {
             const angle = electrodeAngles[e];
@@ -2728,12 +2732,19 @@
                 zBase + (Math.random() - 0.5) * 0.15
             );
 
-            // Electrode shaft line
-            const shaftGeo = new THREE.BufferGeometry().setFromPoints([start, end]);
-            cnElectrodeGroup.add(new THREE.Line(shaftGeo, new THREE.LineBasicMaterial({
-                color: 0x4488aa, transparent: true, opacity: 0.15,
-                blending: THREE.AdditiveBlending
-            })));
+            // Electrode shaft - thick cylinder
+            const shaftDir = new THREE.Vector3().subVectors(end, start);
+            const shaftLen = shaftDir.length();
+            const shaftCylGeo = new THREE.CylinderGeometry(0.012, 0.012, shaftLen, 6, 1);
+            shaftCylGeo.rotateX(Math.PI / 2);
+            const shaftMesh = new THREE.Mesh(shaftCylGeo, new THREE.MeshBasicMaterial({
+                color: 0x4488aa, transparent: true, opacity: 0.25,
+                blending: THREE.AdditiveBlending, depthWrite: false
+            }));
+            const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+            shaftMesh.position.copy(mid);
+            shaftMesh.lookAt(end);
+            cnElectrodeGroup.add(shaftMesh);
 
             // 12 contacts along the shaft
             for (let c = 0; c < CN_CONTACTS_PER; c++) {
@@ -2759,7 +2770,7 @@
         contactGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         contactGeo.setAttribute('color', new THREE.BufferAttribute(cnContactColors, 3));
         cnContactPoints = new THREE.Points(contactGeo, new THREE.PointsMaterial({
-            size: 0.07, map: tex, vertexColors: true,
+            size: 0.12, map: tex, vertexColors: true,
             transparent: true, opacity: 0.9,
             blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
         }));
@@ -2767,7 +2778,7 @@
 
         // Outer glow for contacts
         cnElectrodeGroup.add(new THREE.Points(contactGeo, new THREE.PointsMaterial({
-            size: 0.2, map: tex, vertexColors: true,
+            size: 0.35, map: tex, vertexColors: true,
             transparent: true, opacity: 0.15,
             blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
         })));
@@ -2775,8 +2786,8 @@
         // Phase 2: pick one highlight contact and its connections
         // Pick a contact near the middle of electrode 1 (index ~5)
         cnHighlightContact = 5;
-        // Connect it to 8 other contacts across different electrodes
-        cnConnectedContacts = [2, 8, 15, 19, 26, 31, 38, 44];
+        // Connect it to 10 other contacts across different electrodes
+        cnConnectedContacts = [2, 9, 16, 22, 31, 40, 51, 63, 75, 88];
 
         // Build connection line geometry
         const nConn = cnConnectedContacts.length;
@@ -2808,11 +2819,11 @@
         for (const ci of cnConnectedContacts) {
             cnCritScores[ci] = 0.4 + Math.random() * 0.55;
         }
-        // Subset: ~20 contacts with varied scores
+        // Subset: ~35 contacts with varied scores
         cnCritSubset = [cnHighlightContact, ...cnConnectedContacts];
-        // Add some extra contacts for coverage
+        // Add extra contacts for coverage
         for (let i = 0; i < CN_TOTAL; i++) {
-            if (!cnCritSubset.includes(i) && cnCritSubset.length < 20) {
+            if (!cnCritSubset.includes(i) && cnCritSubset.length < 35) {
                 cnCritScores[i] = Math.random() * 0.5;
                 cnCritSubset.push(i);
             }
@@ -2847,11 +2858,15 @@
             }
         }
 
-        // Hide brain mesh + existing network, show electrodes
+        // Hide cortical mesh + network but keep subcortical structures visible
         if (cnMode > 0) {
             brain.children.forEach(child => {
                 if (child === cnElectrodeGroup) return;
-                child.visible = false;
+                if (child.userData && child.userData.subcortical) {
+                    child.visible = true;
+                } else {
+                    child.visible = false;
+                }
             });
             if (cnElectrodeGroup) cnElectrodeGroup.visible = true;
             if (cnConnectionLines) cnConnectionLines.visible = (step === 2);
