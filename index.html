@@ -1339,11 +1339,6 @@
                         <p class="cn-panel__desc">
                             The algorithm estimates causal influence between every pair of sEEG contacts. Directed connections reveal how seizure activity propagates through the brain - not just which areas are active, but which areas are driving others.
                         </p>
-                        <div class="cn-panel__detail">
-                            <span>Method:</span> Granger causality + transfer entropy<br>
-                            <span>Input:</span> Standard sEEG recordings (ictal + interictal)<br>
-                            <span>Output:</span> Weighted directed connectivity matrix
-                        </div>
                     </div>
 
                     <div class="cn-panel" data-cn-panel="2">
@@ -1352,11 +1347,6 @@
                         <p class="cn-panel__desc">
                             Each contact receives a criticality score based on its network influence - how much it drives downstream activity versus simply responding to it. High-criticality nodes are the network hubs whose removal would most disrupt seizure propagation.
                         </p>
-                        <div class="cn-panel__detail">
-                            <span>Metric:</span> Outward influence weighted by connection strength<br>
-                            <span>Scale:</span> Normalized 0-1 criticality index per contact<br>
-                            <span>Output:</span> Heat-mapped brain with graded node importance
-                        </div>
                     </div>
 
                     <div class="cn-panel" data-cn-panel="3">
@@ -1365,11 +1355,6 @@
                         <p class="cn-panel__desc">
                             A trained model synthesizes connectivity patterns, criticality scores, and anatomical features to predict the optimal surgical targets - the minimal set of contacts whose ablation maximizes seizure freedom probability.
                         </p>
-                        <div class="cn-panel__detail">
-                            <span>Model:</span> Ensemble trained on 200+ post-surgical outcomes<br>
-                            <span>Validation:</span> 81% accuracy on held-out patient cohort<br>
-                            <span>Output:</span> Ranked target list with confidence scores
-                        </div>
                     </div>
                 </div>
             </div>
