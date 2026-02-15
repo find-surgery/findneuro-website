@@ -549,6 +549,137 @@
         }
 
         /* ═══════════════════════════════════════
+           HOW CN WORKS (Interactive Section)
+           ═══════════════════════════════════════ */
+        .cn-interactive { margin-top: 56px; }
+        .cn-steps {
+            display: flex; align-items: center; justify-content: center;
+            gap: 0; margin-bottom: 48px;
+        }
+        .cn-step {
+            display: flex; align-items: center; gap: 12px;
+            background: none; border: 2px solid var(--border);
+            border-radius: 40px; padding: 10px 24px 10px 14px;
+            color: var(--text-dim); cursor: pointer;
+            font-family: var(--font-display); font-size: 0.85rem; font-weight: 500;
+            transition: all 0.4s var(--ease);
+            position: relative;
+        }
+        .cn-step:hover { border-color: rgba(255,255,255,0.15); color: var(--text); }
+        .cn-step__num {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600;
+            background: rgba(255,255,255,0.04);
+            transition: all 0.4s var(--ease); flex-shrink: 0;
+        }
+        .cn-step__connector {
+            width: 40px; height: 2px;
+            background: linear-gradient(90deg, var(--border), var(--border));
+            flex-shrink: 0;
+        }
+        /* Phase 1 active: orange */
+        .cn-step--active[data-cn-step="1"] {
+            border-color: var(--hot); color: var(--text);
+            box-shadow: 0 0 24px rgba(255,107,53,0.15);
+        }
+        .cn-step--active[data-cn-step="1"] .cn-step__num {
+            background: var(--hot); color: var(--bg-deep);
+        }
+        /* Phase 2 active: cyan */
+        .cn-step--active[data-cn-step="2"] {
+            border-color: var(--accent); color: var(--text);
+            box-shadow: 0 0 24px rgba(0,212,255,0.15);
+        }
+        .cn-step--active[data-cn-step="2"] .cn-step__num {
+            background: var(--accent); color: var(--bg-deep);
+        }
+        /* Phase 3 active: green */
+        .cn-step--active[data-cn-step="3"] {
+            border-color: #22c55e; color: var(--text);
+            box-shadow: 0 0 24px rgba(34,197,94,0.15);
+        }
+        .cn-step--active[data-cn-step="3"] .cn-step__num {
+            background: #22c55e; color: var(--bg-deep);
+        }
+        /* Done states */
+        .cn-step--done[data-cn-step="1"] { border-color: rgba(255,107,53,0.3); color: var(--text); }
+        .cn-step--done[data-cn-step="1"] .cn-step__num { background: rgba(255,107,53,0.25); color: var(--hot); }
+        .cn-step--done[data-cn-step="2"] { border-color: rgba(0,212,255,0.3); color: var(--text); }
+        .cn-step--done[data-cn-step="2"] .cn-step__num { background: rgba(0,212,255,0.25); color: var(--accent); }
+
+        .cn-content {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 48px; align-items: start;
+        }
+        .cn-brain {
+            aspect-ratio: 1; max-width: 420px;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            margin: 0 auto;
+        }
+        .cn-brain canvas {
+            width: 100% !important; height: 100% !important;
+            pointer-events: auto; cursor: grab;
+        }
+        .cn-brain canvas:active { cursor: grabbing; }
+        .cn-text {
+            position: relative; min-height: 320px;
+            display: flex; flex-direction: column; justify-content: center;
+        }
+        .cn-panel {
+            opacity: 0; transform: translateY(12px);
+            transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+            position: absolute; top: 0; left: 0; right: 0;
+            pointer-events: none;
+        }
+        .cn-panel--active {
+            opacity: 1; transform: translateY(0);
+            position: relative;
+            pointer-events: auto;
+        }
+        .cn-panel__tag {
+            font-family: var(--font-mono); font-size: 0.62rem;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            padding: 5px 12px; border-radius: 4px;
+            display: inline-block; margin-bottom: 16px;
+        }
+        .cn-panel__tag--1 { color: var(--hot); background: var(--hot-glow); }
+        .cn-panel__tag--2 { color: var(--accent); background: rgba(0,212,255,0.08); }
+        .cn-panel__tag--3 { color: #22c55e; background: rgba(34,197,94,0.08); }
+        .cn-panel__title {
+            font-family: var(--font-display); font-weight: 700;
+            font-size: 1.4rem; margin-bottom: 14px;
+            letter-spacing: -0.02em; line-height: 1.3;
+        }
+        .cn-panel__desc {
+            color: var(--text-dim); font-size: 0.9rem; line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .cn-panel__detail {
+            font-family: var(--font-mono); font-size: 0.72rem;
+            color: var(--text-muted); line-height: 1.8;
+            padding: 16px; border-radius: 10px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--border);
+        }
+        .cn-panel__detail span { color: var(--text-dim); }
+
+        @media (max-width: 768px) {
+            .cn-content { grid-template-columns: 1fr; gap: 32px; }
+            .cn-brain { max-width: 280px; }
+            .cn-steps { gap: 0; flex-wrap: nowrap; }
+            .cn-step { padding: 8px 14px 8px 10px; font-size: 0.78rem; }
+            .cn-step__connector { width: 20px; }
+            .cn-text { min-height: 260px; }
+        }
+        @media (max-width: 480px) {
+            .cn-step__label { display: none; }
+            .cn-step { padding: 8px; border-radius: 50%; }
+            .cn-step__connector { width: 16px; }
+        }
+
+        /* ═══════════════════════════════════════
            WORKFLOW
            ═══════════════════════════════════════ */
         .workflow__track {
@@ -1037,6 +1168,7 @@
 <nav class="nav-fixed">
     <a href="#problem">Problem</a>
     <a href="#solution">Solution</a>
+    <a href="#cn-how">How CN Works</a>
     <a href="#evidence">Evidence</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#team">Team</a>
@@ -1048,6 +1180,7 @@
     <div class="dot-nav__item active" data-section="hero" data-label="Home"></div>
     <div class="dot-nav__item" data-section="problem" data-label="Problem"></div>
     <div class="dot-nav__item" data-section="solution" data-label="Solution"></div>
+    <div class="dot-nav__item" data-section="cn-how" data-label="How CN Works"></div>
     <div class="dot-nav__item" data-section="evidence" data-label="Evidence"></div>
     <div class="dot-nav__item" data-section="roadmap" data-label="Roadmap"></div>
     <div class="dot-nav__item" data-section="vision" data-label="Vision"></div>
@@ -1062,6 +1195,7 @@
 <div class="mobile-menu" id="mobile-menu">
     <a href="#problem">Problem</a>
     <a href="#solution">Solution</a>
+    <a href="#cn-how">How CN Works</a>
     <a href="#evidence">Evidence</a>
     <a href="#roadmap">Roadmap</a>
     <a href="#team">Team</a>
@@ -1162,7 +1296,7 @@
                 <div class="sol-card__tag">Visualization</div>
                 <div class="sol-card__name">MMVT</div>
                 <p class="sol-card__desc">
-                    Interactive 3D brain model integrating MRI, CT, and depth electrode data into a single visualization. The default case-presentation interface for surgical conferences. Free to all centers - ensuring surgeon exposure on every case.
+                    Interactive 3D brain model integrating MRI, CT, and depth electrode data into a single visualization. The default case-presentation interface for surgical conferences - ensuring surgeon exposure on every case.
                 </p>
             </div>
         </div>
@@ -1170,8 +1304,81 @@
     </div>
 </section>
 
+<!-- ─────────────── HOW CN WORKS ─────────────── -->
+<section class="section section--solid" id="cn-how">
+    <div class="container">
+        <div class="section__eyebrow r">Under the Hood</div>
+        <h2 class="section__heading r r-d1">How Critical Nodes Works</h2>
+        <p class="section__lead r r-d2">Three phases transform raw sEEG recordings into precise surgical targets.</p>
+
+        <div class="cn-interactive">
+            <div class="cn-steps">
+                <button class="cn-step cn-step--active" data-cn-step="1">
+                    <span class="cn-step__num">1</span>
+                    <span class="cn-step__label">Connectivity</span>
+                </button>
+                <div class="cn-step__connector"></div>
+                <button class="cn-step" data-cn-step="2">
+                    <span class="cn-step__num">2</span>
+                    <span class="cn-step__label">Criticality</span>
+                </button>
+                <div class="cn-step__connector"></div>
+                <button class="cn-step" data-cn-step="3">
+                    <span class="cn-step__num">3</span>
+                    <span class="cn-step__label">Prediction</span>
+                </button>
+            </div>
+
+            <div class="cn-content">
+                <div class="cn-brain" id="cn-brain-target"></div>
+
+                <div class="cn-text">
+                    <div class="cn-panel cn-panel--active" data-cn-panel="1">
+                        <div class="cn-panel__tag cn-panel__tag--1">Phase 1</div>
+                        <h3 class="cn-panel__title">Directed Connectivity Estimation</h3>
+                        <p class="cn-panel__desc">
+                            The algorithm estimates causal influence between every pair of sEEG contacts. Directed connections reveal how seizure activity propagates through the brain - not just which areas are active, but which areas are driving others.
+                        </p>
+                        <div class="cn-panel__detail">
+                            <span>Method:</span> Granger causality + transfer entropy<br>
+                            <span>Input:</span> Standard sEEG recordings (ictal + interictal)<br>
+                            <span>Output:</span> Weighted directed connectivity matrix
+                        </div>
+                    </div>
+
+                    <div class="cn-panel" data-cn-panel="2">
+                        <div class="cn-panel__tag cn-panel__tag--2">Phase 2</div>
+                        <h3 class="cn-panel__title">Criticality Scoring</h3>
+                        <p class="cn-panel__desc">
+                            Each contact receives a criticality score based on its network influence - how much it drives downstream activity versus simply responding to it. High-criticality nodes are the network hubs whose removal would most disrupt seizure propagation.
+                        </p>
+                        <div class="cn-panel__detail">
+                            <span>Metric:</span> Outward influence weighted by connection strength<br>
+                            <span>Scale:</span> Normalized 0-1 criticality index per contact<br>
+                            <span>Output:</span> Heat-mapped brain with graded node importance
+                        </div>
+                    </div>
+
+                    <div class="cn-panel" data-cn-panel="3">
+                        <div class="cn-panel__tag cn-panel__tag--3">Phase 3</div>
+                        <h3 class="cn-panel__title">ML-Powered Target Prediction</h3>
+                        <p class="cn-panel__desc">
+                            A trained model synthesizes connectivity patterns, criticality scores, and anatomical features to predict the optimal surgical targets - the minimal set of contacts whose ablation maximizes seizure freedom probability.
+                        </p>
+                        <div class="cn-panel__detail">
+                            <span>Model:</span> Ensemble trained on 200+ post-surgical outcomes<br>
+                            <span>Validation:</span> 81% accuracy on held-out patient cohort<br>
+                            <span>Output:</span> Ranked target list with confidence scores
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- ─────────────── WORKFLOW ─────────────── -->
-<section class="section section--solid" id="workflow">
+<section class="section section--alt" id="workflow">
     <div class="container">
         <div class="section__eyebrow r">Clinical Workflow</div>
         <h2 class="section__heading r r-d1">How It Works</h2>
@@ -1204,7 +1411,7 @@
 </section>
 
 <!-- ─────────────── EVIDENCE ─────────────── -->
-<section class="section section--alt" id="evidence">
+<section class="section section--solid" id="evidence">
     <div class="container">
         <div class="section__eyebrow r">Clinical Evidence</div>
 
@@ -1246,7 +1453,7 @@
 </section>
 
 <!-- ─────────────── ROADMAP ─────────────── -->
-<section class="section section--solid" id="roadmap">
+<section class="section section--alt" id="roadmap">
     <div class="container">
         <div class="section__eyebrow r">Product Roadmap</div>
         <h2 class="section__heading r r-d1">Building the Platform</h2>
@@ -1264,7 +1471,7 @@
                 <div class="rm-node__dot"></div>
                 <div class="rm-node__date">Q2 2027</div>
                 <div class="rm-node__title">V2  - Interictal Analysis</div>
-                <div class="rm-node__desc">No seizure wait required. Actionable within hours. Reduces EMU stays from 10-14 days to as little as 2 days. ~$20K per case.</div>
+                <div class="rm-node__desc">No seizure wait required. Actionable within hours. Reduces EMU stays from 10-14 days to as little as 2 days.</div>
             </div>
             <div class="rm-node r r-d3">
                 <div class="rm-node__dot"></div>
@@ -1289,7 +1496,7 @@
 </section>
 
 <!-- ─────────────── VISION ─────────────── -->
-<section class="section section--alt" id="vision">
+<section class="section section--solid" id="vision">
     <div class="container">
         <div class="section__eyebrow r">Long-Term Vision</div>
         <div class="vision__statement r r-d1">
@@ -1313,7 +1520,7 @@
 </section>
 
 <!-- ─────────────── TEAM ─────────────── -->
-<section class="section section--solid" id="team">
+<section class="section section--alt" id="team">
     <div class="container">
         <div class="section__eyebrow r">Leadership</div>
         <h2 class="section__heading r r-d1">Our Team</h2>
@@ -2378,6 +2585,7 @@
 
     function startAliceVisualization() {
         if (aliceTriggered || netNodes.length === 0) return;
+        if (cnMode > 0) stopCNVisualization();
         aliceTriggered = true;
         aliceMode = 1;
         aliceStart = clock.getElapsedTime();
@@ -2428,20 +2636,33 @@
     const canvasOriginalParent = canvas.parentNode;
     const canvasNextSibling = canvas.nextSibling;
     const alicePhotoRow = document.getElementById('alice-photo-row');
-    function setBrainFloating(on) {
-        if (on && alicePhotoRow) {
-            alicePhotoRow.insertBefore(canvas, alicePhotoRow.firstChild);
+    const cnBrainTarget = document.getElementById('cn-brain-target');
+
+    function setBrainFloatingTo(targetEl, size) {
+        if (targetEl) {
+            targetEl.insertBefore(canvas, targetEl.firstChild);
             canvas.classList.add('hero__brain-canvas--floating');
+            if (size > 150) {
+                canvas.style.width = size + 'px';
+                canvas.style.height = size + 'px';
+                canvas.style.pointerEvents = 'auto';
+            }
             requestAnimationFrame(() => {
-                renderer.setSize(120, 120);
+                renderer.setSize(size, size);
                 camera.aspect = 1;
                 camera.updateProjectionMatrix();
             });
         } else {
             canvas.classList.remove('hero__brain-canvas--floating');
+            canvas.style.width = '';
+            canvas.style.height = '';
+            canvas.style.pointerEvents = '';
             canvasOriginalParent.insertBefore(canvas, canvasNextSibling);
             onResize();
         }
+    }
+    function setBrainFloating(on) {
+        setBrainFloatingTo(on ? alicePhotoRow : null, 120);
     }
     function stopAliceVisualization() {
         aliceTimeouts.forEach(t => clearTimeout(t));
@@ -2469,17 +2690,508 @@
         });
     }
 
+    /* ── Critical Nodes Interactive Visualization ── */
+    let cnMode = 0;          // 0=off, 1=connectivity, 2=criticality, 3=prediction
+    let cnCritScores = [];   // per-node criticality scores
+    let cnTargets = [];      // 6 ML-predicted target nodes
+    let cnFocusCluster = []; // ~30 demo nodes
+    let cnParticles = [];    // directed flow particles for Phase 1
+    let cnParticlePoints = null;
+    let cnGlowPoints = null;
+    let cnScanT = 0;         // scan sweep progress for Phase 3
+    let cnScanComplete = false;
+    let cnInitialized = false;
+    let cnTimeouts = [];
+    const cnBrainSize = isMobile ? 280 : 360;
+
+    function initCNData() {
+        if (cnInitialized || netNodes.length === 0) return;
+        cnInitialized = true;
+
+        // Pick a spatial cluster of ~30 nodes
+        const seed = Math.floor(Math.random() * NET_NODES);
+        const dists = [];
+        for (let i = 0; i < NET_NODES; i++) {
+            const dx = netNodes[i].x - netNodes[seed].x;
+            const dy = netNodes[i].y - netNodes[seed].y;
+            const dz = netNodes[i].z - netNodes[seed].z;
+            dists.push({ i, d: dx*dx + dy*dy + dz*dz });
+        }
+        dists.sort((a, b) => a.d - b.d);
+        cnFocusCluster = dists.slice(0, 30).map(d => d.i);
+
+        // Compute mock criticality scores from adjacency (outward influence weighted by distance)
+        cnCritScores = new Float32Array(NET_NODES);
+        for (let i = 0; i < NET_NODES; i++) {
+            let score = 0;
+            for (const { n, d } of netAdj[i]) {
+                score += 1 / (1 + d * 5);
+            }
+            cnCritScores[i] = score;
+        }
+        // Normalize to 0-1
+        let maxScore = 0;
+        for (let i = 0; i < NET_NODES; i++) {
+            if (cnCritScores[i] > maxScore) maxScore = cnCritScores[i];
+        }
+        if (maxScore > 0) {
+            for (let i = 0; i < NET_NODES; i++) cnCritScores[i] /= maxScore;
+        }
+        // Boost cluster nodes
+        for (const idx of cnFocusCluster) {
+            cnCritScores[idx] = Math.min(1, cnCritScores[idx] * 1.5 + 0.3);
+        }
+
+        // Select top 6 critical nodes within cluster as ML targets
+        const clusterScored = cnFocusCluster.map(i => ({ i, s: cnCritScores[i] }));
+        clusterScored.sort((a, b) => b.s - a.s);
+        cnTargets = clusterScored.slice(0, 6).map(d => d.i);
+
+        // Init particles along edges within focus cluster
+        initCNParticles();
+
+        // Create glow points for Phase 2
+        initCNGlowPoints();
+    }
+
+    function initCNParticles() {
+        cnParticles = [];
+        const clusterSet = new Set(cnFocusCluster);
+        const clusterEdges = netEdgeData.filter(e => clusterSet.has(e.from) && clusterSet.has(e.to));
+        const particleCount = isMobile ? 150 : 300;
+        for (let i = 0; i < particleCount; i++) {
+            const edge = clusterEdges[Math.floor(Math.random() * clusterEdges.length)];
+            if (!edge) continue;
+            cnParticles.push({
+                from: edge.from, to: edge.to,
+                t: Math.random(),
+                speed: 0.3 + Math.random() * 0.5
+            });
+        }
+
+        // Create THREE.Points for particles
+        const positions = new Float32Array(cnParticles.length * 3);
+        const colors = new Float32Array(cnParticles.length * 3);
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        const tex = makeTexture(32, 0.2);
+        cnParticlePoints = new THREE.Points(geo, new THREE.PointsMaterial({
+            size: 0.04, map: tex, vertexColors: true,
+            transparent: true, opacity: 0.9,
+            blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
+        }));
+        cnParticlePoints.visible = false;
+        brain.add(cnParticlePoints);
+    }
+
+    function initCNGlowPoints() {
+        // Larger glow layer for critical nodes
+        const positions = new Float32Array(NET_NODES * 3);
+        const colors = new Float32Array(NET_NODES * 3);
+        for (let i = 0; i < NET_NODES; i++) {
+            positions[i*3]   = netNodes[i].x;
+            positions[i*3+1] = netNodes[i].y;
+            positions[i*3+2] = netNodes[i].z;
+        }
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        const tex = makeTexture(64, 0.1);
+        cnGlowPoints = new THREE.Points(geo, new THREE.PointsMaterial({
+            size: 0.3, map: tex, vertexColors: true,
+            transparent: true, opacity: 0.25,
+            blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
+        }));
+        cnGlowPoints.visible = false;
+        brain.add(cnGlowPoints);
+    }
+
+    function setCNStep(step) {
+        if (aliceMode > 0) stopAliceVisualization();
+        cnMode = step;
+        cnScanT = 0;
+        cnScanComplete = false;
+
+        // Update step buttons
+        document.querySelectorAll('.cn-step').forEach(btn => {
+            const s = parseInt(btn.dataset.cnStep);
+            btn.classList.remove('cn-step--active', 'cn-step--done');
+            if (s === step) btn.classList.add('cn-step--active');
+            else if (s < step) btn.classList.add('cn-step--done');
+        });
+
+        // Update text panels
+        document.querySelectorAll('.cn-panel').forEach(panel => {
+            const p = parseInt(panel.dataset.cnPanel);
+            panel.classList.toggle('cn-panel--active', p === step);
+        });
+
+        // Float brain into CN section
+        if (cnBrainTarget && cnMode > 0) {
+            setBrainFloatingTo(cnBrainTarget, cnBrainSize);
+            if (!isBrainVisible) {
+                isBrainVisible = true;
+                clock.getDelta();
+                animate();
+            }
+        }
+
+        // Toggle particle/glow visibility
+        if (cnParticlePoints) cnParticlePoints.visible = (step === 1);
+        if (cnGlowPoints) cnGlowPoints.visible = (step >= 2);
+    }
+
+    function stopCNVisualization() {
+        cnMode = 0;
+        cnScanT = 0;
+        cnScanComplete = false;
+        cnTimeouts.forEach(t => clearTimeout(t));
+        cnTimeouts = [];
+        if (cnParticlePoints) cnParticlePoints.visible = false;
+        if (cnGlowPoints) cnGlowPoints.visible = false;
+        setBrainFloatingTo(null, 0);
+
+        // Reset step buttons
+        document.querySelectorAll('.cn-step').forEach(btn => {
+            btn.classList.remove('cn-step--active', 'cn-step--done');
+        });
+        const firstStep = document.querySelector('.cn-step[data-cn-step="1"]');
+        if (firstStep) firstStep.classList.add('cn-step--active');
+
+        // Reset panels
+        document.querySelectorAll('.cn-panel').forEach(panel => {
+            panel.classList.toggle('cn-panel--active', panel.dataset.cnPanel === '1');
+        });
+    }
+
+    function updateCNVisualization(elapsed, dt) {
+        if (!cnInitialized || netNodes.length === 0) return;
+
+        const focusSet = new Set(cnFocusCluster);
+        const targetSet = new Set(cnTargets);
+
+        // Reset mesh colors to base
+        if (meshColors && baseColors) {
+            const n = Math.min(meshColors.length, baseColors.length);
+            for (let i = 0; i < n; i++) meshColors[i] = baseColors[i];
+        }
+
+        if (cnMode === 1) {
+            // Phase 1: Directed Connectivity - orange flow particles
+            // Color focus cluster nodes orange, dim others
+            for (let i = 0; i < NET_NODES; i++) {
+                if (focusSet.has(i)) {
+                    const pulse = Math.sin(elapsed * 2 + i * 0.5) * 0.15 + 0.85;
+                    netNodeColors[i*3]   = pulse * 0.9;
+                    netNodeColors[i*3+1] = pulse * 0.3;
+                    netNodeColors[i*3+2] = pulse * 0.05;
+                } else {
+                    netNodeColors[i*3]   = 0.0;
+                    netNodeColors[i*3+1] = 0.02;
+                    netNodeColors[i*3+2] = 0.04;
+                }
+            }
+
+            // Animate particles along edges
+            if (cnParticlePoints) {
+                const pos = cnParticlePoints.geometry.attributes.position.array;
+                const col = cnParticlePoints.geometry.attributes.color.array;
+                for (let i = 0; i < cnParticles.length; i++) {
+                    const p = cnParticles[i];
+                    p.t += p.speed * dt;
+                    if (p.t > 1) p.t -= 1;
+                    const a = netNodes[p.from], b = netNodes[p.to];
+                    pos[i*3]   = a.x + (b.x - a.x) * p.t;
+                    pos[i*3+1] = a.y + (b.y - a.y) * p.t;
+                    pos[i*3+2] = a.z + (b.z - a.z) * p.t;
+                    // Hot orange-white at head
+                    const bright = Math.sin(p.t * Math.PI) * 0.5 + 0.5;
+                    col[i*3]   = 1.0;
+                    col[i*3+1] = 0.3 + bright * 0.4;
+                    col[i*3+2] = bright * 0.2;
+                }
+                cnParticlePoints.geometry.attributes.position.needsUpdate = true;
+                cnParticlePoints.geometry.attributes.color.needsUpdate = true;
+            }
+
+            // Edges within cluster pulse orange
+            for (let i = 0; i < netEdgeData.length; i++) {
+                const { from, to } = netEdgeData[i];
+                if (focusSet.has(from) && focusSet.has(to)) {
+                    const pulse = Math.sin(elapsed * 3 + i * 0.3) * 0.2 + 0.4;
+                    netEdgeColors[i*6]   = netEdgeColors[i*6+3] = pulse * 0.8;
+                    netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = pulse * 0.25;
+                    netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = pulse * 0.05;
+                } else {
+                    netEdgeColors[i*6]   = netEdgeColors[i*6+3] = 0.004;
+                    netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = 0.006;
+                    netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = 0.01;
+                }
+            }
+
+            // Orange glow on brain surface near cluster
+            if (meshColors) {
+                for (const idx of cnFocusCluster) {
+                    const nearby = netNodeMeshVerts[idx];
+                    if (!nearby) continue;
+                    const pulse = Math.sin(elapsed * 2 + idx * 0.5) * 0.15 + 0.85;
+                    for (let k = 0; k < nearby.length; k++) {
+                        const { vi, f } = nearby[k];
+                        const glow = f * pulse * 0.3;
+                        meshColors[vi*3]   += glow * 0.9;
+                        meshColors[vi*3+1] += glow * 0.25;
+                        meshColors[vi*3+2] += glow * 0.03;
+                    }
+                }
+            }
+
+        } else if (cnMode === 2) {
+            // Phase 2: Criticality Estimation - heatmap by score
+            for (let i = 0; i < NET_NODES; i++) {
+                const score = cnCritScores[i];
+                if (focusSet.has(i)) {
+                    const pulse = Math.sin(elapsed * 1.5 + i * 0.3) * 0.1 + 0.9;
+                    // Low criticality: dim cyan, high: bright orange
+                    const r = score * pulse * 1.2;
+                    const g = (1 - score * 0.6) * pulse * 0.4;
+                    const b = (1 - score) * pulse * 0.3;
+                    netNodeColors[i*3]   = r;
+                    netNodeColors[i*3+1] = g;
+                    netNodeColors[i*3+2] = b;
+                } else {
+                    netNodeColors[i*3]   = 0.0;
+                    netNodeColors[i*3+1] = 0.015;
+                    netNodeColors[i*3+2] = 0.03;
+                }
+            }
+
+            // Update glow layer colors based on criticality
+            if (cnGlowPoints) {
+                const glowCol = cnGlowPoints.geometry.attributes.color.array;
+                for (let i = 0; i < NET_NODES; i++) {
+                    const score = cnCritScores[i];
+                    if (focusSet.has(i) && score > 0.4) {
+                        const pulse = Math.sin(elapsed * 1.5 + i * 0.3) * 0.1 + 0.9;
+                        glowCol[i*3]   = score * pulse * 1.0;
+                        glowCol[i*3+1] = (1 - score * 0.5) * pulse * 0.3;
+                        glowCol[i*3+2] = (1 - score) * pulse * 0.2;
+                    } else {
+                        glowCol[i*3] = glowCol[i*3+1] = glowCol[i*3+2] = 0;
+                    }
+                }
+                cnGlowPoints.geometry.attributes.color.needsUpdate = true;
+            }
+
+            // Dim edges
+            for (let i = 0; i < netEdgeData.length; i++) {
+                const { from, to } = netEdgeData[i];
+                if (focusSet.has(from) && focusSet.has(to)) {
+                    const avgScore = (cnCritScores[from] + cnCritScores[to]) * 0.5;
+                    netEdgeColors[i*6]   = netEdgeColors[i*6+3] = avgScore * 0.3;
+                    netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = (1 - avgScore * 0.5) * 0.1;
+                    netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = (1 - avgScore) * 0.08;
+                } else {
+                    netEdgeColors[i*6]   = netEdgeColors[i*6+3] = 0.004;
+                    netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = 0.006;
+                    netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = 0.01;
+                }
+            }
+
+            // Heatmap bleed on brain surface
+            if (meshColors) {
+                for (const idx of cnFocusCluster) {
+                    const nearby = netNodeMeshVerts[idx];
+                    if (!nearby) continue;
+                    const score = cnCritScores[idx];
+                    for (let k = 0; k < nearby.length; k++) {
+                        const { vi, f } = nearby[k];
+                        const glow = f * score * 0.35;
+                        meshColors[vi*3]   += glow * 0.9;
+                        meshColors[vi*3+1] += glow * (1 - score * 0.5) * 0.3;
+                        meshColors[vi*3+2] += glow * (1 - score) * 0.15;
+                    }
+                }
+            }
+
+        } else if (cnMode === 3) {
+            // Phase 3: ML Prediction - scan then reveal targets
+            cnScanT += dt * 0.5; // ~2s for full sweep
+
+            if (cnScanT < 1) {
+                // Scanning band sweeps across brain Z-axis
+                const scanZ = -1.0 + cnScanT * 2.0;
+                const bandWidth = 0.25;
+
+                for (let i = 0; i < NET_NODES; i++) {
+                    const nodeZ = netNodes[i].z;
+                    const dist = Math.abs(nodeZ - scanZ);
+                    if (dist < bandWidth) {
+                        const intensity = 1 - dist / bandWidth;
+                        netNodeColors[i*3]   = intensity * 0.4;
+                        netNodeColors[i*3+1] = intensity * 0.15;
+                        netNodeColors[i*3+2] = intensity * 0.7;
+                    } else {
+                        netNodeColors[i*3]   = 0.0;
+                        netNodeColors[i*3+1] = 0.015;
+                        netNodeColors[i*3+2] = 0.04;
+                    }
+                }
+
+                // Purple scan glow on mesh
+                if (meshColors) {
+                    for (let i = 0; i < NET_NODES; i++) {
+                        const nodeZ = netNodes[i].z;
+                        const dist = Math.abs(nodeZ - scanZ);
+                        if (dist < bandWidth) {
+                            const nearby = netNodeMeshVerts[i];
+                            if (!nearby) continue;
+                            const intensity = 1 - dist / bandWidth;
+                            for (let k = 0; k < nearby.length; k++) {
+                                const { vi, f } = nearby[k];
+                                const glow = f * intensity * 0.25;
+                                meshColors[vi*3]   += glow * 0.4;
+                                meshColors[vi*3+1] += glow * 0.1;
+                                meshColors[vi*3+2] += glow * 0.7;
+                            }
+                        }
+                    }
+                }
+
+                // Dim edges during scan
+                for (let i = 0; i < netEdgeData.length; i++) {
+                    netEdgeColors[i*6]   = netEdgeColors[i*6+3] = 0.01;
+                    netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = 0.005;
+                    netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = 0.025;
+                }
+
+                // Update glow for scan band
+                if (cnGlowPoints) {
+                    const glowCol = cnGlowPoints.geometry.attributes.color.array;
+                    for (let i = 0; i < NET_NODES; i++) {
+                        const nodeZ = netNodes[i].z;
+                        const dist = Math.abs(nodeZ - scanZ);
+                        if (dist < bandWidth) {
+                            const intensity = 1 - dist / bandWidth;
+                            glowCol[i*3]   = intensity * 0.3;
+                            glowCol[i*3+1] = intensity * 0.1;
+                            glowCol[i*3+2] = intensity * 0.5;
+                        } else {
+                            glowCol[i*3] = glowCol[i*3+1] = glowCol[i*3+2] = 0;
+                        }
+                    }
+                    cnGlowPoints.geometry.attributes.color.needsUpdate = true;
+                }
+            } else {
+                // Scan complete - reveal targets in green
+                cnScanComplete = true;
+                for (let i = 0; i < NET_NODES; i++) {
+                    if (targetSet.has(i)) {
+                        const pulse = Math.sin(elapsed * 3 + i * 0.5) * 0.15 + 0.85;
+                        netNodeColors[i*3]   = 0.05;
+                        netNodeColors[i*3+1] = pulse * 1.2;
+                        netNodeColors[i*3+2] = pulse * 0.4;
+                    } else if (focusSet.has(i)) {
+                        netNodeColors[i*3]   = 0.0;
+                        netNodeColors[i*3+1] = 0.04;
+                        netNodeColors[i*3+2] = 0.06;
+                    } else {
+                        netNodeColors[i*3]   = 0.0;
+                        netNodeColors[i*3+1] = 0.015;
+                        netNodeColors[i*3+2] = 0.03;
+                    }
+                }
+
+                // Green glow on targets
+                if (cnGlowPoints) {
+                    const glowCol = cnGlowPoints.geometry.attributes.color.array;
+                    for (let i = 0; i < NET_NODES; i++) {
+                        if (targetSet.has(i)) {
+                            const pulse = Math.sin(elapsed * 3 + i * 0.5) * 0.15 + 0.85;
+                            glowCol[i*3]   = 0.02;
+                            glowCol[i*3+1] = pulse * 0.8;
+                            glowCol[i*3+2] = pulse * 0.3;
+                        } else {
+                            glowCol[i*3] = glowCol[i*3+1] = glowCol[i*3+2] = 0;
+                        }
+                    }
+                    cnGlowPoints.geometry.attributes.color.needsUpdate = true;
+                }
+
+                // Edges dim except between targets
+                for (let i = 0; i < netEdgeData.length; i++) {
+                    const { from, to } = netEdgeData[i];
+                    if (targetSet.has(from) && targetSet.has(to)) {
+                        const pulse = Math.sin(elapsed * 2 + i * 0.4) * 0.15 + 0.5;
+                        netEdgeColors[i*6]   = netEdgeColors[i*6+3] = 0.02;
+                        netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = pulse * 0.5;
+                        netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = pulse * 0.18;
+                    } else {
+                        netEdgeColors[i*6]   = netEdgeColors[i*6+3] = 0.004;
+                        netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = 0.008;
+                        netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = 0.012;
+                    }
+                }
+
+                // Green heatmap bleed on mesh around targets
+                if (meshColors) {
+                    for (const idx of cnTargets) {
+                        const nearby = netNodeMeshVerts[idx];
+                        if (!nearby) continue;
+                        const pulse = Math.sin(elapsed * 3 + idx * 0.5) * 0.15 + 0.85;
+                        for (let k = 0; k < nearby.length; k++) {
+                            const { vi, f } = nearby[k];
+                            const glow = f * pulse * 0.4;
+                            meshColors[vi*3]   += glow * 0.05;
+                            meshColors[vi*3+1] += glow * 0.7;
+                            meshColors[vi*3+2] += glow * 0.25;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Commit color updates
+        if (netNodePoints) netNodePoints.geometry.attributes.color.needsUpdate = true;
+        if (netEdgeLines) netEdgeLines.geometry.attributes.color.needsUpdate = true;
+        if (meshGeo && meshGeo.attributes.color) meshGeo.attributes.color.needsUpdate = true;
+    }
+
+    // CN step button click handlers
+    document.querySelectorAll('.cn-step').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const step = parseInt(btn.dataset.cnStep);
+            initCNData();
+            setCNStep(step);
+        });
+    });
+
+    // CN section IntersectionObserver - auto-start Phase 1 when entering viewport
+    const cnSection = document.getElementById('cn-how');
+    if (cnSection) {
+        const cnObserver = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                initCNData();
+                if (cnMode === 0) setCNStep(1);
+            } else {
+                if (cnMode > 0) stopCNVisualization();
+            }
+        }, { threshold: 0.3 });
+        cnObserver.observe(cnSection);
+    }
+
     function animate() {
-        if (!isBrainVisible && aliceMode === 0) return;
+        if (!isBrainVisible && aliceMode === 0 && cnMode === 0) return;
         requestAnimationFrame(animate);
 
         const dt = Math.min(clock.getDelta(), 0.05);
         const elapsed = clock.getElapsedTime();
 
-        // Scroll-driven transforms - override when Alice is active
-        const brainOpacity = aliceMode > 0 ? 1 : Math.max(0, 1 - scrollPct * 0.45);
+        // Scroll-driven transforms - override when Alice or CN is active
+        const activeMode = aliceMode > 0 || cnMode > 0;
+        const brainOpacity = activeMode ? 1 : Math.max(0, 1 - scrollPct * 0.45);
         canvas.style.opacity = brainOpacity;
-        const scale = aliceMode > 0 ? 1 : 1 - Math.min(scrollPct * 0.07, 0.25);
+        const scale = activeMode ? 1 : 1 - Math.min(scrollPct * 0.07, 0.25);
         brain.scale.setScalar(scale);
         brain.position.x = 0;
 
@@ -2500,8 +3212,8 @@
         brain.rotation.x = baseXRot + userRotX;
         brain.rotation.y = 0;
 
-        // Epileptogenic network: auto-trigger spikes periodically (paused during Alice mode)
-        if (aliceMode === 0) {
+        // Epileptogenic network: auto-trigger spikes periodically (paused during Alice/CN modes)
+        if (aliceMode === 0 && cnMode === 0) {
             spikeAutoTimer += dt;
             if (spikeAutoTimer > 4.5) {
                 triggerSpike(Math.floor(Math.random() * NET_NODES));
@@ -2509,9 +3221,15 @@
             }
         }
 
-        // Update network spike propagation + mesh surface glow
-        updateEpiNetwork(elapsed);
-        updateMouseGlow();
+        // CN mode takes over rendering when active
+        if (cnMode > 0) {
+            updateCNVisualization(elapsed, dt);
+            updateMouseGlow();
+        } else {
+            // Update network spike propagation + mesh surface glow
+            updateEpiNetwork(elapsed);
+            updateMouseGlow();
+        }
 
         renderer.render(scene, camera);
     }
