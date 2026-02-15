@@ -126,6 +126,17 @@ function initScrollReveals(): void {
   document.querySelectorAll('.r').forEach(el => revealObs.observe(el));
 }
 
+/** Initialize publication card flip behavior */
+function initPubCards(): void {
+  document.querySelectorAll('.pub-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      // Don't flip when clicking the paper link
+      if ((e.target as HTMLElement).closest('.pub-card__link')) return;
+      card.classList.toggle('flipped');
+    });
+  });
+}
+
 /** Initialize all UI components (no Three.js dependencies) */
 export function initUI(): void {
   // Expose setCTA globally for onclick handlers in HTML
@@ -136,4 +147,5 @@ export function initUI(): void {
   initMobileMenu();
   initDotNav();
   initScrollReveals();
+  initPubCards();
 }

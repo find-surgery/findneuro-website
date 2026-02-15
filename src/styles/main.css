@@ -798,33 +798,66 @@ body::after {
 /* ===================================================
    PUBLICATIONS
    =================================================== */
+.pub__lead { white-space: nowrap; }
 .pub__grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 .pub-card {
+    perspective: 900px;
+    cursor: pointer;
+}
+.pub-card__inner {
+    position: relative;
+    transition: transform 0.6s var(--ease);
+    transform-style: preserve-3d;
+}
+.pub-card.flipped .pub-card__inner {
+    transform: rotateY(180deg);
+}
+.pub-card__front, .pub-card__back {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+.pub-card__front {
     display: flex; flex-direction: column;
     background: rgba(255,255,255,0.02);
-    border: 1px solid var(--border);
-    border-radius: 16px;
     padding: 32px 28px;
-    text-decoration: none; color: inherit;
-    transition: all 0.4s var(--ease);
-    position: relative; overflow: hidden;
+    transition: background 0.4s var(--ease), border-color 0.4s var(--ease);
+    position: relative;
 }
-.pub-card::after {
+.pub-card__front::after {
     content: ''; position: absolute;
     top: 0; left: 0; right: 0; height: 2px;
     background: linear-gradient(90deg, transparent, var(--accent), transparent);
     opacity: 0; transition: opacity 0.4s ease;
 }
-.pub-card:hover {
+.pub-card:hover .pub-card__front {
     background: rgba(0,212,255,0.03);
     border-color: var(--border-accent);
-    transform: translateY(-2px);
 }
-.pub-card:hover::after { opacity: 1; }
+.pub-card:hover .pub-card__front::after { opacity: 1; }
+.pub-card__back {
+    position: absolute; inset: 0;
+    transform: rotateY(180deg);
+    background: var(--bg-card);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 20px;
+}
+.pub-card__back img {
+    max-width: 100%; max-height: calc(100% - 32px);
+    object-fit: contain; border-radius: 8px;
+}
+.pub-card__back-hint {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    color: var(--text-muted); letter-spacing: 0.08em;
+    text-transform: uppercase; margin-top: 12px;
+}
 .pub-card__tag {
     font-family: var(--font-mono);
     font-size: 0.65rem; letter-spacing: 0.12em;
@@ -845,6 +878,7 @@ body::after {
     line-height: 1.6; margin-bottom: 20px;
     flex: 1;
 }
+.pub-card__desc strong { color: var(--text); font-weight: 600; }
 .pub-card__meta {
     display: flex; align-items: center; gap: 12px;
     margin-bottom: 16px;
@@ -863,9 +897,10 @@ body::after {
     font-family: var(--font-display); font-size: 0.8rem;
     font-weight: 600; color: var(--accent);
     display: inline-flex; align-items: center; gap: 6px;
+    text-decoration: none;
     transition: gap 0.3s var(--ease);
 }
-.pub-card:hover .pub-card__link { gap: 10px; }
+.pub-card__link:hover { gap: 10px; }
 
 /* ===================================================
    ROADMAP
@@ -1159,6 +1194,7 @@ body::after {
     .evidence__hero { grid-template-columns: 1fr; gap: 24px; }
     .evidence__pubs { grid-template-columns: 1fr; }
     .pub__grid { grid-template-columns: 1fr; }
+    .pub__lead { white-space: normal; }
     .team__grid { grid-template-columns: repeat(2, 1fr); }
     .team__advisors-grid { grid-template-columns: 1fr; }
     .contact__grid { grid-template-columns: 1fr; }
