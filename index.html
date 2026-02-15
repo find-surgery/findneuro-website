@@ -2706,7 +2706,7 @@
     let cnCyclePairs = [];        // pre-built array of {highlight, connected[]} pairs
 
     function initCNData() {
-        if (cnInitialized) return;
+        if (cnInitialized || !brain) return;
         cnInitialized = true;
 
         cnElectrodeGroup = new THREE.Group();
@@ -2803,18 +2803,19 @@
         cnHighlightContact = cnCyclePairs[0].highlight;
         cnConnectedContacts = cnCyclePairs[0].connected;
 
-        // Build connection line geometry (max size to accommodate cycling)
+        // Build connection line geometry (pre-allocated for max connections)
         const connPos = new Float32Array(CN_MAX_CONN * 6);
         cnConnectionColors = new Float32Array(CN_MAX_CONN * 6);
         const connGeo = new THREE.BufferGeometry();
         connGeo.setAttribute('position', new THREE.BufferAttribute(connPos, 3));
         connGeo.setAttribute('color', new THREE.BufferAttribute(cnConnectionColors, 3));
         cnConnectionLines = new THREE.LineSegments(connGeo, new THREE.LineBasicMaterial({
-            vertexColors: true, transparent: true, opacity: 0.8,
-            blending: THREE.AdditiveBlending, depthWrite: false
+            vertexColors: true, transparent: true, opacity: 0.85,
+            blending: THREE.AdditiveBlending, depthWrite: false, linewidth: 1
         }));
         cnConnectionLines.visible = false;
         cnElectrodeGroup.add(cnConnectionLines);
+        cnUpdateConnectionGeometry();
 
         // Phase 3: pick 4 consecutive contacts on the same electrode
         // Use electrode 3 (indices 36-47), contacts 4-7 (middle of the shaft)
@@ -2853,7 +2854,6 @@
         }
         cnConnectionLines.geometry.attributes.position.needsUpdate = true;
         cnConnectionLines.geometry.attributes.color.needsUpdate = true;
-        cnConnectionLines.geometry.setDrawRange(0, cnConnectedContacts.length * 2);
     }
 
     function setCNStep(step) {
