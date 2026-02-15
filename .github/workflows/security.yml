@@ -35,7 +35,7 @@ jobs:
       - name: Verify SRI hashes
         run: |
           # Extract SRI hash from index.html and verify against live CDN
-          EXPECTED=$(grep -oP 'integrity="sha384-[^"]+' index.html | head -1 | cut -d'"' -f2)
+          EXPECTED=$(grep -oP 'integrity="sha384-[^"]+' src/index.html | head -1 | cut -d'"' -f2)
           ACTUAL="sha384-$(curl -s https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js | openssl dgst -sha384 -binary | openssl base64 -A)"
           if [ "$EXPECTED" = "$ACTUAL" ]; then
             echo "SRI hash verified for Three.js CDN"
