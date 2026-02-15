@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIND Neuro | Precision Neurosurgery Decision Support</title>
+    <meta name="description" content="FIND Neuro builds the foundational decision-support platform for precision neurology, transforming epilepsy surgery through AI-powered brain network analysis.">
+    <meta property="og:title" content="FIND Neuro | AI-Driven Epilepsy Surgery Planning">
+    <meta property="og:description" content="The operating system for precision neurology. Spun out of MGH & Harvard Medical School.">
+    <meta property="og:image" content="https://findneuro.com/assets/social-preview.jpg">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://findneuro.com">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="FIND Neuro | Precision Neurosurgery Decision Support">
+    <meta name="twitter:description" content="The operating system for precision neurology. Transforming epilepsy surgery through AI-powered brain network analysis.">
+    <meta name="twitter:image" content="https://findneuro.com/assets/social-preview.jpg">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://snap.licdn.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://px.ads.linkedin.com https://www.google-analytics.com https://www.googletagmanager.com; connect-src https://formspree.io https://snap.licdn.com https://px.ads.linkedin.com https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com; upgrade-insecure-requests;">
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RVD8TGQLHK"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RVD8TGQLHK');
+    </script>
+    <!-- LinkedIn Insight Tag -->
+    <script type="text/javascript">
+    _linkedin_partner_id = "8671618";
+    window._linkedin_data_partner_ids = window._linkedin_data_partner_ids || [];
+    window._linkedin_data_partner_ids.push(_linkedin_partner_id);
+    </script>
+    <script type="text/javascript">
+    (function(l) {
+    if (!l){window.lintrk = function(a,b){window.lintrk.q.push([a,b])};
+    window.lintrk.q=[]}
+    var s = document.getElementsByTagName("script")[0];
+    var b = document.createElement("script");
+    b.type = "text/javascript";b.async = true;
+    b.src = "https://snap.licdn.com/li.lms-analytics/insight.min.js";
+    s.parentNode.insertBefore(b, s);})(window.lintrk);
+    </script>
+    <link rel="icon" type="image/png" href="/assets/White_500px.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/index-DankCXxO.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CNE0CCvv.css">
+</head>
+<body>
+<noscript>
+<img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=8671618&fmt=gif" />
+</noscript>
+
+<!-- Loader -->
+<div id="loader">
+    <img src="/assets/White_500px.png" alt="FIND Neuro" class="loader__logo">
+    <div class="loader__bar"><div class="loader__fill"></div></div>
+</div>
+
+<!-- Fixed: 3D Canvas -->
+<canvas id="brain-canvas"></canvas>
+
+<!-- Fixed: Logo -->
+<a href="#" class="logo-fixed"><img src="/assets/White_500px.png" alt="FIND Neuro"></a>
+
+<!-- Fixed: Navigation -->
+<nav class="nav-fixed">
+    <a href="#problem">Problem</a>
+    <a href="#solution">Solution</a>
+    <a href="#cn-how">How CN Works</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#team">Team</a>
+    <a href="#contact">Contact</a>
+</nav>
+
+<!-- Fixed: Dot Navigation -->
+<div class="dot-nav" id="dot-nav">
+    <div class="dot-nav__item active" data-section="hero" data-label="Home"></div>
+    <div class="dot-nav__item" data-section="problem" data-label="Problem"></div>
+    <div class="dot-nav__item" data-section="solution" data-label="Solution"></div>
+    <div class="dot-nav__item" data-section="cn-how" data-label="How CN Works"></div>
+    <div class="dot-nav__item" data-section="evidence" data-label="Evidence"></div>
+    <div class="dot-nav__item" data-section="roadmap" data-label="Roadmap"></div>
+    <div class="dot-nav__item" data-section="vision" data-label="Vision"></div>
+    <div class="dot-nav__item" data-section="team" data-label="Team"></div>
+    <div class="dot-nav__item" data-section="contact" data-label="Contact"></div>
+</div>
+
+<!-- Mobile -->
+<button class="mobile-toggle" id="mobile-toggle">
+    <span></span><span></span><span></span>
+</button>
+<div class="mobile-menu" id="mobile-menu">
+    <a href="#problem">Problem</a>
+    <a href="#solution">Solution</a>
+    <a href="#cn-how">How CN Works</a>
+    <a href="#evidence">Evidence</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#team">Team</a>
+    <a href="#contact">Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+    <div class="hero__content">
+        <div class="hero__title-row">
+            <canvas id="hero-brain" class="hero__brain-canvas"></canvas>
+            <img src="/assets/White_500px.png" alt="FIND Neuro" class="hero__logo">
+        </div>
+        <p class="hero__sub">
+            The foundational decision-support platform for precision neurology. Transforming epilepsy surgery through AI-powered brain network analysis.
+        </p>
+        <div class="hero__cta-row">
+            <a href="#contact" class="btn btn--glow" onclick="document.querySelector('[name=cta-type]').value='demo'">
+                Request a Demo
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10m-4-4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="#contact" class="btn btn--outline" onclick="document.querySelector('[name=cta-type]').value='deck'">Request Investor Deck</a>
+        </div>
+    </div>
+    <div class="hero__scroll-hint">
+        <span>Scroll</span>
+        <div class="scroll-arrow"></div>
+    </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="section section--solid" id="problem">
+    <div class="container">
+        <div class="section__eyebrow r">The Treatment Gap</div>
+        <div class="problem__hero-stat r r-d1">
+            <div class="problem__big-number">1.2M</div>
+            <div class="problem__big-label">Americans trapped in the epilepsy treatment gap</div>
+        </div>
+        <div class="problem__grid">
+            <div class="problem__cell r r-d1">
+                <div class="problem__cell-num">~8,000</div>
+                <div class="problem__cell-text">Surgeries performed per year -despite 65,000+ new drug-resistant cases annually</div>
+            </div>
+            <div class="problem__cell r r-d2">
+                <div class="problem__cell-num">30-70%</div>
+                <div class="problem__cell-text">Variable success rates depending on case complexity and clinical subjectivity</div>
+            </div>
+            <div class="problem__cell r r-d3">
+                <div class="problem__cell-num">30+ hrs</div>
+                <div class="problem__cell-text">Manual expert sEEG review required per complex case</div>
+            </div>
+            <div class="problem__cell r r-d4">
+                <div class="problem__cell-num">$4,500/day</div>
+                <div class="problem__cell-text">Cost of invasive monitoring over 10-14 day hospital stays</div>
+            </div>
+            <div class="problem__cell r r-d5">
+                <div class="problem__cell-num">$25B</div>
+                <div class="problem__cell-text">Annual cost burden of drug-resistant epilepsy in the U.S.</div>
+            </div>
+            <div class="problem__cell r r-d6">
+                <div class="problem__cell-num">Zero</div>
+                <div class="problem__cell-text">Network-level quantitative decision support tools available today</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EEG Divider -->
+<div class="eeg-divider">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
+        <path d="M0,30 L50,30 L60,10 L70,50 L80,20 L90,40 L100,30 L200,30 L210,5 L220,55 L230,15 L240,45 L250,25 L260,35 L270,30 L400,30 L410,8 L420,52 L430,18 L440,42 L450,28 L460,32 L470,30 L600,30 L610,12 L620,48 L630,22 L640,38 L650,30 L700,30 L710,5 L720,55 L730,10 L740,50 L750,20 L760,40 L770,30 L900,30 L910,8 L920,52 L930,18 L940,42 L950,30 L1000,30 L1010,10 L1020,50 L1030,20 L1040,40 L1050,30 L1200,30" fill="none" stroke="#00d4ff" stroke-width="1.5"/>
+    </svg>
+</div>
+
+<!-- SOLUTION -->
+<section class="section section--alt" id="solution">
+    <div class="container">
+        <div class="section__eyebrow r">The Platform</div>
+        <h2 class="section__heading r r-d1">CN-Suite&trade;</h2>
+        <p class="section__lead r r-d2">
+            An integrated clinical decision-support platform that turns raw neuroimaging and electrophysiology data into actionable surgical intelligence -with zero workflow disruption.
+        </p>
+
+        <div class="solution__cards">
+            <div class="sol-card sol-card--cn r r-d1">
+                <div class="sol-card__glow"></div>
+                <div class="stack__label">Intelligence Layer</div>
+                <div class="sol-card__tag">Network Analysis</div>
+                <div class="sol-card__name">Critical Nodes&trade;</div>
+                <p class="sol-card__desc">
+                    Proprietary ML algorithm that identifies critical network drivers from sEEG recordings - the contacts whose removal is most likely to produce seizure freedom. Uses only standard-of-care data. No new hardware required.
+                </p>
+            </div>
+            <hr class="stack__divider">
+            <div class="sol-card sol-card--mmvt r r-d2">
+                <div class="sol-card__glow"></div>
+                <div class="stack__label">Foundation Layer</div>
+                <div class="sol-card__tag">Visualization</div>
+                <div class="sol-card__name">MMVT</div>
+                <p class="sol-card__desc">
+                    Interactive 3D brain model integrating MRI, CT, and depth electrode data into a single visualization. The default case-presentation interface for surgical conferences - ensuring surgeon exposure on every case.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- HOW CN WORKS -->
+<section class="section section--solid" id="cn-how">
+    <div class="container">
+        <div class="section__eyebrow r">Under the Hood</div>
+        <h2 class="section__heading r r-d1">How Critical Nodes Works</h2>
+        <p class="section__lead r r-d2">Three phases transform raw sEEG recordings into precise surgical targets.</p>
+
+        <div class="cn-interactive">
+            <div class="cn-steps">
+                <button class="cn-step cn-step--active" data-cn-step="1">
+                    <span class="cn-step__num">1</span>
+                    <span class="cn-step__label">sEEG Data</span>
+                </button>
+                <div class="cn-step__connector"></div>
+                <button class="cn-step" data-cn-step="2">
+                    <span class="cn-step__num">2</span>
+                    <span class="cn-step__label">Connectivity</span>
+                </button>
+                <div class="cn-step__connector"></div>
+                <button class="cn-step" data-cn-step="3">
+                    <span class="cn-step__num">3</span>
+                    <span class="cn-step__label">Criticality</span>
+                </button>
+            </div>
+
+            <div class="cn-content">
+                <div class="cn-brain" id="cn-brain-target"></div>
+
+                <div class="cn-text">
+                    <div class="cn-panel cn-panel--active" data-cn-panel="1">
+                        <div class="cn-panel__tag cn-panel__tag--1">Phase 1</div>
+                        <h3 class="cn-panel__title">sEEG Electrode Recordings</h3>
+                        <p class="cn-panel__desc">
+                            Depth electrodes are implanted into the brain, each carrying multiple recording contacts. The algorithm uses only standard-of-care sEEG data - no additional hardware or protocols required.
+                        </p>
+                    </div>
+
+                    <div class="cn-panel" data-cn-panel="2">
+                        <div class="cn-panel__tag cn-panel__tag--2">Phase 2</div>
+                        <h3 class="cn-panel__title">Directed Connectivity</h3>
+                        <p class="cn-panel__desc">
+                            For each contact, the algorithm estimates causal influence to every other contact - revealing how seizure activity propagates through the network, not just which areas are active.
+                        </p>
+                    </div>
+
+                    <div class="cn-panel" data-cn-panel="3">
+                        <div class="cn-panel__tag cn-panel__tag--3">Phase 3</div>
+                        <h3 class="cn-panel__title">Criticality Scoring</h3>
+                        <p class="cn-panel__desc">
+                            Each contact receives a criticality score based on its network influence. Red contacts are the strongest drivers of seizure activity - the surgical targets whose removal maximizes seizure freedom.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WORKFLOW -->
+<section class="section section--alt" id="workflow">
+    <div class="container">
+        <div class="section__eyebrow r">Clinical Workflow</div>
+        <h2 class="section__heading r r-d1">How It Works</h2>
+        <p class="section__lead r r-d2">
+            Integrates into the existing epilepsy surgery workflow. No new hardware, protocols, or changes to clinical ownership.
+        </p>
+        <div class="workflow__track">
+            <div class="wf-step r r-d1">
+                <div class="wf-step__ring"><span class="wf-step__ring-num">01</span></div>
+                <h3 class="wf-step__title">Data Integration</h3>
+                <p class="wf-step__desc">Standard MRI, CT, and sEEG recordings are loaded. No additional acquisition needed.</p>
+            </div>
+            <div class="wf-step r r-d2">
+                <div class="wf-step__ring"><span class="wf-step__ring-num">02</span></div>
+                <h3 class="wf-step__title">3D Visualization</h3>
+                <p class="wf-step__desc">MMVT constructs a patient-specific 3D brain model with precise electrode positions.</p>
+            </div>
+            <div class="wf-step r r-d3">
+                <div class="wf-step__ring"><span class="wf-step__ring-num">03</span></div>
+                <h3 class="wf-step__title">Network Analysis</h3>
+                <p class="wf-step__desc">Critical Nodes algorithm ranks electrode contacts by network criticality during seizures.</p>
+            </div>
+            <div class="wf-step r r-d4">
+                <div class="wf-step__ring"><span class="wf-step__ring-num">04</span></div>
+                <h3 class="wf-step__title">Decision Support</h3>
+                <p class="wf-step__desc">Objective, network-level evidence presented at surgical conference for consensus decisions.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- EVIDENCE -->
+<section class="section section--solid" id="evidence">
+    <div class="container">
+        <div class="section__eyebrow r">Clinical Evidence</div>
+
+        <div class="evidence__hero r r-d1">
+            <div class="evidence__meta">
+                <div class="evidence__meta-title">Multicenter, Outcome-Anchored Validation</div>
+                <div class="evidence__meta-desc">
+                    Retrospective study of over 100 patients across 5 leading U.S. centers with 12-month Engel follow-up - the gold standard for seizure freedom assessment. Achieved high sensitivity and specificity in a strict center-held-out validation, demonstrating cross-site generalization.
+                </div>
+                <div class="evidence__centers">
+                    <span class="evidence__center-chip">5 Leading U.S. Centers</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="quote r r-d3">
+            <p class="quote__text">
+                &ldquo;FIND Neuro will enable our team to utilize our vast patient database to derive the most effective treatments for each patient.&rdquo;
+            </p>
+            <div class="quote__attr">
+                Prof. Howard L. Weiner, MD <span> - Chief of Neurosurgery, Texas Children's Hospital</span>
+            </div>
+        </div>
+
+        <div class="story story--featured r r-d4" id="alice-story">
+            <div class="story__photo-row" id="alice-photo-row">
+                <div class="story__photo" style="background-image:url('/assets/alice-photo.jpg')"></div>
+            </div>
+            <div class="story__eyebrow">Patient Impact</div>
+            <h3 class="story__title">Alice's Story</h3>
+            <p class="story__text story__text--large">
+                At six years old, <strong>Alice experienced up to 50 seizures daily.</strong> Traditional treatments offered only 20-50% success rates.
+            </p>
+            <p class="story__text story__text--large">
+                Using FIND's network analysis, clinicians identified precise surgical targets. <strong class="story__highlight">Today, Alice is seizure-free.</strong>
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="section section--alt" id="roadmap">
+    <div class="container">
+        <div class="section__eyebrow r">Product Roadmap</div>
+        <h2 class="section__heading r r-d1">Building the Platform</h2>
+        <p class="section__lead r r-d2">
+            A phased regulatory and product strategy. Each version expands clinical reach while building on validated foundations.
+        </p>
+        <div class="roadmap__track">
+            <div class="rm-node r r-d1">
+                <div class="rm-node__dot"></div>
+                <div class="rm-node__title">CN-Suite V1  - FDA 510(k)</div>
+                <div class="rm-node__desc">MMVT + Critical Nodes (Ictal analysis). FDA submission and target clearance. Beachhead launch at 5 partner centers.</div>
+            </div>
+            <div class="rm-node r r-d2">
+                <div class="rm-node__dot"></div>
+                <div class="rm-node__title">V2  - Interictal Analysis</div>
+                <div class="rm-node__desc">No seizure wait required. Actionable within hours. Reduces EMU stays from 10-14 days to as little as 2 days.</div>
+            </div>
+            <div class="rm-node r r-d3">
+                <div class="rm-node__dot"></div>
+                <div class="rm-node__title">Surgical Simulation Module</div>
+                <div class="rm-node__desc">Simulate network response to ablation in silico. Compare strategies before surgery. Diagnose, simulate, and treat in 1-2 days.</div>
+            </div>
+            <div class="rm-node r r-d4">
+                <div class="rm-node__dot"></div>
+                <div class="rm-node__title">V3  - HD-EEG / MEG Integration</div>
+                <div class="rm-node__desc">Extends network analysis to non-invasive modalities. Reaches all 260 Level III/IV epilepsy centers in the U.S.</div>
+            </div>
+            <div class="rm-node r r-d5">
+                <div class="rm-node__dot"></div>
+                <div class="rm-node__title">V4  - Scalp EEG</div>
+                <div class="rm-node__desc">Critical node analysis from routine scalp EEG via cross-modal knowledge distillation. Expands reach to 500,000+ diagnostic sessions per year.</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- VISION -->
+<section class="section section--solid" id="vision">
+    <div class="container">
+        <div class="section__eyebrow r">Long-Term Vision</div>
+        <div class="vision__statement r r-d1">
+            Beyond Epilepsy.<br>
+            The <em>operating system</em> for<br>precision neuromodulation.
+        </div>
+        <p class="vision__sub r r-d2">
+            Epilepsy surgery is our beachhead. The same network analysis engine that identifies seizure drivers can guide neuromodulation across a $1 trillion bioelectronics opportunity.
+        </p>
+        <div class="vision__chips r r-d3">
+            <span class="vision__chip">Chronic Pain</span>
+            <span class="vision__chip">Drug-Resistant Depression</span>
+            <span class="vision__chip">Addiction</span>
+            <span class="vision__chip">OCD</span>
+            <span class="vision__chip">PTSD</span>
+            <span class="vision__chip">Migraine</span>
+            <span class="vision__chip">Parkinson's</span>
+            <span class="vision__chip">Alzheimer's</span>
+        </div>
+    </div>
+</section>
+
+<!-- TEAM -->
+<section class="section section--alt" id="team">
+    <div class="container">
+        <div class="section__eyebrow r">Leadership</div>
+        <h2 class="section__heading r r-d1">Our Team</h2>
+        <div class="hero__badge r r-d1" style="margin: 0 auto 24px;">
+            <span class="hero__badge-dot"></span>
+            MGH &amp; Harvard Medical School Spin-Out
+        </div>
+        <p class="section__lead r r-d2">
+            World-class neuroscience expertise combined with proven entrepreneurial and regulatory leadership.
+        </p>
+        <div class="team__grid">
+            <div class="t-card r r-d1">
+                <div class="t-card__avatar" style="background-image:url('/assets/team/noam_peled.jpg')"></div>
+                <div class="t-card__name">Noam Peled, PhD</div>
+                <div class="t-card__role">CEO</div>
+                <div class="t-card__bio">Former Director of Visualization, Martinos Center, MGH &amp; Harvard Medical School</div>
+            </div>
+            <div class="t-card r r-d2">
+                <div class="t-card__avatar" style="background-image:url('/assets/team/avi_yaron.jpg')"></div>
+                <div class="t-card__name">Avi Yaron</div>
+                <div class="t-card__role">Executive Chairman</div>
+                <div class="t-card__bio">Serial neurotech investor. Founded 3 venture funds ($50M AUM each)</div>
+            </div>
+            <div class="t-card r r-d3">
+                <div class="t-card__avatar" style="background-image:url('/assets/team/adam_lerner.jpg')"></div>
+                <div class="t-card__name">Adam P. Lerner, JD</div>
+                <div class="t-card__role">COO &amp; Head of Legal</div>
+                <div class="t-card__bio">Former VP Legal &amp; IP at VC-backed life sciences companies</div>
+            </div>
+            <div class="t-card r r-d4">
+                <div class="t-card__avatar" style="background-image:url('/assets/team/dekel_shapira.png')"></div>
+                <div class="t-card__name">Dekel Shapira, PhD</div>
+                <div class="t-card__role">VP R&amp;D</div>
+                <div class="t-card__bio">Healthcare sector development leader</div>
+            </div>
+            <div class="t-card r r-d5">
+                <div class="t-card__avatar" style="background-image:url('/assets/team/alex-rockhill.jpeg')"></div>
+                <div class="t-card__name">Alex Rockhill, PhD</div>
+                <div class="t-card__role">Research Scientist</div>
+                <div class="t-card__bio">Expert in invasive EEG &amp; network-guided neuromodulation</div>
+            </div>
+        </div>
+
+        <div class="team__advisors-label r">Advisory Board</div>
+        <div class="team__advisors-grid">
+            <div class="adv-card r r-d1">
+                <div class="adv-card__photo" style="background-image:url('/assets/team/steve_stufflebeam.jpg')"></div>
+                <div>
+                    <div class="adv-card__name">Prof. Steven Stufflebeam, MD</div>
+                    <div class="adv-card__title">Co-Founder &bull; Neuroradiologist, Associate Professor at HMS &bull; Medical Director of the Martinos Center, MGH</div>
+                </div>
+            </div>
+            <div class="adv-card r r-d2">
+                <div class="adv-card__photo" style="background-image:url('/assets/team/howard_weiner.png')"></div>
+                <div>
+                    <div class="adv-card__name">Prof. Howard L. Weiner, MD</div>
+                    <div class="adv-card__title">Chief of Neurosurgery, Texas Children's Hospital &bull; Professor, Pediatric Neurosurgery and Vice-Chairman, Baylor College of Medicine</div>
+                </div>
+            </div>
+            <div class="adv-card r r-d3">
+                <div class="adv-card__photo" style="background-image:url('/assets/team/matti_hamalainen.png')"></div>
+                <div>
+                    <div class="adv-card__name">Prof. Matti H&auml;m&auml;l&auml;inen, PhD</div>
+                    <div class="adv-card__title">Invented MEG &amp; EEG source localization &bull; Full Professor at Harvard Medical School &bull; Head of Neuroscience &amp; Biomedical Engineering, Aalto University, Finland</div>
+                </div>
+            </div>
+            <div class="adv-card r r-d4">
+                <div class="adv-card__photo" style="background-image:url('/assets/team/alon_blankstein.png')"></div>
+                <div>
+                    <div class="adv-card__name">Alon Blankstein</div>
+                    <div class="adv-card__title">Co-founder and advisor of Israeli &amp; North American technology ventures &bull; CEO of ICD Pharma</div>
+                </div>
+            </div>
+            <div class="adv-card r r-d5">
+                <div class="adv-card__photo" style="background-image:url('/assets/team/mandana_behbahani.png')"></div>
+                <div>
+                    <div class="adv-card__name">Prof. Mandana Behbahani, MD</div>
+                    <div class="adv-card__title">Neurosurgery, Montefiore Medical Center</div>
+                </div>
+            </div>
+            <div class="adv-card r r-d6">
+                <div class="adv-card__photo" style="background-image:url('/assets/team/ed_marram.png')"></div>
+                <div>
+                    <div class="adv-card__name">Prof. Ed Marram, PhD</div>
+                    <div class="adv-card__title">Founded Geo-Centers Inc. (1,400 employees, $200M revenue) &bull; Babson College Entrepreneurship Director</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section section--solid" id="contact">
+    <div class="container">
+        <div class="section__eyebrow r">Get In Touch</div>
+        <h2 class="section__heading r r-d1">Contact Us</h2>
+        <div class="contact__cta-pills r r-d1">
+            <button class="contact__pill contact__pill--active" data-cta="demo" onclick="setCTA('demo')">Request a Demo</button>
+            <button class="contact__pill" data-cta="deck" onclick="setCTA('deck')">Request Investor Deck</button>
+            <button class="contact__pill" data-cta="general" onclick="setCTA('general')">General Inquiry</button>
+        </div>
+        <div class="contact__grid">
+            <div class="r r-d2">
+                <div class="contact__title" id="contact-title">Let's discuss how FIND Neuro can support your clinical program.</div>
+                <p class="contact__text" id="contact-text">
+                    Whether you're a clinician, investor, or potential partner - we'd love to hear from you.
+                </p>
+                <div class="contact__detail">
+                    <div class="contact__detail-icon">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="1" y="3" width="12" height="8" rx="1.5" stroke="#00d4ff" stroke-width="1.2"/><path d="M1 4.5l6 4 6-4" stroke="#00d4ff" stroke-width="1.2"/></svg>
+                    </div>
+                    info@findneuro.com
+                </div>
+                <div class="contact__detail">
+                    <div class="contact__detail-icon">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1C4.2 1 2 3.2 2 6c0 3.5 5 7 5 7s5-3.5 5-7c0-2.8-2.2-5-5-5z" stroke="#00d4ff" stroke-width="1.2"/><circle cx="7" cy="6" r="1.5" stroke="#00d4ff" stroke-width="1.2"/></svg>
+                    </div>
+                    Boston, Massachusetts
+                </div>
+            </div>
+            <form class="contact__form r r-d3" id="contact-form">
+                <input type="hidden" name="cta-type" value="demo">
+                <input type="hidden" name="_subject" value="New inquiry from findneuro.com">
+                <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+                <div class="fg"><label>Name</label><input type="text" name="name" placeholder="Your name" required></div>
+                <div class="fg"><label>Email</label><input type="email" name="email" placeholder="your@email.com" required></div>
+                <div class="fg"><label>Organization</label><input type="text" name="organization" placeholder="Hospital, institution, or company"></div>
+                <div class="fg">
+                    <label>I am a...</label>
+                    <select name="role"><option value="">Select role</option><option>Clinician / Epileptologist</option><option>Neurosurgeon</option><option>Hospital Administrator</option><option>Investor</option><option>Researcher</option><option>Industry Partner</option><option>Other</option></select>
+                </div>
+                <div class="fg"><label>Message</label><textarea name="message" placeholder="Tell us about your interest..."></textarea></div>
+                <button type="submit" class="btn btn--glow btn--full btn--submit">Request a Demo</button>
+                <div class="form-status" id="form-status" style="display:none; text-align:center; margin-top:12px; font-size:0.85rem;"></div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer__inner">
+            <div class="footer__brand">FIND Neuro <span>Precision Neurosurgery Decision Support</span></div>
+        </div>
+        <div class="footer__copy">
+            &copy; 2026 FIND Neuro (FIND Surgical Sciences, Inc.)  - All rights reserved.<br>
+            Spun out of Massachusetts General Hospital &amp; Harvard Medical School.
+        </div>
+    </div>
+</footer>
+
+<!-- THREE.JS (CDN with SRI) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" integrity="sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9" crossorigin="anonymous"></script>
+<script src="/brain_data.js"></script>
+</body>
+</html>

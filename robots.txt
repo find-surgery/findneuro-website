@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /gtm/
+Disallow: /clin/
+Disallow: /clinical-pipeline-integration/
+
+Sitemap: https://findneuro.com/sitemap.xml
