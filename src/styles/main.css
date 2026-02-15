@@ -796,6 +796,78 @@ body::after {
 }
 
 /* ===================================================
+   PUBLICATIONS
+   =================================================== */
+.pub__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+.pub-card {
+    display: flex; flex-direction: column;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px 28px;
+    text-decoration: none; color: inherit;
+    transition: all 0.4s var(--ease);
+    position: relative; overflow: hidden;
+}
+.pub-card::after {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.4s ease;
+}
+.pub-card:hover {
+    background: rgba(0,212,255,0.03);
+    border-color: var(--border-accent);
+    transform: translateY(-2px);
+}
+.pub-card:hover::after { opacity: 1; }
+.pub-card__tag {
+    font-family: var(--font-mono);
+    font-size: 0.65rem; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent); background: rgba(0,212,255,0.08);
+    padding: 4px 10px; border-radius: 4px;
+    display: inline-block; margin-bottom: 16px;
+    align-self: flex-start;
+}
+.pub-card__title {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 1.05rem; line-height: 1.4;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+}
+.pub-card__desc {
+    font-size: 0.82rem; color: var(--text-dim);
+    line-height: 1.6; margin-bottom: 20px;
+    flex: 1;
+}
+.pub-card__meta {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+}
+.pub-card__journal {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--text-muted); font-weight: 500;
+}
+.pub-card__year {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--text-muted);
+    padding-left: 12px;
+    border-left: 1px solid var(--border);
+}
+.pub-card__link {
+    font-family: var(--font-display); font-size: 0.8rem;
+    font-weight: 600; color: var(--accent);
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: gap 0.3s var(--ease);
+}
+.pub-card:hover .pub-card__link { gap: 10px; }
+
+/* ===================================================
    ROADMAP
    =================================================== */
 .roadmap__track {
@@ -1086,6 +1158,7 @@ body::after {
     .workflow__track::before { display: none; }
     .evidence__hero { grid-template-columns: 1fr; gap: 24px; }
     .evidence__pubs { grid-template-columns: 1fr; }
+    .pub__grid { grid-template-columns: 1fr; }
     .team__grid { grid-template-columns: repeat(2, 1fr); }
     .team__advisors-grid { grid-template-columns: 1fr; }
     .contact__grid { grid-template-columns: 1fr; }
