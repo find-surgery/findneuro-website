@@ -902,28 +902,48 @@ body::after {
 }
 .pub-card__link:hover { gap: 10px; }
 .pub-covers {
-    margin-top: 64px; text-align: center;
+    margin-top: 72px; text-align: center;
 }
 .pub-covers__heading {
     font-family: var(--font-display); font-weight: 600;
     font-size: 1.1rem; color: var(--text-dim);
-    letter-spacing: -0.01em; margin-bottom: 28px;
+    letter-spacing: -0.01em; margin-bottom: 32px;
 }
 .pub-covers__grid {
-    display: flex; justify-content: center;
-    gap: 24px; flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
 }
-.pub-covers__grid img {
-    height: 280px; width: auto;
-    border-radius: 8px;
+.cover-card {
+    background: rgba(255,255,255,0.02);
     border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 24px 20px;
     transition: all 0.4s var(--ease);
-    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    display: flex; flex-direction: column; align-items: center;
 }
-.pub-covers__grid img:hover {
-    transform: translateY(-4px) scale(1.02);
+.cover-card:hover {
+    background: rgba(0,212,255,0.03);
     border-color: var(--border-accent);
-    box-shadow: 0 8px 40px rgba(0,212,255,0.1);
+    transform: translateY(-3px);
+}
+.cover-card img {
+    width: 100%; max-width: 280px; height: auto;
+    border-radius: 6px;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.4);
+    transition: box-shadow 0.4s var(--ease);
+}
+.cover-card:hover img {
+    box-shadow: 0 10px 40px rgba(0,212,255,0.12);
+}
+.cover-card__label {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 0.95rem; margin-top: 16px;
+}
+.cover-card__date {
+    font-family: var(--font-mono); font-size: 0.7rem;
+    color: var(--text-muted); margin-top: 4px;
+    letter-spacing: 0.05em;
 }
 
 /* ===================================================
@@ -1219,7 +1239,7 @@ body::after {
     .evidence__pubs { grid-template-columns: 1fr; }
     .pub__grid { grid-template-columns: 1fr; }
     .pub__lead { white-space: normal; }
-    .pub-covers__grid img { height: 200px; }
+    .pub-covers__grid { grid-template-columns: 1fr; max-width: 320px; margin: 0 auto; }
     .team__grid { grid-template-columns: repeat(2, 1fr); }
     .team__advisors-grid { grid-template-columns: 1fr; }
     .contact__grid { grid-template-columns: 1fr; }
