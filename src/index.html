@@ -15,6 +15,7 @@
     <meta name="twitter:description" content="The operating system for precision neurology. Transforming epilepsy surgery through AI-powered brain network analysis.">
     <meta name="twitter:image" content="https://findneuro.com/assets/social-preview.jpg">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://snap.licdn.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://px.ads.linkedin.com https://www.google-analytics.com https://www.googletagmanager.com; connect-src https://formspree.io https://snap.licdn.com https://px.ads.linkedin.com https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com; upgrade-insecure-requests;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
     <!-- Google Analytics (GA4) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-RVD8TGQLHK"></script>
     <script>
@@ -42,7 +43,12 @@
     <link rel="icon" type="image/png" href="/assets/White_500px.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Three.js + brain data: defer in head for early download without blocking paint -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" integrity="sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9" crossorigin="anonymous"></script>
+    <script defer src="/brain_data.js"></script>
+    <script type="module" src="/ts/main.ts"></script>
 </head>
 <body>
 <noscript>
@@ -552,9 +558,5 @@
     </div>
 </footer>
 
-<!-- THREE.JS (CDN with SRI) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" integrity="sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9" crossorigin="anonymous"></script>
-<script src="/brain_data.js"></script>
-<script type="module" src="/ts/main.ts"></script>
 </body>
 </html>

@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Audit npm dependencies
+        run: npm audit --audit-level=moderate
       - name: Check for secrets in code
         uses: trufflesecurity/trufflehog@main
         with:

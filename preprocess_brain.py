@@ -140,7 +140,7 @@ def main():
         sv_norm = (sv - center) * scale
         sub_output.append({
             'name': name,
-            'v': np.round(sv_norm, 4).flatten().tolist(),
+            'v': np.round(sv_norm, 2).flatten().tolist(),
             'f': sf.flatten().tolist()
         })
 
@@ -152,7 +152,7 @@ def main():
     print(f"Subcortical: {len(sub_output)} structures, {total_sub_v} total verts, {total_sub_f} total faces")
 
     # Build JS output
-    verts_list = np.round(all_verts, 4).flatten().tolist()
+    verts_list = np.round(all_verts, 2).flatten().tolist()
     faces_list = all_faces.flatten().tolist()
     curv_list = np.round(all_curv, 3).tolist()
 
