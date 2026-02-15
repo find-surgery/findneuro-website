@@ -578,35 +578,35 @@
             background: linear-gradient(90deg, var(--border), var(--border));
             flex-shrink: 0;
         }
-        /* Phase 1 active: orange */
+        /* Phase 1 active: cyan (electrodes) */
         .cn-step--active[data-cn-step="1"] {
-            border-color: var(--hot); color: var(--text);
-            box-shadow: 0 0 24px rgba(255,107,53,0.15);
-        }
-        .cn-step--active[data-cn-step="1"] .cn-step__num {
-            background: var(--hot); color: var(--bg-deep);
-        }
-        /* Phase 2 active: cyan */
-        .cn-step--active[data-cn-step="2"] {
             border-color: var(--accent); color: var(--text);
             box-shadow: 0 0 24px rgba(0,212,255,0.15);
         }
-        .cn-step--active[data-cn-step="2"] .cn-step__num {
+        .cn-step--active[data-cn-step="1"] .cn-step__num {
             background: var(--accent); color: var(--bg-deep);
         }
-        /* Phase 3 active: green */
+        /* Phase 2 active: red (connectivity) */
+        .cn-step--active[data-cn-step="2"] {
+            border-color: #ef4444; color: var(--text);
+            box-shadow: 0 0 24px rgba(239,68,68,0.15);
+        }
+        .cn-step--active[data-cn-step="2"] .cn-step__num {
+            background: #ef4444; color: var(--bg-deep);
+        }
+        /* Phase 3 active: orange (criticality heatmap) */
         .cn-step--active[data-cn-step="3"] {
-            border-color: #22c55e; color: var(--text);
-            box-shadow: 0 0 24px rgba(34,197,94,0.15);
+            border-color: var(--hot); color: var(--text);
+            box-shadow: 0 0 24px rgba(255,107,53,0.15);
         }
         .cn-step--active[data-cn-step="3"] .cn-step__num {
-            background: #22c55e; color: var(--bg-deep);
+            background: var(--hot); color: var(--bg-deep);
         }
         /* Done states */
-        .cn-step--done[data-cn-step="1"] { border-color: rgba(255,107,53,0.3); color: var(--text); }
-        .cn-step--done[data-cn-step="1"] .cn-step__num { background: rgba(255,107,53,0.25); color: var(--hot); }
-        .cn-step--done[data-cn-step="2"] { border-color: rgba(0,212,255,0.3); color: var(--text); }
-        .cn-step--done[data-cn-step="2"] .cn-step__num { background: rgba(0,212,255,0.25); color: var(--accent); }
+        .cn-step--done[data-cn-step="1"] { border-color: rgba(0,212,255,0.3); color: var(--text); }
+        .cn-step--done[data-cn-step="1"] .cn-step__num { background: rgba(0,212,255,0.25); color: var(--accent); }
+        .cn-step--done[data-cn-step="2"] { border-color: rgba(239,68,68,0.3); color: var(--text); }
+        .cn-step--done[data-cn-step="2"] .cn-step__num { background: rgba(239,68,68,0.25); color: #ef4444; }
 
         .cn-content {
             display: grid; grid-template-columns: 1fr 1fr;
@@ -644,9 +644,9 @@
             padding: 5px 12px; border-radius: 4px;
             display: inline-block; margin-bottom: 16px;
         }
-        .cn-panel__tag--1 { color: var(--hot); background: var(--hot-glow); }
-        .cn-panel__tag--2 { color: var(--accent); background: rgba(0,212,255,0.08); }
-        .cn-panel__tag--3 { color: #22c55e; background: rgba(34,197,94,0.08); }
+        .cn-panel__tag--1 { color: var(--accent); background: rgba(0,212,255,0.08); }
+        .cn-panel__tag--2 { color: #ef4444; background: rgba(239,68,68,0.08); }
+        .cn-panel__tag--3 { color: var(--hot); background: var(--hot-glow); }
         .cn-panel__title {
             font-family: var(--font-display); font-weight: 700;
             font-size: 1.4rem; margin-bottom: 14px;
@@ -1315,17 +1315,17 @@
             <div class="cn-steps">
                 <button class="cn-step cn-step--active" data-cn-step="1">
                     <span class="cn-step__num">1</span>
-                    <span class="cn-step__label">Connectivity</span>
+                    <span class="cn-step__label">sEEG Data</span>
                 </button>
                 <div class="cn-step__connector"></div>
                 <button class="cn-step" data-cn-step="2">
                     <span class="cn-step__num">2</span>
-                    <span class="cn-step__label">Criticality</span>
+                    <span class="cn-step__label">Connectivity</span>
                 </button>
                 <div class="cn-step__connector"></div>
                 <button class="cn-step" data-cn-step="3">
                     <span class="cn-step__num">3</span>
-                    <span class="cn-step__label">Prediction</span>
+                    <span class="cn-step__label">Criticality</span>
                 </button>
             </div>
 
@@ -1335,25 +1335,25 @@
                 <div class="cn-text">
                     <div class="cn-panel cn-panel--active" data-cn-panel="1">
                         <div class="cn-panel__tag cn-panel__tag--1">Phase 1</div>
-                        <h3 class="cn-panel__title">Directed Connectivity Estimation</h3>
+                        <h3 class="cn-panel__title">sEEG Electrode Recordings</h3>
                         <p class="cn-panel__desc">
-                            The algorithm estimates causal influence between every pair of sEEG contacts. Directed connections reveal how seizure activity propagates through the brain - not just which areas are active, but which areas are driving others.
+                            Depth electrodes are implanted into the brain, each carrying multiple recording contacts. The algorithm uses only standard-of-care sEEG data - no additional hardware or protocols required.
                         </p>
                     </div>
 
                     <div class="cn-panel" data-cn-panel="2">
                         <div class="cn-panel__tag cn-panel__tag--2">Phase 2</div>
-                        <h3 class="cn-panel__title">Criticality Scoring</h3>
+                        <h3 class="cn-panel__title">Directed Connectivity</h3>
                         <p class="cn-panel__desc">
-                            Each contact receives a criticality score based on its network influence - how much it drives downstream activity versus simply responding to it. High-criticality nodes are the network hubs whose removal would most disrupt seizure propagation.
+                            For each contact, the algorithm estimates causal influence to every other contact - revealing how seizure activity propagates through the network, not just which areas are active.
                         </p>
                     </div>
 
                     <div class="cn-panel" data-cn-panel="3">
                         <div class="cn-panel__tag cn-panel__tag--3">Phase 3</div>
-                        <h3 class="cn-panel__title">ML-Powered Target Prediction</h3>
+                        <h3 class="cn-panel__title">Criticality Scoring</h3>
                         <p class="cn-panel__desc">
-                            A trained model synthesizes connectivity patterns, criticality scores, and anatomical features to predict the optimal surgical targets - the minimal set of contacts whose ablation maximizes seizure freedom probability.
+                            Each contact receives a criticality score based on its network influence. Red contacts are the strongest drivers of seizure activity - the surgical targets whose removal maximizes seizure freedom.
                         </p>
                     </div>
                 </div>
@@ -2676,127 +2676,152 @@
     }
 
     /* ── Critical Nodes Interactive Visualization ── */
-    let cnMode = 0;          // 0=off, 1=connectivity, 2=criticality, 3=prediction
-    let cnCritScores = [];   // per-node criticality scores
-    let cnTargets = [];      // 6 ML-predicted target nodes
-    let cnFocusCluster = []; // ~30 demo nodes
-    let cnParticles = [];    // directed flow particles for Phase 1
-    let cnParticlePoints = null;
-    let cnGlowPoints = null;
-    let cnScanT = 0;         // scan sweep progress for Phase 3
-    let cnScanComplete = false;
+    let cnMode = 0;          // 0=off, 1=electrodes, 2=one contact + connections, 3=criticality colormap
     let cnInitialized = false;
     let cnTimeouts = [];
     const cnBrainSize = isMobile ? 280 : 360;
 
+    // sEEG electrode geometry
+    const CN_ELECTRODES = 4;
+    const CN_CONTACTS_PER = 12;
+    const CN_TOTAL = CN_ELECTRODES * CN_CONTACTS_PER; // 48
+    let cnElectrodeGroup = null;   // THREE.Group holding electrode lines + contact points
+    let cnContactPoints = null;    // THREE.Points for all 48 contacts
+    let cnContactPositions = [];   // [{x,y,z}, ...] for each contact
+    let cnContactColors = null;    // Float32Array for vertex colors
+    let cnConnectionLines = null;  // THREE.LineSegments for Phase 2 connections
+    let cnConnectionColors = null;
+    let cnHighlightContact = 0;    // index of the one red contact in Phase 2
+    let cnConnectedContacts = [];  // indices connected to highlight contact
+    let cnCritScores = [];         // per-contact criticality (0-1)
+    let cnCritSubset = [];         // subset of contacts shown in Phase 3
+
     function initCNData() {
-        if (cnInitialized || netNodes.length === 0) return;
+        if (cnInitialized) return;
         cnInitialized = true;
 
-        // Pick a spatial cluster of ~30 nodes
-        const seed = Math.floor(Math.random() * NET_NODES);
-        const dists = [];
-        for (let i = 0; i < NET_NODES; i++) {
-            const dx = netNodes[i].x - netNodes[seed].x;
-            const dy = netNodes[i].y - netNodes[seed].y;
-            const dz = netNodes[i].z - netNodes[seed].z;
-            dists.push({ i, d: dx*dx + dy*dy + dz*dz });
-        }
-        dists.sort((a, b) => a.d - b.d);
-        cnFocusCluster = dists.slice(0, 30).map(d => d.i);
+        cnElectrodeGroup = new THREE.Group();
+        cnElectrodeGroup.visible = false;
+        brain.add(cnElectrodeGroup);
 
-        // Compute mock criticality scores from adjacency (outward influence weighted by distance)
-        cnCritScores = new Float32Array(NET_NODES);
-        for (let i = 0; i < NET_NODES; i++) {
-            let score = 0;
-            for (const { n, d } of netAdj[i]) {
-                score += 1 / (1 + d * 5);
+        cnContactPositions = [];
+        const tex = makeTexture(64, 0.15);
+
+        // Create 4 sEEG depth electrodes penetrating into brain
+        const electrodeAngles = [0.4, 1.6, 2.8, 4.3]; // spread around the brain
+        const electrodeZ = [-0.15, 0.25, -0.05, 0.35]; // different depths
+
+        for (let e = 0; e < CN_ELECTRODES; e++) {
+            const angle = electrodeAngles[e];
+            const zBase = electrodeZ[e];
+            const outerR = 1.6;
+            const innerR = 0.15;
+
+            const start = new THREE.Vector3(
+                Math.cos(angle) * outerR,
+                Math.sin(angle) * outerR,
+                zBase + (Math.random() - 0.5) * 0.2
+            );
+            const end = new THREE.Vector3(
+                Math.cos(angle) * innerR,
+                Math.sin(angle) * innerR,
+                zBase + (Math.random() - 0.5) * 0.15
+            );
+
+            // Electrode shaft line
+            const shaftGeo = new THREE.BufferGeometry().setFromPoints([start, end]);
+            cnElectrodeGroup.add(new THREE.Line(shaftGeo, new THREE.LineBasicMaterial({
+                color: 0x4488aa, transparent: true, opacity: 0.15,
+                blending: THREE.AdditiveBlending
+            })));
+
+            // 12 contacts along the shaft
+            for (let c = 0; c < CN_CONTACTS_PER; c++) {
+                const t = 0.08 + (c / CN_CONTACTS_PER) * 0.75;
+                const pos = new THREE.Vector3().lerpVectors(start, end, t);
+                cnContactPositions.push({ x: pos.x, y: pos.y, z: pos.z });
             }
-            cnCritScores[i] = score;
-        }
-        // Normalize to 0-1
-        let maxScore = 0;
-        for (let i = 0; i < NET_NODES; i++) {
-            if (cnCritScores[i] > maxScore) maxScore = cnCritScores[i];
-        }
-        if (maxScore > 0) {
-            for (let i = 0; i < NET_NODES; i++) cnCritScores[i] /= maxScore;
-        }
-        // Boost cluster nodes
-        for (const idx of cnFocusCluster) {
-            cnCritScores[idx] = Math.min(1, cnCritScores[idx] * 1.5 + 0.3);
         }
 
-        // Select top 6 critical nodes within cluster as ML targets
-        const clusterScored = cnFocusCluster.map(i => ({ i, s: cnCritScores[i] }));
-        clusterScored.sort((a, b) => b.s - a.s);
-        cnTargets = clusterScored.slice(0, 6).map(d => d.i);
-
-        // Init particles along edges within focus cluster
-        initCNParticles();
-
-        // Create glow points for Phase 2
-        initCNGlowPoints();
-    }
-
-    function initCNParticles() {
-        cnParticles = [];
-        const clusterSet = new Set(cnFocusCluster);
-        const clusterEdges = netEdgeData.filter(e => clusterSet.has(e.from) && clusterSet.has(e.to));
-        const particleCount = isMobile ? 150 : 300;
-        for (let i = 0; i < particleCount; i++) {
-            const edge = clusterEdges[Math.floor(Math.random() * clusterEdges.length)];
-            if (!edge) continue;
-            cnParticles.push({
-                from: edge.from, to: edge.to,
-                t: Math.random(),
-                speed: 0.3 + Math.random() * 0.5
-            });
+        // Create contact points geometry
+        const positions = new Float32Array(CN_TOTAL * 3);
+        cnContactColors = new Float32Array(CN_TOTAL * 3);
+        for (let i = 0; i < CN_TOTAL; i++) {
+            positions[i*3]   = cnContactPositions[i].x;
+            positions[i*3+1] = cnContactPositions[i].y;
+            positions[i*3+2] = cnContactPositions[i].z;
+            // Default: dim cyan
+            cnContactColors[i*3]   = 0.0;
+            cnContactColors[i*3+1] = 0.5;
+            cnContactColors[i*3+2] = 0.8;
         }
-
-        // Create THREE.Points for particles
-        const positions = new Float32Array(cnParticles.length * 3);
-        const colors = new Float32Array(cnParticles.length * 3);
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        const tex = makeTexture(32, 0.2);
-        cnParticlePoints = new THREE.Points(geo, new THREE.PointsMaterial({
-            size: 0.04, map: tex, vertexColors: true,
+        const contactGeo = new THREE.BufferGeometry();
+        contactGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        contactGeo.setAttribute('color', new THREE.BufferAttribute(cnContactColors, 3));
+        cnContactPoints = new THREE.Points(contactGeo, new THREE.PointsMaterial({
+            size: 0.07, map: tex, vertexColors: true,
             transparent: true, opacity: 0.9,
             blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
         }));
-        cnParticlePoints.visible = false;
-        brain.add(cnParticlePoints);
-    }
+        cnElectrodeGroup.add(cnContactPoints);
 
-    function initCNGlowPoints() {
-        // Larger glow layer for critical nodes
-        const positions = new Float32Array(NET_NODES * 3);
-        const colors = new Float32Array(NET_NODES * 3);
-        for (let i = 0; i < NET_NODES; i++) {
-            positions[i*3]   = netNodes[i].x;
-            positions[i*3+1] = netNodes[i].y;
-            positions[i*3+2] = netNodes[i].z;
-        }
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        const tex = makeTexture(64, 0.1);
-        cnGlowPoints = new THREE.Points(geo, new THREE.PointsMaterial({
-            size: 0.3, map: tex, vertexColors: true,
-            transparent: true, opacity: 0.25,
+        // Outer glow for contacts
+        cnElectrodeGroup.add(new THREE.Points(contactGeo, new THREE.PointsMaterial({
+            size: 0.2, map: tex, vertexColors: true,
+            transparent: true, opacity: 0.15,
             blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
+        })));
+
+        // Phase 2: pick one highlight contact and its connections
+        // Pick a contact near the middle of electrode 1 (index ~5)
+        cnHighlightContact = 5;
+        // Connect it to 8 other contacts across different electrodes
+        cnConnectedContacts = [2, 8, 15, 19, 26, 31, 38, 44];
+
+        // Build connection line geometry
+        const nConn = cnConnectedContacts.length;
+        const connPos = new Float32Array(nConn * 6);
+        cnConnectionColors = new Float32Array(nConn * 6);
+        const hc = cnContactPositions[cnHighlightContact];
+        for (let i = 0; i < nConn; i++) {
+            const tc = cnContactPositions[cnConnectedContacts[i]];
+            connPos[i*6]   = hc.x; connPos[i*6+1] = hc.y; connPos[i*6+2] = hc.z;
+            connPos[i*6+3] = tc.x; connPos[i*6+4] = tc.y; connPos[i*6+5] = tc.z;
+        }
+        const connGeo = new THREE.BufferGeometry();
+        connGeo.setAttribute('position', new THREE.BufferAttribute(connPos, 3));
+        connGeo.setAttribute('color', new THREE.BufferAttribute(cnConnectionColors, 3));
+        cnConnectionLines = new THREE.LineSegments(connGeo, new THREE.LineBasicMaterial({
+            vertexColors: true, transparent: true, opacity: 0.8,
+            blending: THREE.AdditiveBlending, depthWrite: false
         }));
-        cnGlowPoints.visible = false;
-        brain.add(cnGlowPoints);
+        cnConnectionLines.visible = false;
+        cnElectrodeGroup.add(cnConnectionLines);
+
+        // Phase 3: assign criticality scores and pick a visible subset
+        cnCritScores = new Float32Array(CN_TOTAL);
+        for (let i = 0; i < CN_TOTAL; i++) {
+            cnCritScores[i] = Math.random();
+        }
+        // Make the highlight contact and its connections score high
+        cnCritScores[cnHighlightContact] = 0.95;
+        for (const ci of cnConnectedContacts) {
+            cnCritScores[ci] = 0.4 + Math.random() * 0.55;
+        }
+        // Subset: ~20 contacts with varied scores
+        cnCritSubset = [cnHighlightContact, ...cnConnectedContacts];
+        // Add some extra contacts for coverage
+        for (let i = 0; i < CN_TOTAL; i++) {
+            if (!cnCritSubset.includes(i) && cnCritSubset.length < 20) {
+                cnCritScores[i] = Math.random() * 0.5;
+                cnCritSubset.push(i);
+            }
+        }
     }
 
     function setCNStep(step) {
         if (aliceMode > 0) stopAliceVisualization();
         cnMode = step;
-        cnScanT = 0;
-        cnScanComplete = false;
 
         // Update step buttons
         document.querySelectorAll('.cn-step').forEach(btn => {
@@ -2822,19 +2847,27 @@
             }
         }
 
-        // Toggle particle/glow visibility
-        if (cnParticlePoints) cnParticlePoints.visible = (step === 1);
-        if (cnGlowPoints) cnGlowPoints.visible = (step >= 2);
+        // Hide brain mesh + existing network, show electrodes
+        if (cnMode > 0) {
+            brain.children.forEach(child => {
+                if (child === cnElectrodeGroup) return;
+                child.visible = false;
+            });
+            if (cnElectrodeGroup) cnElectrodeGroup.visible = true;
+            if (cnConnectionLines) cnConnectionLines.visible = (step === 2);
+        }
     }
 
     function stopCNVisualization() {
         cnMode = 0;
-        cnScanT = 0;
-        cnScanComplete = false;
         cnTimeouts.forEach(t => clearTimeout(t));
         cnTimeouts = [];
-        if (cnParticlePoints) cnParticlePoints.visible = false;
-        if (cnGlowPoints) cnGlowPoints.visible = false;
+
+        // Restore brain mesh + network visibility
+        brain.children.forEach(child => { child.visible = true; });
+        if (cnElectrodeGroup) cnElectrodeGroup.visible = false;
+        if (cnConnectionLines) cnConnectionLines.visible = false;
+
         setBrainFloatingTo(null, 0);
 
         // Reset step buttons
@@ -2851,295 +2884,75 @@
     }
 
     function updateCNVisualization(elapsed, dt) {
-        if (!cnInitialized || netNodes.length === 0) return;
-
-        const focusSet = new Set(cnFocusCluster);
-        const targetSet = new Set(cnTargets);
-
-        // Reset mesh colors to base
-        if (meshColors && baseColors) {
-            const n = Math.min(meshColors.length, baseColors.length);
-            for (let i = 0; i < n; i++) meshColors[i] = baseColors[i];
-        }
+        if (!cnInitialized || !cnContactColors) return;
 
         if (cnMode === 1) {
-            // Phase 1: Directed Connectivity - orange flow particles
-            // Color focus cluster nodes orange, dim others
-            for (let i = 0; i < NET_NODES; i++) {
-                if (focusSet.has(i)) {
-                    const pulse = Math.sin(elapsed * 2 + i * 0.5) * 0.15 + 0.85;
-                    netNodeColors[i*3]   = pulse * 0.9;
-                    netNodeColors[i*3+1] = pulse * 0.3;
-                    netNodeColors[i*3+2] = pulse * 0.05;
-                } else {
-                    netNodeColors[i*3]   = 0.0;
-                    netNodeColors[i*3+1] = 0.02;
-                    netNodeColors[i*3+2] = 0.04;
-                }
-            }
-
-            // Animate particles along edges
-            if (cnParticlePoints) {
-                const pos = cnParticlePoints.geometry.attributes.position.array;
-                const col = cnParticlePoints.geometry.attributes.color.array;
-                for (let i = 0; i < cnParticles.length; i++) {
-                    const p = cnParticles[i];
-                    p.t += p.speed * dt;
-                    if (p.t > 1) p.t -= 1;
-                    const a = netNodes[p.from], b = netNodes[p.to];
-                    pos[i*3]   = a.x + (b.x - a.x) * p.t;
-                    pos[i*3+1] = a.y + (b.y - a.y) * p.t;
-                    pos[i*3+2] = a.z + (b.z - a.z) * p.t;
-                    // Hot orange-white at head
-                    const bright = Math.sin(p.t * Math.PI) * 0.5 + 0.5;
-                    col[i*3]   = 1.0;
-                    col[i*3+1] = 0.3 + bright * 0.4;
-                    col[i*3+2] = bright * 0.2;
-                }
-                cnParticlePoints.geometry.attributes.position.needsUpdate = true;
-                cnParticlePoints.geometry.attributes.color.needsUpdate = true;
-            }
-
-            // Edges within cluster pulse orange
-            for (let i = 0; i < netEdgeData.length; i++) {
-                const { from, to } = netEdgeData[i];
-                if (focusSet.has(from) && focusSet.has(to)) {
-                    const pulse = Math.sin(elapsed * 3 + i * 0.3) * 0.2 + 0.4;
-                    netEdgeColors[i*6]   = netEdgeColors[i*6+3] = pulse * 0.8;
-                    netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = pulse * 0.25;
-                    netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = pulse * 0.05;
-                } else {
-                    netEdgeColors[i*6]   = netEdgeColors[i*6+3] = 0.004;
-                    netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = 0.006;
-                    netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = 0.01;
-                }
-            }
-
-            // Orange glow on brain surface near cluster
-            if (meshColors) {
-                for (const idx of cnFocusCluster) {
-                    const nearby = netNodeMeshVerts[idx];
-                    if (!nearby) continue;
-                    const pulse = Math.sin(elapsed * 2 + idx * 0.5) * 0.15 + 0.85;
-                    for (let k = 0; k < nearby.length; k++) {
-                        const { vi, f } = nearby[k];
-                        const glow = f * pulse * 0.3;
-                        meshColors[vi*3]   += glow * 0.9;
-                        meshColors[vi*3+1] += glow * 0.25;
-                        meshColors[vi*3+2] += glow * 0.03;
-                    }
-                }
+            // Phase 1: Show electrodes with contacts - all contacts dim cyan, gentle pulse
+            for (let i = 0; i < CN_TOTAL; i++) {
+                const pulse = Math.sin(elapsed * 1.5 + i * 0.4) * 0.1 + 0.9;
+                cnContactColors[i*3]   = 0.0;
+                cnContactColors[i*3+1] = pulse * 0.5;
+                cnContactColors[i*3+2] = pulse * 0.8;
             }
 
         } else if (cnMode === 2) {
-            // Phase 2: Criticality Estimation - heatmap by score
-            for (let i = 0; i < NET_NODES; i++) {
-                const score = cnCritScores[i];
-                if (focusSet.has(i)) {
-                    const pulse = Math.sin(elapsed * 1.5 + i * 0.3) * 0.1 + 0.9;
-                    // Low criticality: dim cyan, high: bright orange
-                    const r = score * pulse * 1.2;
-                    const g = (1 - score * 0.6) * pulse * 0.4;
-                    const b = (1 - score) * pulse * 0.3;
-                    netNodeColors[i*3]   = r;
-                    netNodeColors[i*3+1] = g;
-                    netNodeColors[i*3+2] = b;
+            // Phase 2: One contact red, connections shown
+            const connSet = new Set(cnConnectedContacts);
+            for (let i = 0; i < CN_TOTAL; i++) {
+                if (i === cnHighlightContact) {
+                    // Bright red with pulse
+                    const pulse = Math.sin(elapsed * 3) * 0.15 + 0.85;
+                    cnContactColors[i*3]   = pulse * 1.4;
+                    cnContactColors[i*3+1] = pulse * 0.08;
+                    cnContactColors[i*3+2] = pulse * 0.02;
+                } else if (connSet.has(i)) {
+                    // Connected contacts: dim warm
+                    const pulse = Math.sin(elapsed * 2 + i * 0.5) * 0.1 + 0.9;
+                    cnContactColors[i*3]   = pulse * 0.4;
+                    cnContactColors[i*3+1] = pulse * 0.25;
+                    cnContactColors[i*3+2] = pulse * 0.1;
                 } else {
-                    netNodeColors[i*3]   = 0.0;
-                    netNodeColors[i*3+1] = 0.015;
-                    netNodeColors[i*3+2] = 0.03;
+                    // Others: very dim
+                    cnContactColors[i*3]   = 0.0;
+                    cnContactColors[i*3+1] = 0.08;
+                    cnContactColors[i*3+2] = 0.15;
                 }
             }
 
-            // Update glow layer colors based on criticality
-            if (cnGlowPoints) {
-                const glowCol = cnGlowPoints.geometry.attributes.color.array;
-                for (let i = 0; i < NET_NODES; i++) {
-                    const score = cnCritScores[i];
-                    if (focusSet.has(i) && score > 0.4) {
-                        const pulse = Math.sin(elapsed * 1.5 + i * 0.3) * 0.1 + 0.9;
-                        glowCol[i*3]   = score * pulse * 1.0;
-                        glowCol[i*3+1] = (1 - score * 0.5) * pulse * 0.3;
-                        glowCol[i*3+2] = (1 - score) * pulse * 0.2;
-                    } else {
-                        glowCol[i*3] = glowCol[i*3+1] = glowCol[i*3+2] = 0;
-                    }
+            // Animate connection line colors (red pulsing)
+            if (cnConnectionLines && cnConnectionColors) {
+                for (let i = 0; i < cnConnectedContacts.length; i++) {
+                    const pulse = Math.sin(elapsed * 2.5 + i * 0.7) * 0.2 + 0.7;
+                    // Both endpoints same color
+                    cnConnectionColors[i*6]   = cnConnectionColors[i*6+3] = pulse * 0.9;
+                    cnConnectionColors[i*6+1] = cnConnectionColors[i*6+4] = pulse * 0.1;
+                    cnConnectionColors[i*6+2] = cnConnectionColors[i*6+5] = pulse * 0.05;
                 }
-                cnGlowPoints.geometry.attributes.color.needsUpdate = true;
-            }
-
-            // Dim edges
-            for (let i = 0; i < netEdgeData.length; i++) {
-                const { from, to } = netEdgeData[i];
-                if (focusSet.has(from) && focusSet.has(to)) {
-                    const avgScore = (cnCritScores[from] + cnCritScores[to]) * 0.5;
-                    netEdgeColors[i*6]   = netEdgeColors[i*6+3] = avgScore * 0.3;
-                    netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = (1 - avgScore * 0.5) * 0.1;
-                    netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = (1 - avgScore) * 0.08;
-                } else {
-                    netEdgeColors[i*6]   = netEdgeColors[i*6+3] = 0.004;
-                    netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = 0.006;
-                    netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = 0.01;
-                }
-            }
-
-            // Heatmap bleed on brain surface
-            if (meshColors) {
-                for (const idx of cnFocusCluster) {
-                    const nearby = netNodeMeshVerts[idx];
-                    if (!nearby) continue;
-                    const score = cnCritScores[idx];
-                    for (let k = 0; k < nearby.length; k++) {
-                        const { vi, f } = nearby[k];
-                        const glow = f * score * 0.35;
-                        meshColors[vi*3]   += glow * 0.9;
-                        meshColors[vi*3+1] += glow * (1 - score * 0.5) * 0.3;
-                        meshColors[vi*3+2] += glow * (1 - score) * 0.15;
-                    }
-                }
+                cnConnectionLines.geometry.attributes.color.needsUpdate = true;
             }
 
         } else if (cnMode === 3) {
-            // Phase 3: ML Prediction - scan then reveal targets
-            cnScanT += dt * 0.5; // ~2s for full sweep
-
-            if (cnScanT < 1) {
-                // Scanning band sweeps across brain Z-axis
-                const scanZ = -1.0 + cnScanT * 2.0;
-                const bandWidth = 0.25;
-
-                for (let i = 0; i < NET_NODES; i++) {
-                    const nodeZ = netNodes[i].z;
-                    const dist = Math.abs(nodeZ - scanZ);
-                    if (dist < bandWidth) {
-                        const intensity = 1 - dist / bandWidth;
-                        netNodeColors[i*3]   = intensity * 0.4;
-                        netNodeColors[i*3+1] = intensity * 0.15;
-                        netNodeColors[i*3+2] = intensity * 0.7;
-                    } else {
-                        netNodeColors[i*3]   = 0.0;
-                        netNodeColors[i*3+1] = 0.015;
-                        netNodeColors[i*3+2] = 0.04;
-                    }
-                }
-
-                // Purple scan glow on mesh
-                if (meshColors) {
-                    for (let i = 0; i < NET_NODES; i++) {
-                        const nodeZ = netNodes[i].z;
-                        const dist = Math.abs(nodeZ - scanZ);
-                        if (dist < bandWidth) {
-                            const nearby = netNodeMeshVerts[i];
-                            if (!nearby) continue;
-                            const intensity = 1 - dist / bandWidth;
-                            for (let k = 0; k < nearby.length; k++) {
-                                const { vi, f } = nearby[k];
-                                const glow = f * intensity * 0.25;
-                                meshColors[vi*3]   += glow * 0.4;
-                                meshColors[vi*3+1] += glow * 0.1;
-                                meshColors[vi*3+2] += glow * 0.7;
-                            }
-                        }
-                    }
-                }
-
-                // Dim edges during scan
-                for (let i = 0; i < netEdgeData.length; i++) {
-                    netEdgeColors[i*6]   = netEdgeColors[i*6+3] = 0.01;
-                    netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = 0.005;
-                    netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = 0.025;
-                }
-
-                // Update glow for scan band
-                if (cnGlowPoints) {
-                    const glowCol = cnGlowPoints.geometry.attributes.color.array;
-                    for (let i = 0; i < NET_NODES; i++) {
-                        const nodeZ = netNodes[i].z;
-                        const dist = Math.abs(nodeZ - scanZ);
-                        if (dist < bandWidth) {
-                            const intensity = 1 - dist / bandWidth;
-                            glowCol[i*3]   = intensity * 0.3;
-                            glowCol[i*3+1] = intensity * 0.1;
-                            glowCol[i*3+2] = intensity * 0.5;
-                        } else {
-                            glowCol[i*3] = glowCol[i*3+1] = glowCol[i*3+2] = 0;
-                        }
-                    }
-                    cnGlowPoints.geometry.attributes.color.needsUpdate = true;
-                }
-            } else {
-                // Scan complete - reveal targets in green
-                cnScanComplete = true;
-                for (let i = 0; i < NET_NODES; i++) {
-                    if (targetSet.has(i)) {
-                        const pulse = Math.sin(elapsed * 3 + i * 0.5) * 0.15 + 0.85;
-                        netNodeColors[i*3]   = 0.05;
-                        netNodeColors[i*3+1] = pulse * 1.2;
-                        netNodeColors[i*3+2] = pulse * 0.4;
-                    } else if (focusSet.has(i)) {
-                        netNodeColors[i*3]   = 0.0;
-                        netNodeColors[i*3+1] = 0.04;
-                        netNodeColors[i*3+2] = 0.06;
-                    } else {
-                        netNodeColors[i*3]   = 0.0;
-                        netNodeColors[i*3+1] = 0.015;
-                        netNodeColors[i*3+2] = 0.03;
-                    }
-                }
-
-                // Green glow on targets
-                if (cnGlowPoints) {
-                    const glowCol = cnGlowPoints.geometry.attributes.color.array;
-                    for (let i = 0; i < NET_NODES; i++) {
-                        if (targetSet.has(i)) {
-                            const pulse = Math.sin(elapsed * 3 + i * 0.5) * 0.15 + 0.85;
-                            glowCol[i*3]   = 0.02;
-                            glowCol[i*3+1] = pulse * 0.8;
-                            glowCol[i*3+2] = pulse * 0.3;
-                        } else {
-                            glowCol[i*3] = glowCol[i*3+1] = glowCol[i*3+2] = 0;
-                        }
-                    }
-                    cnGlowPoints.geometry.attributes.color.needsUpdate = true;
-                }
-
-                // Edges dim except between targets
-                for (let i = 0; i < netEdgeData.length; i++) {
-                    const { from, to } = netEdgeData[i];
-                    if (targetSet.has(from) && targetSet.has(to)) {
-                        const pulse = Math.sin(elapsed * 2 + i * 0.4) * 0.15 + 0.5;
-                        netEdgeColors[i*6]   = netEdgeColors[i*6+3] = 0.02;
-                        netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = pulse * 0.5;
-                        netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = pulse * 0.18;
-                    } else {
-                        netEdgeColors[i*6]   = netEdgeColors[i*6+3] = 0.004;
-                        netEdgeColors[i*6+1] = netEdgeColors[i*6+4] = 0.008;
-                        netEdgeColors[i*6+2] = netEdgeColors[i*6+5] = 0.012;
-                    }
-                }
-
-                // Green heatmap bleed on mesh around targets
-                if (meshColors) {
-                    for (const idx of cnTargets) {
-                        const nearby = netNodeMeshVerts[idx];
-                        if (!nearby) continue;
-                        const pulse = Math.sin(elapsed * 3 + idx * 0.5) * 0.15 + 0.85;
-                        for (let k = 0; k < nearby.length; k++) {
-                            const { vi, f } = nearby[k];
-                            const glow = f * pulse * 0.4;
-                            meshColors[vi*3]   += glow * 0.05;
-                            meshColors[vi*3+1] += glow * 0.7;
-                            meshColors[vi*3+2] += glow * 0.25;
-                        }
-                    }
+            // Phase 3: Subset of contacts with red-to-yellow colormap by criticality
+            const subsetSet = new Set(cnCritSubset);
+            for (let i = 0; i < CN_TOTAL; i++) {
+                if (subsetSet.has(i)) {
+                    const score = cnCritScores[i];
+                    const pulse = Math.sin(elapsed * 1.5 + i * 0.3) * 0.08 + 0.92;
+                    // Red (score=1) to yellow (score=0): R stays high, G increases as score drops
+                    cnContactColors[i*3]   = pulse * (0.8 + score * 0.6);
+                    cnContactColors[i*3+1] = pulse * (1.0 - score) * 0.85;
+                    cnContactColors[i*3+2] = pulse * 0.02;
+                } else {
+                    // Hidden: nearly invisible
+                    cnContactColors[i*3]   = 0.0;
+                    cnContactColors[i*3+1] = 0.03;
+                    cnContactColors[i*3+2] = 0.06;
                 }
             }
         }
 
-        // Commit color updates
-        if (netNodePoints) netNodePoints.geometry.attributes.color.needsUpdate = true;
-        if (netEdgeLines) netEdgeLines.geometry.attributes.color.needsUpdate = true;
-        if (meshGeo && meshGeo.attributes.color) meshGeo.attributes.color.needsUpdate = true;
+        // Commit contact color updates
+        if (cnContactPoints) cnContactPoints.geometry.attributes.color.needsUpdate = true;
     }
 
     // CN step button click handlers
