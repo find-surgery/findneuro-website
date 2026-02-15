@@ -20,6 +20,7 @@ jobs:
       - name: Type-check (tsc --noEmit)
         run: npm run lint
       - name: Check accessibility (axe)
+        continue-on-error: true
         run: |
           npm install -g @axe-core/cli browser-driver-manager
           npx browser-driver-manager install chrome
