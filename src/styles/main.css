@@ -901,6 +901,12 @@ body::after {
     transition: gap 0.3s var(--ease);
 }
 .pub-card__link:hover { gap: 10px; }
+.pub-card__flip-hint {
+    font-family: var(--font-mono); font-size: 0.62rem;
+    color: var(--text-muted); letter-spacing: 0.08em;
+    text-transform: uppercase; margin-top: 14px;
+    opacity: 0.6;
+}
 .pub-covers {
     margin-top: 72px; text-align: center;
 }
