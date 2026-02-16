@@ -1083,6 +1083,7 @@ body::after {
     align-items: flex-start;
     padding: 28px 24px;
     gap: 0;
+    overflow-y: auto;
 }
 .t-card__back-title {
     font-family: var(--font-display); font-weight: 700;
