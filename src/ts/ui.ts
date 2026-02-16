@@ -137,6 +137,16 @@ function initPubCards(): void {
   });
 }
 
+/** Initialize team card flip behavior */
+function initTeamCards(): void {
+  document.querySelectorAll('.t-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('.t-card__linkedin')) return;
+      card.classList.toggle('flipped');
+    });
+  });
+}
+
 /** Initialize all UI components (no Three.js dependencies) */
 export function initUI(): void {
   // Expose setCTA globally for onclick handlers in HTML
@@ -148,4 +158,5 @@ export function initUI(): void {
   initDotNav();
   initScrollReveals();
   initPubCards();
+  initTeamCards();
 }
