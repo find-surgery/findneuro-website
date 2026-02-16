@@ -1083,6 +1083,13 @@ body::after {
 .t-card__bio {
     font-size: 0.76rem; color: var(--text-dim); line-height: 1.45;
 }
+.t-card__linkedin {
+    color: var(--text-muted);
+    margin-top: 10px;
+    transition: color 0.3s ease;
+    display: inline-flex;
+}
+.t-card__linkedin:hover { color: #0a66c2; }
 .team__advisors-label {
     font-family: var(--font-display); font-weight: 700;
     font-size: 1.2rem; margin-bottom: 20px;
