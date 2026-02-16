@@ -951,7 +951,8 @@ body::after {
     font-family: var(--font-display); font-size: 0.8rem;
     font-weight: 600; color: var(--accent);
     display: inline-flex; align-items: center; gap: 6px;
-    margin-top: 16px;
+    margin-top: auto;
+    padding-top: 16px;
     transition: gap 0.3s var(--ease);
 }
 .cover-card:hover .cover-card__link { gap: 10px; }
