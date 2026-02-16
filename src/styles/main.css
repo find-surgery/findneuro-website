@@ -873,6 +873,7 @@ body::after {
     font-size: 1.05rem; line-height: 1.4;
     letter-spacing: -0.01em;
     margin-bottom: 12px;
+    min-height: 4.2em;
 }
 .pub-card__desc {
     font-size: 0.82rem; color: var(--text-dim);
