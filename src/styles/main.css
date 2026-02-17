@@ -425,12 +425,15 @@ body::after {
 }
 .find-step__keyword {
     font-family: var(--font-display); font-weight: 800;
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(1.4rem, 2.8vw, 2rem);
     line-height: 1.1; letter-spacing: -0.03em;
     color: var(--text);
 }
 .find-step__keyword-rest {
     color: var(--text-muted);
+}
+.find-step--keyword-only {
+    grid-template-columns: 1fr;
 }
 .find-step--resolve .find-step__keyword {
     background: linear-gradient(135deg, var(--accent), #38bdf8);
