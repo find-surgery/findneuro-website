@@ -3,5 +3,6 @@ Allow: /
 Disallow: /gtm/
 Disallow: /clin/
 Disallow: /clinical-pipeline-integration/
+Disallow: /index-dev.html
 
 Sitemap: https://findneuro.com/sitemap.xml

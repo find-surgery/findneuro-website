@@ -407,6 +407,72 @@ body::after {
     font-size: 0.88rem; color: var(--text-dim); line-height: 1.5;
 }
 
+/* FIND Narrative */
+.find-narrative {
+    display: flex; flex-direction: column;
+    gap: 0; margin-top: 56px;
+}
+.find-step {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 40px;
+    padding: 48px 0;
+    border-top: 1px solid var(--border);
+    align-items: start;
+}
+.find-step:last-child {
+    border-bottom: 1px solid var(--border);
+}
+.find-step__keyword {
+    font-family: var(--font-display); font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1; letter-spacing: -0.03em;
+    color: var(--text);
+}
+.find-step__keyword-rest {
+    color: var(--text-muted);
+}
+.find-step--resolve .find-step__keyword {
+    background: linear-gradient(135deg, var(--accent), #38bdf8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.find-step--resolve .find-step__keyword-rest {
+    background: linear-gradient(135deg, var(--accent), #38bdf8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.find-step__body {
+    display: flex; flex-direction: column; gap: 20px;
+}
+.find-step__text {
+    font-size: 1rem; color: var(--text-dim); line-height: 1.65;
+}
+.find-step__outcome {
+    font-family: var(--font-display); font-weight: 600;
+    font-size: 1.05rem; color: var(--text);
+    padding: 16px 20px;
+    background: rgba(0,212,255,0.04);
+    border-left: 2px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+}
+.find-step__outcome-label {
+    display: block;
+    font-family: var(--font-mono); font-weight: 400;
+    font-size: 0.65rem; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 4px;
+}
+@media (max-width: 900px) {
+    .find-step {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .find-step__keyword {
+        font-size: clamp(1.6rem, 6vw, 2.4rem);
+    }
+}
+
 /* ===================================================
    SOLUTION - CN-SUITE
    =================================================== */
