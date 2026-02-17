@@ -288,6 +288,10 @@ html,body{
     'Brain-Stem':[.45,.42,.55],
   };
 
+  /* ── Cortex materials (for fade animation) ── */
+  const cortexMaterials = [];
+  const surfaceParticleMaterials = [];
+
   /* ── Build Brain ── */
   let meshColors, baseColors, numVerts;
   const B = window.BRAIN;
@@ -316,11 +320,13 @@ html,body{
     }
     meshGeo.setAttribute('color', new THREE.BufferAttribute(meshColors, 3));
 
-    brainGroup.add(new THREE.Mesh(meshGeo, new THREE.MeshPhongMaterial({
+    const solidMat = new THREE.MeshPhongMaterial({
       vertexColors:true, transparent:true, opacity:0.18, side:THREE.DoubleSide,
       specular:new THREE.Color(0x00aadd), shininess:18,
       emissive:new THREE.Color(0x000a14), depthWrite:false,
-    })));
+    });
+    cortexMaterials.push({ mat: solidMat, baseOpacity: 0.18 });
+    brainGroup.add(new THREE.Mesh(meshGeo, solidMat));
 
     /* Subcortical */
     if (B.sub) {
@@ -346,10 +352,12 @@ html,body{
     }
 
     /* Wireframe */
-    brainGroup.add(new THREE.Mesh(meshGeo, new THREE.MeshBasicMaterial({
+    const wireMat = new THREE.MeshBasicMaterial({
       color:0x00bbdd, wireframe:true, transparent:true, opacity:0.025,
       blending:THREE.AdditiveBlending, depthWrite:false,
-    })));
+    });
+    cortexMaterials.push({ mat: wireMat, baseOpacity: 0.025 });
+    brainGroup.add(new THREE.Mesh(meshGeo, wireMat));
 
     /* Surface particles */
     const NUM_P = 1200;
@@ -364,14 +372,47 @@ html,body{
     pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
     pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
     const tex = makeTexture(64, 0.2);
-    brainGroup.add(new THREE.Points(pGeo, new THREE.PointsMaterial({
+    const pMat1 = new THREE.PointsMaterial({
       size:0.04, map:tex, vertexColors:true, transparent:true, opacity:0.6,
       blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
-    })));
-    brainGroup.add(new THREE.Points(pGeo, new THREE.PointsMaterial({
+    });
+    const pMat2 = new THREE.PointsMaterial({
       size:0.15, map:tex, vertexColors:true, transparent:true, opacity:0.04,
       blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
-    })));
+    });
+    surfaceParticleMaterials.push({ mat: pMat1, baseOpacity: 0.6 });
+    surfaceParticleMaterials.push({ mat: pMat2, baseOpacity: 0.04 });
+    brainGroup.add(new THREE.Points(pGeo, pMat1));
+    brainGroup.add(new THREE.Points(pGeo, pMat2));
+
+    /* ── Electrodes ── */
+    const elGroup = new THREE.Group();
+    const elTex = makeTexture(32, 0.3);
+    for (let e = 0; e < 12; e++) {
+      const angle = (e / 12) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
+      const zPos = -0.6 + Math.random() * 1.2;
+      const outerR = 2.0, innerR = 0.2 + Math.random() * 0.35;
+      const start = new THREE.Vector3(Math.cos(angle)*outerR, Math.sin(angle)*outerR, zPos);
+      const end = new THREE.Vector3(Math.cos(angle)*innerR, Math.sin(angle)*innerR, zPos + (Math.random()-0.5)*0.3);
+      const lGeo = new THREE.BufferGeometry().setFromPoints([start, end]);
+      elGroup.add(new THREE.Line(lGeo, new THREE.LineBasicMaterial({
+        color:0x00d4ff, transparent:true, opacity:0.08,
+        blending:THREE.AdditiveBlending,
+      })));
+      const contacts = 3 + Math.floor(Math.random() * 5);
+      for (let c = 0; c < contacts; c++) {
+        const t = 0.15 + (c / contacts) * 0.65;
+        const pos = new THREE.Vector3().lerpVectors(start, end, t);
+        const dGeo = new THREE.BufferGeometry();
+        dGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([pos.x,pos.y,pos.z]), 3));
+        elGroup.add(new THREE.Points(dGeo, new THREE.PointsMaterial({
+          size:0.045, color:0xff6b35, transparent:true, opacity:0.55,
+          blending:THREE.AdditiveBlending, depthWrite:false, map:elTex,
+        })));
+      }
+    }
+    elGroup.visible = false;
+    brainGroup.add(elGroup);
 
     /* ── Epileptogenic Network ── */
     const NET_NODES = 200;
@@ -571,14 +612,32 @@ html,body{
       if (brainMode === 'calm' && Math.random() < 0.005) triggerSpike();
     }
 
+    /* ── Cortex Fade Config ── */
+    const CORTEX_FADE_START = 8.5;  // seconds - when "targets" begins
+    const CORTEX_FADE_DURATION = 3; // seconds to fully fade
+    let lastTime = 0;
+
     /* ── Animation Loop ── */
     function animate() {
       requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
+      const dt = elapsed - lastTime;
+      lastTime = elapsed;
       updateSlides();
 
       /* Auto-rotate brain */
-      brainGroup.rotation.z += 0.06 * clock.getDelta();
+      brainGroup.rotation.z += 0.35 * dt;
+
+      /* Cortex fade: gradually reveal subcortical + electrodes */
+      const wallTime = (performance.now() - startTime) / 1000;
+      const fadeT = Math.max(0, Math.min(1, (wallTime - CORTEX_FADE_START) / CORTEX_FADE_DURATION));
+      for (const { mat, baseOpacity } of cortexMaterials) {
+        mat.opacity = baseOpacity * (1 - fadeT);
+      }
+      for (const { mat, baseOpacity } of surfaceParticleMaterials) {
+        mat.opacity = baseOpacity * (1 - fadeT);
+      }
+      if (fadeT > 0.05) elGroup.visible = true;
 
       /* Update network colors */
       for (let i = 0; i < NET_NODES; i++) {
