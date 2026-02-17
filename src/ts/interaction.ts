@@ -56,8 +56,8 @@ export function initMouseAndScroll(animState: AnimationState): void {
   });
   window.addEventListener('scroll', () => {
     animState.scrollPct = window.scrollY / window.innerHeight;
-    const logo = document.querySelector('.logo-fixed');
-    if (logo) logo.classList.toggle('visible', animState.scrollPct > LOGO_SCROLL_THRESHOLD);
+    const logo = document.querySelector('.nav-fixed__logo');
+    if (logo) (logo as HTMLElement).style.opacity = animState.scrollPct > LOGO_SCROLL_THRESHOLD ? '1' : '0';
   });
 }
 
