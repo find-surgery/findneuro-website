@@ -573,7 +573,7 @@
       <div class="two-col anim d3">
         <div>
           <h3 style="color:#fff; font-size:18px; margin-bottom:12px;">Signal Processing</h3>
-          <p class="body-text" style="font-size:17px;"><strong>Delay-adjusted wavelet transfer entropy (dWTE)</strong><span class="cite">[11,25]<span class="cite-popup"><span class="cite-ref">Schreiber T. Measuring information transfer. <em>Phys Rev Lett</em>. 2000;85(2):461-464. <a href="https://doi.org/10.1103/PhysRevLett.85.461" target="_blank">DOI</a></span><span class="cite-ref">Gourevitch B, Eggermont JJ. Evaluating information transfer between auditory cortical neurons. <em>J Neurophysiol</em>. 2007;97(3):2533-2543. <a href="https://doi.org/10.1152/jn.00915.2006" target="_blank">DOI</a></span></span></span> - a nonlinear, information-theoretic measure that captures directional causality between neural signals across time-frequency scales. Produces a pairwise directed connectivity matrix for each seizure epoch.</p>
+          <p class="body-text" style="font-size:17px;"><strong>Delay-adjusted wavelet-based transfer entropy (dWTE)</strong><span class="cite">[11,25]<span class="cite-popup"><span class="cite-ref">Schreiber T. Measuring information transfer. <em>Phys Rev Lett</em>. 2000;85(2):461-464. <a href="https://doi.org/10.1103/PhysRevLett.85.461" target="_blank">DOI</a></span><span class="cite-ref">Gourevitch B, Eggermont JJ. Evaluating information transfer between auditory cortical neurons. <em>J Neurophysiol</em>. 2007;97(3):2533-2543. <a href="https://doi.org/10.1152/jn.00915.2006" target="_blank">DOI</a></span></span></span> - a nonlinear, information-theoretic measure that captures directional causality between neural signals across time-frequency scales. Produces a pairwise directed connectivity matrix for each seizure epoch.</p>
           <div class="tag-row" style="margin-top:12px;">
             <span class="tag cyan">Directed</span>
             <span class="tag cyan">Nonlinear</span>
@@ -748,7 +748,7 @@
             <tbody>
               <tr><td><strong>All (N=42)</strong></td><td>49.0%</td><td class="highlight">88.0%</td></tr>
               <tr><td>Adults (n=35)</td><td>56.4%</td><td>85.6%</td></tr>
-              <tr><td>Pediatrics (n=7)</td><td>10.8%</td><td class="highlight">99.4%</td></tr>
+              <tr><td>Pediatrics (n=7)</td><td>10.8%</td><td class="highlight">99.35%</td></tr>
             </tbody>
           </table>
         </div>
@@ -757,7 +757,7 @@
         <strong>Clinical interpretation:</strong> High specificity (~84%) and NPV (~88%) mean the platform excels at ruling out tissue - if CN-Suite does <em>not</em> flag a contact, clinicians can be confident it's a "responder," not a driver. The PPV of 49% reflects its role as a candidate-identification tool: it flags a superset for multidisciplinary deliberation.
       </div>
       <div class="key-point good anim d5">
-        <strong>Pediatric NPV = 99.4%</strong> - In developing brains, safely defining what <em>not</em> to remove is especially valuable. Low pediatric PPV (10.8%) is driven by base-rate prevalence (2.9% treated-contact ratio vs. 17.1% in adults), not discriminative failure.
+        <strong>Pediatric NPV = 99.35%</strong> - In developing brains, safely defining what <em>not</em> to remove is especially valuable. Low pediatric PPV (10.8%) is driven by base-rate prevalence (2.9% treated-contact ratio vs. 17.1% in adults), not discriminative failure.
       </div>
     </div>
   </div>
@@ -795,7 +795,7 @@
       <h2 class="section-title anim d1">High-Critical Contacts Form Compact 3D Clusters</h2>
       <div class="two-col-text-fig anim d2">
         <div>
-          <p class="body-text">For each patient (n=34 with MNI coordinates), we computed the mean nearest-neighbor distance among high-critical contacts and compared it to a null distribution of <strong>10,000 random permutations</strong> of electrode labels. Points below the diagonal indicate spatial clustering beyond chance. The ~9 mm mean spacing is compatible with a single LITT ablation trajectory<span class="cite">[14,34]<span class="cite-popup"><span class="cite-ref">Youngerman BE et al. Long-term outcomes of mesial temporal LITT. <em>J Neurol Neurosurg Psychiatry</em>. 2023. <a href="https://doi.org/10.1136/jnnp-2023-331388" target="_blank">DOI</a></span><span class="cite-ref">Chen J et al. MR-guided LITT for drug-resistant epilepsy: IPD meta-analysis. <em>Epilepsia</em>. 2023. <a href="https://doi.org/10.1111/epi.17663" target="_blank">DOI</a></span></span></span>.</p>
+          <p class="body-text">For each patient (n=34 with coordinates), we computed the mean nearest-neighbor distance among high-critical contacts and compared it to a null distribution of <strong>2,000 random permutations</strong> of electrode labels. Points below the diagonal indicate spatial clustering beyond chance. The ~9 mm mean spacing is compatible with a single LITT ablation trajectory<span class="cite">[14,34]<span class="cite-popup"><span class="cite-ref">Youngerman BE et al. Long-term outcomes of mesial temporal LITT. <em>J Neurol Neurosurg Psychiatry</em>. 2023. <a href="https://doi.org/10.1136/jnnp-2023-331388" target="_blank">DOI</a></span><span class="cite-ref">Chen J et al. MR-guided LITT for drug-resistant epilepsy: IPD meta-analysis. <em>Epilepsia</em>. 2023. <a href="https://doi.org/10.1111/epi.17663" target="_blank">DOI</a></span></span></span>.</p>
           <div class="stat-row" style="margin-top:10px; grid-template-columns: 1fr 1fr;">
             <div class="stat-card">
               <div class="stat-value">8.96 mm</div>
@@ -822,7 +822,7 @@
           <div class="figure-wrap">
             <img src="figures/paper_critical_contact_clustering_3d.svg" alt="3D nearest-neighbor compactness">
           </div>
-          <div class="figure-caption">Figure 4. Observed vs. expected mean nearest-neighbor distance per patient. Each point represents one patient; points below the diagonal indicate spatial clustering of high-critical contacts beyond chance (permutation test, 10,000 iterations).</div>
+          <div class="figure-caption">Figure 4. Observed vs. expected mean nearest-neighbor distance per patient. Each point represents one patient; points below the diagonal indicate spatial clustering of high-critical contacts beyond chance (permutation test, 2,000 iterations).</div>
         </div>
       </div>
     </div>
@@ -868,7 +868,7 @@
       <div class="two-col-text-fig anim d2">
         <div>
           <p class="body-text">Each patient is plotted along two axes: the <strong>delta-mean</strong> (mean criticality inside the surgical zone minus outside, x-axis) and the <strong>fraction of high-critical contacts left outside</strong> the surgical zone (y-axis). Favorable-outcome patients (blue) cluster in the lower-right - high separation with few untreated drivers. Unfavorable patients (red) cluster in the upper-left - low separation with a large share of critical tissue left untreated.</p>
-          <p class="body-text" style="margin-top:10px;">Favorable patients showed a mean delta of <strong>0.24</strong> vs. only <strong>0.05</strong> for unfavorable (p = 0.002), confirming that surgical failure is associated with residual driver tissue outside the resection boundary.</p>
+          <p class="body-text" style="margin-top:10px;">Favorable patients showed a median delta-mean of <strong>0.24</strong> vs. only <strong>0.05</strong> for unfavorable (Mann-Whitney p = 0.002), confirming that surgical failure is associated with residual driver tissue outside the resection boundary.</p>
           <div class="key-point warn" style="margin-top:10px;">
             <strong>Prospective implication:</strong> Before surgery, clinicians could use this two-dimensional failure map to assess coverage adequacy - a high fraction of untreated critical contacts with low inside-outside separation would flag incomplete resection planning.
           </div>
@@ -895,7 +895,7 @@
           <p class="body-text" style="margin-top:10px;"><strong>Missing demographic data</strong> - Race, ethnicity, and sex unavailable for some patients due to IRB de-identification. No known biological mechanism links demographics to iEEG network connectivity.</p>
         </div>
         <div>
-          <p class="body-text"><strong>Pediatric sample</strong> - Only 7 patients from a single center (TCH). The 99.4% NPV and 91.1% sensitivity are promising but preliminary, and require multicenter replication.</p>
+          <p class="body-text"><strong>Pediatric sample</strong> - Only 7 patients from a single center (TCH). The 99.35% NPV and 91.1% sensitivity are promising but preliminary, and require multicenter replication.</p>
           <p class="body-text" style="margin-top:10px;"><strong>No head-to-head comparisons</strong> - This study evaluated standalone CN-Suite performance without direct comparison to HFO detectors<span class="cite">[16,17]<span class="cite-popup"><span class="cite-ref">Jacobs J et al. High-frequency oscillations (HFOs) in clinical epilepsy. <em>Prog Neurobiol</em>. 2012;98(3):302-315. <a href="https://doi.org/10.1016/j.pneurobio.2012.03.001" target="_blank">DOI</a></span><span class="cite-ref">Frauscher B et al. High-frequency oscillations: the state of clinical research. <em>Epilepsia</em>. 2017;58(8):1316-1329. <a href="https://doi.org/10.1111/epi.13829" target="_blank">DOI</a></span></span></span>, directed connectivity methods<span class="cite">[18,19]<span class="cite-popup"><span class="cite-ref">Blinowska KJ et al. Granger causality and information flow in multivariate processes. <em>Phys Rev E</em>. 2004;70(5):050902. <a href="https://doi.org/10.1103/PhysRevE.70.050902" target="_blank">DOI</a></span><span class="cite-ref">Wilke C et al. Graph analysis of epileptogenic networks in human partial epilepsy. <em>Epilepsia</em>. 2011;52(1):84-93. <a href="https://doi.org/10.1111/j.1528-1167.2010.02785.x" target="_blank">DOI</a></span></span></span>, or EZTrack<span class="cite">[13]<span class="cite-popup"><span class="cite-ref">U.S. FDA. 510(k) K201910: EZTrack. 2021. <a href="https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K201910" target="_blank">FDA</a></span></span></span>.</p>
           <p class="body-text" style="margin-top:10px;"><strong>U.S. Level-4 centers only</strong> - Applicability to lower-volume centers, non-U.S. settings, subdural grids, or non-resective interventions (neuromodulation, RNS, DBS) requires separate validation.</p>
         </div>
@@ -924,7 +924,7 @@
       </div>
       <div class="divider anim d4" style="margin-top:12px;"></div>
       <div class="key-point good anim d5" style="max-width:700px; text-align:left;">
-        <strong>d = 0.74</strong> (95% CI: 0.39-1.06, p = 0.003) - The CN-Suite identifies compact epileptogenic driver networks, provides surgeons with a quantitative, reproducible map for precise surgical targeting, and offers a pediatric NPV of 99.4% for safely defining boundaries in developing brains. The network causality framework extends naturally to neuromodulation targeting (RNS, DBS).
+        <strong>d = 0.74</strong> (95% CI: 0.39-1.06, p = 0.003) - The CN-Suite identifies compact epileptogenic driver networks, provides surgeons with a quantitative, reproducible map for precise surgical targeting, and offers a pediatric NPV of 99.35% for safely defining boundaries in developing brains. The network causality framework extends naturally to neuromodulation targeting (RNS, DBS).
       </div>
       <p class="body-text anim d5" style="margin-top:8px; font-size:16px; color:var(--text-muted);">FIND Neuro · FDA 510(k) Submission · Multicenter Clinical Validation</p>
     </div>
