@@ -743,9 +743,9 @@
     <div class="slide-inner">
       <div class="slide-label anim">Results - Spatial Analysis</div>
       <h2 class="section-title anim d1">High-Critical Contacts Form Compact 3D Clusters</h2>
-      <div class="two-col anim d2">
+      <div class="two-col-text-fig anim d2">
         <div>
-          <p class="body-text">3D clustering analysis (n=34) shows high-critical contacts are <strong>significantly clustered</strong> - roughly <strong>half the distance expected by chance</strong>.</p>
+          <p class="body-text">For each patient (n=34 with MNI coordinates), we computed the mean nearest-neighbor distance among high-critical contacts and compared it to a null distribution of <strong>10,000 random permutations</strong> of electrode labels. Points below the diagonal indicate spatial clustering beyond chance.</p>
           <div class="stat-row" style="margin-top:10px; grid-template-columns: 1fr 1fr;">
             <div class="stat-card">
               <div class="stat-value">8.96 mm</div>
@@ -764,20 +764,15 @@
               <div class="stat-label">Wilcoxon test</div>
             </div>
           </div>
+          <div class="key-point" style="margin-top:10px;">
+            <strong>Clinical implication:</strong> The ~9 mm mean spacing is compatible with a single LITT ablation trajectory (15-25 mm major axis), confirming that high-critical contacts form surgically targetable focal clusters rather than diffuse scatter.
+          </div>
         </div>
-        <div class="two-col" style="gap:16px;">
-          <div>
-            <div class="figure-wrap">
-              <img src="figures/paper_critical_contact_clustering_3d.svg" alt="3D nearest-neighbor compactness">
-            </div>
-            <div class="figure-caption">Fig 4a. Observed vs. expected NN distance.</div>
+        <div>
+          <div class="figure-wrap">
+            <img src="figures/paper_critical_contact_clustering_3d.svg" alt="3D nearest-neighbor compactness">
           </div>
-          <div>
-            <div class="figure-wrap">
-              <img src="figures/paper_critical_contact_clustering_contiguity.svg" alt="Clustered fraction analysis">
-            </div>
-            <div class="figure-caption">Fig 4b. Observed vs. expected clustered fraction.</div>
-          </div>
+          <div class="figure-caption">Figure 4. Observed vs. expected mean nearest-neighbor distance per patient. Each point represents one patient; points below the diagonal indicate spatial clustering of high-critical contacts beyond chance (permutation test, 10,000 iterations).</div>
         </div>
       </div>
     </div>
