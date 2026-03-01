@@ -929,11 +929,11 @@ SLIDE_TITLES.forEach((title, i) => {
 function goTo(idx) {
   if (idx < 0 || idx >= total || idx === current) return;
   const dir = idx > current ? 1 : -1;
-  slides[current].classList.remove('active');
-  slides[current].classList.add(dir > 0 ? 'exit-left' : '');
+  const prev = current;
+  slides[prev].classList.remove('active');
+  if (dir > 0) slides[prev].classList.add('exit-left');
   setTimeout(() => {
-    slides[current].classList.remove('exit-left');
-    slides[current].style.transform = '';
+    slides[prev].classList.remove('exit-left');
   }, 500);
 
   current = idx;
