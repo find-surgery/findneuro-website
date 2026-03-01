@@ -17,7 +17,7 @@
     "noEmit": true,
     "jsx": "preserve",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "types": ["three"]
+    "types": ["three", "d3"]
   },
   "include": ["src/**/*.ts"]
 }
