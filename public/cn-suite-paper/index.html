@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CN-Suite Clinical Validation</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #0a0e17;
+    --bg-card: #111827;
+    --bg-card-hover: #1a2332;
+    --accent: #22d3ee;
+    --accent-dim: rgba(34, 211, 238, 0.15);
+    --accent-glow: rgba(34, 211, 238, 0.3);
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --border: rgba(148, 163, 184, 0.12);
+    --success: #34d399;
+    --warning: #fbbf24;
+    --danger: #f87171;
+    --purple: #a78bfa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  /* ── NAV BAR ── */
+  .navbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10, 14, 23, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    height: 56px;
+    gap: 16px;
+  }
+
+  .nav-logo {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-logo img {
+    height: 28px;
+    width: auto;
+    filter: brightness(1.1);
+  }
+
+  .nav-progress-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 0 12px;
+  }
+
+  .nav-dot {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    min-width: 8px;
+  }
+
+  .nav-dot.active {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  .nav-dot.visited {
+    background: rgba(34, 211, 238, 0.35);
+  }
+
+  .nav-dot:hover {
+    background: var(--accent);
+    transform: scaleY(2);
+  }
+
+  .nav-dot .nav-tooltip {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+  }
+
+  .nav-dot:hover .nav-tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .nav-slide-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── SLIDE CONTAINER ── */
+  .slide-viewport {
+    position: fixed;
+    top: 56px;
+    left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 60px;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    overflow-y: auto;
+  }
+
+  .slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+  }
+
+  .slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  .slide-inner {
+    max-width: 1100px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  .slide-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    opacity: 0.8;
+  }
+
+  h1.slide-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 700;
+    line-height: 1.15;
+    color: #fff;
+  }
+
+  h1.slide-title .accent { color: var(--accent); }
+
+  h2.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 3vw, 36px);
+    font-weight: 600;
+    line-height: 1.25;
+    color: #fff;
+  }
+
+  .subtitle {
+    font-size: 17px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    max-width: 760px;
+  }
+
+  .body-text {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+
+  .body-text strong { color: var(--text-primary); font-weight: 600; }
+
+  /* ── STAT CARDS ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 8px;
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .stat-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-value.green { color: var(--success); }
+  .stat-value.purple { color: var(--purple); }
+  .stat-value.yellow { color: var(--warning); }
+  .stat-value.red { color: var(--danger); }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    line-height: 1.5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── FIGURE CONTAINER ── */
+  .figure-wrap {
+    background: #fff;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .figure-wrap img, .figure-wrap object {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+  }
+
+  .figure-caption {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+
+  /* ── TWO-COL LAYOUT ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .two-col-text-fig {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .two-col-fig-text {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 32px;
+    align-items: center;
+  }
+
+  /* ── TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .data-table th {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .data-table tbody tr:hover { background: var(--bg-card-hover); }
+
+  .data-table .highlight { color: var(--accent); font-weight: 600; }
+
+  /* ── KEY POINT ── */
+  .key-point {
+    border-left: 3px solid var(--accent);
+    padding: 12px 20px;
+    background: var(--accent-dim);
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+    color: var(--text-primary);
+    line-height: 1.65;
+  }
+
+  .key-point.warn { border-left-color: var(--warning); background: rgba(251, 191, 36, 0.08); }
+  .key-point.good { border-left-color: var(--success); background: rgba(52, 211, 153, 0.08); }
+
+  /* ── PILL TAGS ── */
+  .tag-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .tag.cyan { border-color: var(--accent); color: var(--accent); }
+
+  /* ── CONTROLS ── */
+  .controls {
+    position: fixed;
+    bottom: 32px;
+    right: 40px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+  }
+
+  .ctrl-btn {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: rgba(17, 24, 39, 0.85);
+    backdrop-filter: blur(12px);
+    color: var(--text-primary);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease;
+  }
+
+  .ctrl-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+
+  .ctrl-btn:disabled {
+    opacity: 0.25;
+    pointer-events: none;
+  }
+
+  /* ── TITLE SLIDE SPECIAL ── */
+  .title-slide .slide-inner {
+    text-align: center;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .title-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 8px;
+  }
+
+  .title-meta span {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 1px;
+    margin: 4px 0;
+  }
+
+  /* ── ANIMATED ENTRANCE ── */
+  .slide.active .anim { animation: fadeUp 0.6s ease both; }
+  .slide.active .anim.d1 { animation-delay: 0.1s; }
+  .slide.active .anim.d2 { animation-delay: 0.2s; }
+  .slide.active .anim.d3 { animation-delay: 0.3s; }
+  .slide.active .anim.d4 { animation-delay: 0.4s; }
+  .slide.active .anim.d5 { animation-delay: 0.5s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .two-col, .two-col-text-fig, .two-col-fig-text {
+      grid-template-columns: 1fr;
+    }
+    .slide { padding: 24px 20px; }
+    .controls { right: 16px; bottom: 16px; }
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* Background subtle texture */
+  .slide-viewport::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(34, 211, 238, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(167, 139, 250, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .slide { z-index: 1; }
+</style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+  <div class="nav-logo"><a href="/"><img src="/assets/White_500px.png" alt="FIND Neuro"></a></div>
+  <div class="nav-progress-wrap" id="navDots"></div>
+  <div class="nav-slide-num" id="slideNum">1 / 14</div>
+</nav>
+
+<!-- ── SLIDE VIEWPORT ── -->
+<div class="slide-viewport">
+
+  <!-- SLIDE 0: Title -->
+  <div class="slide title-slide active" data-slide="0">
+    <div class="slide-inner">
+      <div class="slide-label anim">Clinical Validation Study</div>
+      <h1 class="slide-title anim d1">Clinical Validation of <span class="accent">CN-Suite</span></h1>
+      <p class="subtitle anim d2" style="text-align:center;">Machine Learning-Based Directed Network Analysis<br>for Drug-Resistant Epilepsy Surgery</p>
+      <div class="divider anim d3"></div>
+      <p class="body-text anim d3" style="text-align:center; max-width:600px;">A Retrospective, Multicenter, Observational Study<br>across Four U.S. Level-4 Epilepsy Centers</p>
+      <div class="title-meta anim d4">
+        <span>📍 N = 60 patients</span>
+        <span>🏥 4 validation sites</span>
+        <span>🔒 Pre-locked algorithm</span>
+        <span>📊 12-month Engel outcomes</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 1: The Problem -->
+  <div class="slide" data-slide="1">
+    <div class="slide-inner">
+      <div class="slide-label anim">Background</div>
+      <h2 class="section-title anim d1">The Clinical Challenge</h2>
+      <p class="body-text anim d2">Drug-resistant epilepsy (DRE) affects ~20 million people worldwide. Surgical intervention is the only curative option, but <strong>success rates range from only 30–70%</strong> depending on etiology and localization accuracy. Failures carry continued seizure burden, elevated SUDEP risk, and multi-million-dollar societal costs per patient.</p>
+      <div class="stat-row anim d3">
+        <div class="stat-card">
+          <div class="stat-value red">30–70%</div>
+          <div class="stat-label">Surgery success range</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value yellow">~65M</div>
+          <div class="stat-label">People with epilepsy globally</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value purple">⅓</div>
+          <div class="stat-label">Are drug-resistant</div>
+        </div>
+      </div>
+      <div class="key-point warn anim d4">
+        <strong>Core bottleneck:</strong> Surgical planning relies on subjective visual analysis of intracranial EEG (iEEG), which is unstandardized and fails to capture the complex network dynamics underlying seizure generation.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: What CN-Suite Does -->
+  <div class="slide" data-slide="2">
+    <div class="slide-inner">
+      <div class="slide-label anim">Platform Overview</div>
+      <h2 class="section-title anim d1">How CN-Suite Works</h2>
+      <p class="body-text anim d2">CN-Suite is a Software as a Medical Device (SaMD) that computes quantitative <strong>"criticality scores"</strong> for each brain region sampled by intracranial electrodes. Instead of relying on visual pattern recognition, it quantifies <strong>directed information flow</strong> between neural signals to distinguish seizure "drivers" from passive "responders."</p>
+      <div class="two-col anim d3">
+        <div>
+          <h3 style="color:#fff; font-size:15px; margin-bottom:12px;">Signal Processing</h3>
+          <p class="body-text" style="font-size:14px;"><strong>Delay-adjusted wavelet transfer entropy (dWTE)</strong> — a nonlinear, information-theoretic measure that captures directional causality between neural signals across time-frequency scales. Produces a pairwise directed connectivity matrix for each seizure epoch.</p>
+          <div class="tag-row" style="margin-top:12px;">
+            <span class="tag cyan">Directed</span>
+            <span class="tag cyan">Nonlinear</span>
+            <span class="tag cyan">Information-theoretic</span>
+          </div>
+        </div>
+        <div>
+          <h3 style="color:#fff; font-size:15px; margin-bottom:12px;">Classification</h3>
+          <p class="body-text" style="font-size:14px;"><strong>XGBoost classifier</strong> — ensemble machine learning that maps connectivity features to a criticality score (0–1) per contact per seizure. Score near 1 = causal driver that exports information. Score near 0 = passive responder. Model weights were <strong>locked</strong> before validation.</p>
+          <div class="tag-row" style="margin-top:12px;">
+            <span class="tag">Pre-locked</span>
+            <span class="tag">Reproducible</span>
+            <span class="tag">Hash-verified</span>
+          </div>
+        </div>
+      </div>
+      <div class="key-point anim d4">
+        <strong>Key differentiator vs. EZTrack (FDA 510(k) K201910):</strong> EZTrack uses undirected eigenvector centrality — it finds highly connected hubs but cannot distinguish drivers from responders. CN-Suite uses directed transfer entropy to infer causal information flow.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Study Design -->
+  <div class="slide" data-slide="3">
+    <div class="slide-inner">
+      <div class="slide-label anim">Methods</div>
+      <h2 class="section-title anim d1">Study Design</h2>
+      <div class="two-col anim d2">
+        <div>
+          <p class="body-text">Retrospective, multicenter, observational, single-arm performance study. The algorithm was <strong>trained on an independent cohort (N=37)</strong> from 3 centers and <strong>hash-locked</strong> before validation on 60 patients from 4 different centers. Zero overlap between training and validation data.</p>
+          <table class="data-table" style="margin-top:20px;">
+            <thead><tr><th>Role</th><th>Centers</th><th>N</th></tr></thead>
+            <tbody>
+              <tr><td>Training</td><td>BCH, NIH, UMMC</td><td class="highlight">37</td></tr>
+              <tr><td>Validation</td><td>HUP, JHH, UMF, TCH</td><td class="highlight">60</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3 style="color:#fff; font-size:15px; margin-bottom:12px;">Inclusion Criteria</h3>
+          <p class="body-text" style="font-size:14px;">Age ≥ 3 years · Focal/multifocal DRE · Curative-intent resection or ablation · ≥ 3 stereotyped seizures captured during iEEG · ≥ 12-month follow-up with Engel classification · Detailed operative notes mapping the surgical zone</p>
+          <h3 style="color:#fff; font-size:15px; margin:20px 0 12px;">Primary Endpoint</h3>
+          <p class="body-text" style="font-size:14px;"><strong>Standardized effect size (Cohen's d)</strong> of the patient-level interpretability ratio between favorable (Engel I–II) and unfavorable (Engel III–IV) outcome groups. Success = lower 95% CI bound exceeds the pre-specified performance goal of 0.205.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Demographics -->
+  <div class="slide" data-slide="4">
+    <div class="slide-inner">
+      <div class="slide-label anim">Results — Cohort</div>
+      <h2 class="section-title anim d1">Patient Demographics</h2>
+      <p class="body-text anim d2">Of 75 records screened, 60 met all eligibility criteria (5 excluded by criteria, 10 by incomplete data). All 60 were successfully processed — zero processing failures.</p>
+      <div class="stat-row anim d3">
+        <div class="stat-card">
+          <div class="stat-value">60</div>
+          <div class="stat-label">Complete cases analyzed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value green">42</div>
+          <div class="stat-label">Favorable (Engel I/II)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value red">18</div>
+          <div class="stat-label">Unfavorable (Engel III/IV)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value purple">51 / 9</div>
+          <div class="stat-label">Adult / Pediatric</div>
+        </div>
+      </div>
+      <div class="anim d4">
+        <table class="data-table">
+          <thead><tr><th>Site</th><th>Favorable</th><th>Unfavorable</th><th>Total</th><th>%</th></tr></thead>
+          <tbody>
+            <tr><td>HUP (Penn)</td><td>34</td><td>13</td><td class="highlight">47</td><td>78.3%</td></tr>
+            <tr><td>TCH (Texas Children's)</td><td>7</td><td>2</td><td class="highlight">9</td><td>15.0%</td></tr>
+            <tr><td>JHH (Johns Hopkins)</td><td>0</td><td>3</td><td class="highlight">3</td><td>5.0%</td></tr>
+            <tr><td>UMF (Miami)</td><td>1</td><td>0</td><td class="highlight">1</td><td>1.7%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: Effect Size -->
+  <div class="slide" data-slide="5">
+    <div class="slide-inner">
+      <div class="slide-label anim">Results — Primary Endpoint</div>
+      <h2 class="section-title anim d1">Effect-Size Analysis: <span style="color:var(--accent)">Primary Endpoint Met</span></h2>
+      <p class="body-text anim d2">The interpretability ratio asks: <em>does the algorithm assign higher criticality to tissue the surgeon actually treated?</em> Favorable-outcome patients showed a mean ratio of <strong>4.64</strong> vs. <strong>1.83</strong> for unfavorable, confirming the algorithm reliably distinguishes driver tissue in successful surgeries.</p>
+      <div class="stat-row anim d3">
+        <div class="stat-card">
+          <div class="stat-value">d = 0.74</div>
+          <div class="stat-label">Bootstrapped Cohen's d</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value green">0.39–1.06</div>
+          <div class="stat-label">95% CI</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value green">p = 0.003</div>
+          <div class="stat-label">One-sided p-value</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value yellow">PG = 0.205</div>
+          <div class="stat-label">Performance goal exceeded</div>
+        </div>
+      </div>
+      <div class="anim d4">
+        <table class="data-table">
+          <thead><tr><th>Subgroup</th><th>Fav. Mean</th><th>Unfav. Mean</th><th>Boot. d</th><th>95% CI</th><th>p</th></tr></thead>
+          <tbody>
+            <tr><td><strong>All Subjects</strong></td><td>4.64</td><td>1.83</td><td class="highlight">0.74</td><td>0.39, 1.06</td><td class="highlight">0.003</td></tr>
+            <tr><td>Adults</td><td>5.05</td><td>2.00</td><td class="highlight">0.73</td><td>0.37, 1.08</td><td>0.006</td></tr>
+            <tr><td>Pediatrics</td><td>2.58</td><td>0.54</td><td class="highlight">1.87</td><td>1.17, 3.24</td><td>< 0.0001</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="key-point good anim d5">
+        <strong>Robustness:</strong> Engel I-only vs. III/IV yielded d = 0.77 (CI: 0.38–1.14). Excluding HUP yielded d = 0.68 (CI: 0.12–1.24). Concordant AUC = 0.82 and localization ratio = 3.01×.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Threshold Sweep -->
+  <div class="slide" data-slide="6">
+    <div class="slide-inner">
+      <div class="slide-label anim">Results — Threshold Characterization</div>
+      <h2 class="section-title anim d1">Sensitivity & Specificity Across Thresholds</h2>
+      <div class="two-col-text-fig anim d2">
+        <div>
+          <p class="body-text">This figure sweeps the criticality threshold from 0 to 1, showing how patient-level macro-averaged sensitivity, specificity, and Youden's J change. The <strong>pre-locked operating point at 0.15</strong> (red marker) was derived from the independent training cohort by maximizing Youden's J over seizure-free patients.</p>
+          <p class="body-text" style="margin-top:12px;">Note that this threshold was <strong>not</strong> optimized on the validation set — it was fixed prior to any validation analysis. The validation-set optimum may differ, but using a training-derived threshold prevents overfitting and ensures generalizability.</p>
+          <div class="key-point" style="margin-top:16px;">
+            At the 0.15 threshold: <strong>macro sensitivity ≈ 67%</strong>, <strong>macro specificity ≈ 83%</strong>, <strong>Youden's J ≈ 0.50</strong>.
+          </div>
+        </div>
+        <div>
+          <div class="figure-wrap">
+            <img src="figures/loco_20260204_202020Z_macro_sens_spec_vs_threshold.svg" alt="Threshold sweep: sensitivity, specificity, and Youden's J">
+          </div>
+          <div class="figure-caption">Figure 1. Patient-level macro-sensitivity, specificity, and Youden's J across thresholds 0–1 (Engel I/II, n=42). Pre-locked operating point (0.15) in red.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Contact-Level Performance -->
+  <div class="slide" data-slide="7">
+    <div class="slide-inner">
+      <div class="slide-label anim">Results — Contact-Level Metrics</div>
+      <h2 class="section-title anim d1">Diagnostic Performance at the Contact Level</h2>
+      <p class="body-text anim d2">686 treated and 3,277 untreated contacts were evaluated in the Engel I/II cohort. Three estimation approaches address different aspects of the clustered data structure:</p>
+      <div class="two-col anim d3">
+        <div>
+          <h3 style="color:#fff; font-size:15px; margin-bottom:12px;">Sensitivity & Specificity</h3>
+          <table class="data-table">
+            <thead><tr><th>Group</th><th>Sens (GEE)</th><th>Spec (GEE)</th></tr></thead>
+            <tbody>
+              <tr><td><strong>All (N=42)</strong></td><td class="highlight">64.3%</td><td class="highlight">84.3%</td></tr>
+              <tr><td>Adults (n=35)</td><td>59.6%</td><td>86.4%</td></tr>
+              <tr><td>Pediatrics (n=7)</td><td>91.1%</td><td>76.0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3 style="color:#fff; font-size:15px; margin-bottom:12px;">PPV & NPV</h3>
+          <table class="data-table">
+            <thead><tr><th>Group</th><th>PPV (GEE)</th><th>NPV (GEE)</th></tr></thead>
+            <tbody>
+              <tr><td><strong>All (N=42)</strong></td><td>49.0%</td><td class="highlight">88.0%</td></tr>
+              <tr><td>Adults (n=35)</td><td>56.4%</td><td>85.6%</td></tr>
+              <tr><td>Pediatrics (n=7)</td><td>10.8%</td><td class="highlight">99.4%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="key-point anim d4">
+        <strong>Clinical interpretation:</strong> High specificity (~84%) and NPV (~88%) mean the platform excels at ruling out tissue — if CN-Suite does <em>not</em> flag a contact, clinicians can be confident it's a "responder," not a driver. The PPV of 49% reflects its role as a candidate-identification tool: it flags a superset for multidisciplinary deliberation.
+      </div>
+      <div class="key-point good anim d5">
+        <strong>Pediatric NPV = 99.4%</strong> — In developing brains, safely defining what <em>not</em> to remove is especially valuable. Low pediatric PPV (10.8%) is driven by base-rate prevalence (2.9% treated-contact ratio vs. 17.1% in adults), not discriminative failure.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Surgery-Size Dependence -->
+  <div class="slide" data-slide="8">
+    <div class="slide-inner">
+      <div class="slide-label anim">Results — Surgery Size</div>
+      <h2 class="section-title anim d1">Performance Scales with Surgery Size</h2>
+      <p class="body-text anim d2">The strongest finding: per-patient sensitivity is <strong>inversely correlated with surgery size</strong> (ρ = −0.62, p < 0.0001). The algorithm is most informative for small focal procedures — the clinical scenario most relevant to minimally invasive ablation (LITT).</p>
+      <div class="two-col anim d3">
+        <div>
+          <div class="figure-wrap">
+            <img src="figures/paper_sens_spec_vs_targeted_contacts.svg" alt="Sensitivity and specificity vs targeted contacts">
+          </div>
+          <div class="figure-caption">Figure 2. Per-patient sensitivity (blue) & specificity (orange) vs. treated-contact count. Each point = one patient. Spearman ρ and trend lines shown.</div>
+        </div>
+        <div>
+          <div class="figure-wrap">
+            <img src="figures/paper_sensitivity_by_surgery_size_bucket10.svg" alt="Sensitivity by surgery size bucket">
+          </div>
+          <div class="figure-caption">Figure 3. Mean sensitivity by surgery-size bucket (10-contact bins). Error bars = SE. Patient counts above each point. Trend excludes the single-patient ≥80 bucket.</div>
+        </div>
+      </div>
+      <div class="key-point anim d4">
+        <strong>≤ 10 treated contacts (n=21, 50% of cohort):</strong> mean sensitivity = <strong>80%</strong>. This is the LITT-sized target range where a compact driver cluster (~9 mm spacing) fits within a single ablation trajectory (15–25 mm major axis).
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: Spatial Compactness -->
+  <div class="slide" data-slide="9">
+    <div class="slide-inner">
+      <div class="slide-label anim">Results — Spatial Analysis</div>
+      <h2 class="section-title anim d1">High-Critical Contacts Form Compact 3D Clusters</h2>
+      <p class="body-text anim d2">A critical question for surgical planning: are flagged contacts targetable focal subnetworks, or diffusely scattered? 3D coordinate-based clustering analysis (n=34 with available coordinates) shows they are <strong>significantly clustered</strong> — roughly <strong>half the inter-contact distance expected by chance</strong>.</p>
+      <div class="stat-row anim d3">
+        <div class="stat-card">
+          <div class="stat-value">8.96 mm</div>
+          <div class="stat-label">Observed mean NN distance</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value red">17.21 mm</div>
+          <div class="stat-label">Expected by chance</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value green">85%</div>
+          <div class="stat-label">Patients individually significant</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value green">p = 1.2×10⁻¹⁰</div>
+          <div class="stat-label">Wilcoxon test</div>
+        </div>
+      </div>
+      <div class="two-col anim d4">
+        <div>
+          <div class="figure-wrap">
+            <img src="figures/paper_critical_contact_clustering_3d.svg" alt="3D nearest-neighbor compactness">
+          </div>
+          <div class="figure-caption">Figure 4a. Observed vs. expected nearest-neighbor distance. Points below diagonal = spatial clustering.</div>
+        </div>
+        <div>
+          <div class="figure-wrap">
+            <img src="figures/paper_critical_contact_clustering_contiguity.svg" alt="Clustered fraction analysis">
+          </div>
+          <div class="figure-caption">Figure 4b. Observed vs. expected clustered fraction (≥1 high-critical neighbor within 10mm). Points above diagonal = clustering. Observed: 0.77 vs. expected: 0.39.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Score Ranking -->
+  <div class="slide" data-slide="10">
+    <div class="slide-inner">
+      <div class="slide-label anim">Results — Score Ranking</div>
+      <h2 class="section-title anim d1">Criticality Scores Carry Rank-Order Information</h2>
+      <div class="two-col-text-fig anim d2">
+        <div>
+          <p class="body-text">Beyond the binary threshold classification, do continuous scores carry clinically useful rank information? Yes — among the 946 high-critical contacts, the proportion falling inside the surgical zone <strong>increases monotonically</strong> with criticality score.</p>
+          <div class="stat-row" style="margin-top:16px;">
+            <div class="stat-card">
+              <div class="stat-value red">26%</div>
+              <div class="stat-label">Bottom-decile PPV</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value green">61%</div>
+              <div class="stat-label">Top-decile PPV</div>
+            </div>
+          </div>
+          <div class="key-point" style="margin-top:16px;">
+            <strong>Clinical utility:</strong> Surgical teams can triage flagged contacts by predicted clinical relevance rather than treating all above-threshold contacts as equivalent. Spearman ρ = 0.28, p = 6.8 × 10⁻¹⁹.
+          </div>
+        </div>
+        <div>
+          <div class="figure-wrap">
+            <img src="figures/paper_high_critical_score_ranking.svg" alt="PPV by criticality score decile">
+          </div>
+          <div class="figure-caption">Figure 5. Surgical-zone enrichment (PPV) by criticality-score decile among 946 high-critical contacts (≥ 0.15, Engel I/II, n=42). Dashed red line: linear trend.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: Failure Analysis -->
+  <div class="slide" data-slide="11">
+    <div class="slide-inner">
+      <div class="slide-label anim">Results — Failure Mechanism</div>
+      <h2 class="section-title anim d1">Why Surgery Fails: Untreated Driver Tissue</h2>
+      <p class="body-text anim d2">In patients whose surgery failed, the algorithm identified critical tissue <strong>outside the surgical zone</strong> — criticality scores were nearly as high outside as inside (Δmean = 0.05), whereas favorable patients showed clear separation (Δmean = 0.24, p = 0.002).</p>
+      <div class="two-col anim d3">
+        <div>
+          <div class="figure-wrap">
+            <img src="figures/paper_failure_marker_and_robustness.svg" alt="Delta mean by outcome group">
+          </div>
+          <div class="figure-caption">Figure 6a. Per-patient delta mean (criticality inside SZ minus outside SZ) by outcome group. Favorable patients show clear separation; unfavorable patients show little difference.</div>
+        </div>
+        <div>
+          <div class="figure-wrap">
+            <img src="figures/paper_failure_pattern_distribution_distance.svg" alt="Failure pattern map">
+          </div>
+          <div class="figure-caption">Figure 6b. Failure-pattern map: delta-mean (x) vs. fraction of high-critical contacts outside SZ (y). Red = unfavorable, Blue = favorable. Unfavorable patients cluster in upper-left (low separation + high untreated driver burden).</div>
+        </div>
+      </div>
+      <div class="key-point warn anim d4">
+        <strong>Prospective implication:</strong> Before surgery, surgeons could examine the proportion of high-critical contacts outside the proposed resection boundary. A large share of untreated critical tissue could serve as a <strong>preoperative warning</strong> for incomplete coverage.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: Limitations -->
+  <div class="slide" data-slide="12">
+    <div class="slide-inner">
+      <div class="slide-label anim">Caveats</div>
+      <h2 class="section-title anim d1">Limitations</h2>
+      <div class="two-col anim d2">
+        <div>
+          <p class="body-text"><strong>Retrospective design</strong> — validates correlation with outcomes but cannot measure real-time impact on surgical decision-making. Prospective integration into Epilepsy Surgery Conferences is the logical next step.</p>
+          <p class="body-text" style="margin-top:16px;"><strong>Site imbalance</strong> — HUP contributed 78% of subjects. JHH contributed only 3, all unfavorable. An excluding-HUP analysis (n=13) yielded d = 0.68 (CI: 0.12–1.24), directionally consistent but underpowered.</p>
+          <p class="body-text" style="margin-top:16px;"><strong>Missing demographic data</strong> — Race, ethnicity, and sex unavailable for some patients due to IRB de-identification. No known biological mechanism links demographics to iEEG network connectivity.</p>
+        </div>
+        <div>
+          <p class="body-text"><strong>Pediatric sample</strong> — Only 7 patients from a single center (TCH). The 99.4% NPV and 91.1% sensitivity are promising but preliminary and require multicenter replication.</p>
+          <p class="body-text" style="margin-top:16px;"><strong>No head-to-head comparisons</strong> — This study evaluated standalone CN-Suite performance without direct comparison to HFO detectors, directed connectivity methods, or EZTrack.</p>
+          <p class="body-text" style="margin-top:16px;"><strong>U.S. Level-4 centers only</strong> — Applicability to lower-volume centers, non-U.S. settings, subdural grids, or non-resective interventions (neuromodulation) requires separate validation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 13: Conclusion -->
+  <div class="slide" data-slide="13">
+    <div class="slide-inner" style="align-items:center; text-align:center;">
+      <div class="slide-label anim">Conclusion</div>
+      <h2 class="section-title anim d1" style="max-width:800px;">Three Convergent Findings Define Clinical Value</h2>
+      <div class="stat-row anim d3" style="max-width:900px;">
+        <div class="stat-card" style="text-align:left;">
+          <div class="stat-value" style="font-size:20px;">🎯 Compact Drivers</div>
+          <div class="stat-label" style="font-size:13px; text-transform:none; letter-spacing:0; color:var(--text-secondary); margin-top:12px;">High-critical contacts form spatially compact 3D clusters (~9mm NN distance) compatible with minimally invasive LITT ablation volumes. Sensitivity reaches 80% at ≤ 10 treated contacts.</div>
+        </div>
+        <div class="stat-card" style="text-align:left;">
+          <div class="stat-value" style="font-size:20px;">📊 Rank-Order Info</div>
+          <div class="stat-label" style="font-size:13px; text-transform:none; letter-spacing:0; color:var(--text-secondary); margin-top:12px;">Criticality scores carry meaningful rank ordering — PPV climbs from 26% (bottom decile) to 61% (top decile), enabling surgical teams to prioritize among flagged contacts.</div>
+        </div>
+        <div class="stat-card" style="text-align:left;">
+          <div class="stat-value" style="font-size:20px;">⚠️ Failure Warning</div>
+          <div class="stat-label" style="font-size:13px; text-transform:none; letter-spacing:0; color:var(--text-secondary); margin-top:12px;">When high-critical tissue is left outside the surgical zone, outcomes are unfavorable — providing both a mechanistic explanation and a potential prospective coverage-adequacy check.</div>
+        </div>
+      </div>
+      <div class="divider anim d4" style="margin-top:12px;"></div>
+      <div class="key-point good anim d5" style="max-width:700px; text-align:left;">
+        <strong>d = 0.74</strong> (95% CI: 0.39–1.06, p = 0.003) — The CN-Suite identifies compact epileptogenic driver networks, provides surgeons with a quantitative, reproducible map for precise surgical targeting, and offers a pediatric NPV of 99.4% for safely defining boundaries in developing brains.
+      </div>
+      <p class="body-text anim d5" style="margin-top:8px; font-size:13px; color:var(--text-muted);">FIND Neuro · FDA 510(k) Submission · Multicenter Clinical Validation</p>
+    </div>
+  </div>
+
+</div><!-- /slide-viewport -->
+
+<!-- ── CONTROLS ── -->
+<div class="controls">
+  <button class="ctrl-btn" id="prevBtn" onclick="navigate(-1)">‹</button>
+  <button class="ctrl-btn" id="nextBtn" onclick="navigate(1)">›</button>
+</div>
+
+<script>
+const SLIDE_TITLES = [
+  "Title",
+  "The Problem",
+  "How CN-Suite Works",
+  "Study Design",
+  "Demographics",
+  "Effect Size (Primary)",
+  "Threshold Sweep",
+  "Contact-Level Metrics",
+  "Surgery-Size Effect",
+  "Spatial Compactness",
+  "Score Ranking",
+  "Failure Mechanism",
+  "Limitations",
+  "Conclusions"
+];
+
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+const navWrap = document.getElementById('navDots');
+const slideNum = document.getElementById('slideNum');
+
+// Build nav dots
+SLIDE_TITLES.forEach((title, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+  dot.innerHTML = `<span class="nav-tooltip">${title}</span>`;
+  dot.addEventListener('click', () => goTo(i));
+  navWrap.appendChild(dot);
+});
+
+function goTo(idx) {
+  if (idx < 0 || idx >= total || idx === current) return;
+  const dir = idx > current ? 1 : -1;
+  slides[current].classList.remove('active');
+  slides[current].classList.add(dir > 0 ? 'exit-left' : '');
+  setTimeout(() => {
+    slides[current].classList.remove('exit-left');
+    slides[current].style.transform = '';
+  }, 500);
+
+  current = idx;
+  slides[current].classList.add('active');
+  updateNav();
+}
+
+function navigate(dir) {
+  goTo(current + dir);
+}
+
+function updateNav() {
+  const dots = navWrap.querySelectorAll('.nav-dot');
+  dots.forEach((d, i) => {
+    d.classList.toggle('active', i === current);
+    d.classList.toggle('visited', i < current);
+  });
+  slideNum.textContent = `${current + 1} / ${total}`;
+  document.getElementById('prevBtn').disabled = current === 0;
+  document.getElementById('nextBtn').disabled = current === total - 1;
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    navigate(1);
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    navigate(-1);
+  }
+});
+
+// Touch/swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) navigate(dx < 0 ? 1 : -1);
+});
+
+updateNav();
+</script>
+</body>
+</html>
