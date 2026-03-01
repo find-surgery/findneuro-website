@@ -815,23 +815,20 @@
     <div class="slide-inner">
       <div class="slide-label anim">Results - Failure Mechanism</div>
       <h2 class="section-title anim d1">Why Surgery Fails: Untreated Driver Tissue</h2>
-      <p class="body-text anim d2">In patients whose surgery failed, the algorithm identified critical tissue <strong>outside the surgical zone</strong> - criticality scores were nearly as high outside as inside (Δmean = 0.05), whereas favorable patients showed clear separation (Δmean = 0.24, p = 0.002).</p>
-      <div class="two-col anim d3">
+      <div class="two-col-text-fig anim d2">
         <div>
-          <div class="figure-wrap">
-            <img src="figures/paper_failure_marker_and_robustness.svg" alt="Delta mean by outcome group">
+          <p class="body-text">Each patient is plotted along two axes: the <strong>delta-mean</strong> (mean criticality inside the surgical zone minus outside, x-axis) and the <strong>fraction of high-critical contacts left outside</strong> the surgical zone (y-axis). Favorable-outcome patients (blue) cluster in the lower-right - high separation with few untreated drivers. Unfavorable patients (red) cluster in the upper-left - low separation with a large share of critical tissue left untreated.</p>
+          <p class="body-text" style="margin-top:10px;">Favorable patients showed a mean delta of <strong>0.24</strong> vs. only <strong>0.05</strong> for unfavorable (p = 0.002), confirming that surgical failure is associated with residual driver tissue outside the resection boundary.</p>
+          <div class="key-point warn" style="margin-top:10px;">
+            <strong>Prospective implication:</strong> Before surgery, clinicians could use this two-dimensional failure map to assess coverage adequacy - a high fraction of untreated critical contacts with low inside-outside separation would flag incomplete resection planning.
           </div>
-          <div class="figure-caption">Figure 6a. Per-patient delta mean (criticality inside SZ minus outside SZ) by outcome group. Favorable patients show clear separation; unfavorable patients show little difference.</div>
         </div>
         <div>
           <div class="figure-wrap">
             <img src="figures/paper_failure_pattern_distribution_distance.svg" alt="Failure pattern map">
           </div>
-          <div class="figure-caption">Figure 6b. Failure-pattern map: delta-mean (x) vs. fraction of high-critical contacts outside SZ (y). Red = unfavorable, Blue = favorable. Unfavorable patients cluster in upper-left (low separation + high untreated driver burden).</div>
+          <div class="figure-caption">Figure 6. Failure-pattern map: delta-mean (x) vs. fraction of high-critical contacts outside the surgical zone (y). Blue = favorable outcome (Engel I/II), Red = unfavorable (Engel III/IV). Unfavorable patients cluster in the upper-left quadrant.</div>
         </div>
-      </div>
-      <div class="key-point warn anim d4">
-        <strong>Prospective implication:</strong> Before surgery, surgeons could examine the proportion of high-critical contacts outside the proposed resection boundary. A large share of untreated critical tissue could serve as a <strong>preoperative warning</strong> for incomplete coverage.
       </div>
     </div>
   </div>
