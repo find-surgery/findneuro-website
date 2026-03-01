@@ -441,7 +441,7 @@ h2.section-title {
 
   .nav-slide-num { font-size: 10px; }
 
-  .slide-viewport { top: 44px; overflow: visible; }
+  .slide-viewport { top: 44px; overflow-y: auto; }
 
   .slide {
     position: relative;
