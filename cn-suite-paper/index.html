@@ -138,7 +138,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 60px;
+    padding: 24px 60px;
     opacity: 0;
     transform: translateX(60px);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -162,7 +162,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 16px;
   }
 
   /* ── TYPOGRAPHY ── */
@@ -212,15 +212,14 @@
   .stat-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-    margin-top: 8px;
+    gap: 12px;
   }
 
   .stat-card {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 20px;
+    padding: 14px 18px;
     transition: all 0.3s ease;
   }
 
@@ -256,7 +255,7 @@
   .figure-wrap {
     background: #fff;
     border-radius: 12px;
-    padding: 16px;
+    padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -266,7 +265,7 @@
 
   .figure-wrap img, .figure-wrap object {
     max-width: 100%;
-    max-height: 100%;
+    max-height: 40vh;
     display: block;
   }
 
@@ -282,21 +281,21 @@
   .two-col {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 32px;
+    gap: 24px;
     align-items: start;
   }
 
   .two-col-text-fig {
     display: grid;
     grid-template-columns: 0.9fr 1.1fr;
-    gap: 32px;
+    gap: 24px;
     align-items: center;
   }
 
   .two-col-fig-text {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
-    gap: 32px;
+    gap: 24px;
     align-items: center;
   }
 
@@ -331,7 +330,7 @@
   /* ── KEY POINT ── */
   .key-point {
     border-left: 3px solid var(--accent);
-    padding: 12px 20px;
+    padding: 10px 18px;
     background: var(--accent-dim);
     border-radius: 0 8px 8px 0;
     font-size: 17px;
@@ -660,7 +659,7 @@
         <div>
           <p class="body-text">This figure sweeps the criticality threshold from 0 to 1, showing how patient-level macro-averaged sensitivity, specificity, and Youden's J change. The <strong>pre-locked operating point at 0.15</strong> (red marker) was derived from the independent training cohort by maximizing Youden's J over seizure-free patients.</p>
           <p class="body-text" style="margin-top:12px;">Note that this threshold was <strong>not</strong> optimized on the validation set - it was fixed prior to any validation analysis. The validation-set optimum may differ, but using a training-derived threshold prevents overfitting and ensures generalizability.</p>
-          <div class="key-point" style="margin-top:16px;">
+          <div class="key-point" style="margin-top:10px;">
             At the 0.15 threshold: <strong>macro sensitivity ≈ 67%</strong>, <strong>macro specificity ≈ 83%</strong>, <strong>Youden's J ≈ 0.50</strong>.
           </div>
         </div>
@@ -788,7 +787,7 @@
       <div class="two-col-text-fig anim d2">
         <div>
           <p class="body-text">Beyond the binary threshold classification, do continuous scores carry clinically useful rank information? Yes - among the 946 high-critical contacts, the proportion falling inside the surgical zone <strong>increases monotonically</strong> with criticality score.</p>
-          <div class="stat-row" style="margin-top:16px;">
+          <div class="stat-row" style="margin-top:10px;">
             <div class="stat-card">
               <div class="stat-value red">26%</div>
               <div class="stat-label">Bottom-decile PPV</div>
@@ -798,7 +797,7 @@
               <div class="stat-label">Top-decile PPV</div>
             </div>
           </div>
-          <div class="key-point" style="margin-top:16px;">
+          <div class="key-point" style="margin-top:10px;">
             <strong>Clinical utility:</strong> Surgical teams can triage flagged contacts by predicted clinical relevance rather than treating all above-threshold contacts as equivalent. Spearman ρ = 0.28, p = 6.8 × 10⁻¹⁹.
           </div>
         </div>
@@ -846,13 +845,13 @@
       <div class="two-col anim d2">
         <div>
           <p class="body-text"><strong>Retrospective design</strong> - validates correlation with outcomes but cannot measure real-time impact on surgical decision-making. Prospective integration into Epilepsy Surgery Conferences is the logical next step.</p>
-          <p class="body-text" style="margin-top:16px;"><strong>Site imbalance</strong> - HUP contributed 78% of subjects. JHH contributed only 3, all unfavorable. An excluding-HUP analysis (n=13) yielded d = 0.68 (CI: 0.12-1.24), directionally consistent but underpowered.</p>
-          <p class="body-text" style="margin-top:16px;"><strong>Missing demographic data</strong> - Race, ethnicity, and sex unavailable for some patients due to IRB de-identification. No known biological mechanism links demographics to iEEG network connectivity.</p>
+          <p class="body-text" style="margin-top:10px;"><strong>Site imbalance</strong> - HUP contributed 78% of subjects. JHH contributed only 3, all unfavorable. An excluding-HUP analysis (n=13) yielded d = 0.68 (CI: 0.12-1.24), directionally consistent but underpowered.</p>
+          <p class="body-text" style="margin-top:10px;"><strong>Missing demographic data</strong> - Race, ethnicity, and sex unavailable for some patients due to IRB de-identification. No known biological mechanism links demographics to iEEG network connectivity.</p>
         </div>
         <div>
           <p class="body-text"><strong>Pediatric sample</strong> - Only 7 patients from a single center (TCH). The 99.4% NPV and 91.1% sensitivity are promising but preliminary and require multicenter replication.</p>
-          <p class="body-text" style="margin-top:16px;"><strong>No head-to-head comparisons</strong> - This study evaluated standalone CN-Suite performance without direct comparison to HFO detectors, directed connectivity methods, or EZTrack.</p>
-          <p class="body-text" style="margin-top:16px;"><strong>U.S. Level-4 centers only</strong> - Applicability to lower-volume centers, non-U.S. settings, subdural grids, or non-resective interventions (neuromodulation) requires separate validation.</p>
+          <p class="body-text" style="margin-top:10px;"><strong>No head-to-head comparisons</strong> - This study evaluated standalone CN-Suite performance without direct comparison to HFO detectors, directed connectivity methods, or EZTrack.</p>
+          <p class="body-text" style="margin-top:10px;"><strong>U.S. Level-4 centers only</strong> - Applicability to lower-volume centers, non-U.S. settings, subdural grids, or non-resective interventions (neuromodulation) requires separate validation.</p>
         </div>
       </div>
     </div>
