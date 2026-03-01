@@ -1325,8 +1325,8 @@ function renderThresholdChart() {
     .attr('x', -ih / 2).attr('y', -40).attr('text-anchor', 'middle')
     .text('Rate');
 
-  const colors = { sens: '#22d3ee', spec: '#fb923c', yj: '#a78bfa' };
-  const labels = { sens: 'Sensitivity', spec: 'Specificity', yj: "Youden's J" };
+  const colors = { sens: '#1f77b4', spec: '#ff7f0e', yj: '#2ca02c' };
+  const labels = { sens: 'Macro sensitivity', spec: 'Macro specificity', yj: "Macro Youden's J" };
 
   // Line generators
   const lineSens = d3.line().x(d => x(d[0])).y(d => y(d[1])).curve(d3.curveMonotoneX);
@@ -1364,34 +1364,41 @@ function renderThresholdChart() {
   opG.append('line')
     .attr('x1', x(0.15)).attr('x2', x(0.15))
     .attr('y1', 0).attr('y2', ih)
-    .attr('stroke', '#f87171').attr('stroke-width', 1.5)
+    .attr('stroke', '#ff0000').attr('stroke-width', 1.5)
     .attr('stroke-dasharray', '6,4').attr('opacity', 0.6);
 
-  // Red dot
+  // Red dots at operating point
   opG.append('circle')
     .attr('cx', x(0.15)).attr('cy', y(op[1]))
-    .attr('r', 5).attr('fill', '#f87171');
+    .attr('r', 5).attr('fill', '#ff0000');
   opG.append('circle')
     .attr('cx', x(0.15)).attr('cy', y(op[2]))
-    .attr('r', 5).attr('fill', '#f87171');
+    .attr('r', 5).attr('fill', '#ff0000');
   opG.append('circle')
     .attr('cx', x(0.15)).attr('cy', y(op[3]))
-    .attr('r', 5).attr('fill', '#f87171');
+    .attr('r', 5).attr('fill', '#ff0000');
 
   // Label
   opG.append('text')
     .attr('x', x(0.15) + 6).attr('y', 10)
-    .attr('fill', '#f87171').attr('font-size', '11px')
+    .attr('fill', '#ff0000').attr('font-size', '11px')
     .attr('font-family', 'JetBrains Mono, monospace')
-    .text('0.15 (pre-locked)');
+    .text('Pre-locked operating point (0.15)');
 
-  // Legend
-  const leg = g.append('g').attr('transform', `translate(${iw - 120}, ${ih - 60})`);
-  lines.forEach(({ color, label }, i) => {
+  // Legend (upper right, matching original)
+  const allLegend = [...lines, { color: '#ff0000', label: 'Pre-locked operating point (0.15)' }];
+  const leg = g.append('g').attr('transform', `translate(${iw - 230}, 6)`);
+  leg.append('rect')
+    .attr('x', -8).attr('y', -10)
+    .attr('width', 238).attr('height', allLegend.length * 18 + 12)
+    .attr('fill', 'rgba(17,24,39,0.8)').attr('stroke', 'rgba(148,163,184,0.2)')
+    .attr('rx', 4);
+  allLegend.forEach(({ color, label }, i) => {
     leg.append('line').attr('x1', 0).attr('x2', 18).attr('y1', i * 18).attr('y2', i * 18)
-      .attr('stroke', color).attr('stroke-width', 2.5);
+      .attr('stroke', color).attr('stroke-width', 2)
+      .attr('stroke-opacity', color === '#ff0000' ? 0.8 : 1);
     leg.append('text').attr('x', 24).attr('y', i * 18 + 4)
-      .attr('fill', '#94a3b8').attr('font-size', '11px')
+      .attr('fill', '#94a3b8').attr('font-size', '10px')
       .attr('font-family', 'DM Sans, sans-serif')
       .text(label);
   });
@@ -1421,9 +1428,9 @@ function renderThresholdChart() {
       });
       showTip(evt,
         `<span class="tt-label">Threshold:</span> <span class="tt-val">${d[0].toFixed(2)}</span><br>` +
-        `<span class="tt-label">Sensitivity:</span> <span class="tt-val">${(d[1]*100).toFixed(1)}%</span><br>` +
-        `<span class="tt-label">Specificity:</span> <span class="tt-val yellow">${(d[2]*100).toFixed(1)}%</span><br>` +
-        `<span class="tt-label">Youden's J:</span> <span class="tt-val purple">${d[3].toFixed(3)}</span>`
+        `<span style="color:#1f77b4">Sensitivity:</span> <span class="tt-val">${(d[1]*100).toFixed(1)}%</span><br>` +
+        `<span style="color:#ff7f0e">Specificity:</span> <span class="tt-val">${(d[2]*100).toFixed(1)}%</span><br>` +
+        `<span style="color:#2ca02c">Youden's J:</span> <span class="tt-val">${d[3].toFixed(3)}</span>`
       );
     })
     .on('mouseleave', function() {
@@ -1478,7 +1485,7 @@ function renderSurgeryScatter() {
   const regSens = linReg(pts, d => d.s);
   const regSpec = linReg(pts, d => d.p);
 
-  [{reg: regSens, color: '#22d3ee'}, {reg: regSpec, color: '#fb923c'}].forEach(({reg, color}) => {
+  [{reg: regSens, color: '#1f77b4'}, {reg: regSpec, color: '#ff7f0e'}].forEach(({reg, color}) => {
     g.append('line')
       .attr('x1', x(0)).attr('x2', x(90))
       .attr('y1', y(reg.a)).attr('y2', y(reg.a + reg.b * 90))
@@ -1490,7 +1497,7 @@ function renderSurgeryScatter() {
   const dotsS = g.selectAll('.dot-sens').data(pts).enter().append('circle')
     .attr('class', 'dot-sens')
     .attr('cx', d => x(d.c)).attr('cy', y(0.5))
-    .attr('r', 0).attr('fill', '#22d3ee').attr('opacity', 0.8)
+    .attr('r', 0).attr('fill', '#1f77b4').attr('opacity', 0.85)
     .style('cursor', 'pointer');
   dotsS.transition().duration(800).delay((d, i) => i * 15)
     .attr('r', 5).attr('cy', d => y(d.s));
@@ -1498,7 +1505,7 @@ function renderSurgeryScatter() {
   const dotsP = g.selectAll('.dot-spec').data(pts).enter().append('circle')
     .attr('class', 'dot-spec')
     .attr('cx', d => x(d.c)).attr('cy', y(0.5))
-    .attr('r', 0).attr('fill', '#fb923c').attr('opacity', 0.8)
+    .attr('r', 0).attr('fill', '#ff7f0e').attr('opacity', 0.85)
     .style('cursor', 'pointer');
   dotsP.transition().duration(800).delay((d, i) => i * 15)
     .attr('r', 5).attr('cy', d => y(d.p));
@@ -1507,19 +1514,19 @@ function renderSurgeryScatter() {
   dotsS.on('mousemove', (evt, d) => {
     showTip(evt,
       `<span class="tt-label">Contacts:</span> <span class="tt-val">${d.c}</span><br>` +
-      `<span class="tt-label">Sensitivity:</span> <span class="tt-val">${(d.s*100).toFixed(1)}%</span>`
+      `<span style="color:#1f77b4">Sensitivity:</span> <span class="tt-val">${(d.s*100).toFixed(1)}%</span>`
     );
   }).on('mouseleave', hideTip);
   dotsP.on('mousemove', (evt, d) => {
     showTip(evt,
       `<span class="tt-label">Contacts:</span> <span class="tt-val">${d.c}</span><br>` +
-      `<span class="tt-label">Specificity:</span> <span class="tt-val yellow">${(d.p*100).toFixed(1)}%</span>`
+      `<span style="color:#ff7f0e">Specificity:</span> <span class="tt-val">${(d.p*100).toFixed(1)}%</span>`
     );
   }).on('mouseleave', hideTip);
 
   // Legend
   const leg = g.append('g').attr('transform', `translate(${iw - 150}, 8)`);
-  [{c:'#22d3ee',l:`Sens (rho=${CHART_DATA.fig2.rho_sens})`},{c:'#fb923c',l:`Spec (rho=${CHART_DATA.fig2.rho_spec})`}].forEach(({c,l}, i) => {
+  [{c:'#1f77b4',l:`Sensitivity (\u03C1=${CHART_DATA.fig2.rho_sens})`},{c:'#ff7f0e',l:`Specificity (\u03C1=${CHART_DATA.fig2.rho_spec})`}].forEach(({c,l}, i) => {
     leg.append('circle').attr('cx', 5).attr('cy', i * 18).attr('r', 4).attr('fill', c);
     leg.append('text').attr('x', 14).attr('y', i * 18 + 4)
       .attr('fill', '#94a3b8').attr('font-size', '10px').text(l);
@@ -1564,8 +1571,8 @@ function renderSurgeryBucket() {
     .attr('width', x.bandwidth())
     .attr('y', ih)
     .attr('height', 0)
-    .attr('fill', '#22d3ee')
-    .attr('opacity', 0.7)
+    .attr('fill', '#1f77b4')
+    .attr('opacity', 0.8)
     .attr('rx', 3)
     .style('cursor', 'pointer');
 
@@ -1649,21 +1656,21 @@ function renderClusteringChart() {
   g.append('line')
     .attr('x1', x(0)).attr('y1', y(0))
     .attr('x2', x(maxVal)).attr('y2', y(maxVal))
-    .attr('stroke', '#64748b').attr('stroke-width', 1)
-    .attr('stroke-dasharray', '6,4').attr('opacity', 0.5);
+    .attr('stroke', '#808080').attr('stroke-width', 1)
+    .attr('stroke-dasharray', '3.7,1.6');
 
   // Label for diagonal
   g.append('text')
     .attr('x', x(maxVal) - 4).attr('y', y(maxVal) + 14)
-    .attr('fill', '#64748b').attr('font-size', '10px')
+    .attr('fill', '#808080').attr('font-size', '10px')
     .attr('text-anchor', 'end')
     .text('y = x (no clustering)');
 
-  // Dots
+  // Dots (all same color, matching original)
   const dots = g.selectAll('.dot').data(pts).enter().append('circle')
     .attr('cx', d => x(d.e)).attr('cy', d => y(d.e))
     .attr('r', 0)
-    .attr('fill', d => d.p < 0.05 ? '#22d3ee' : '#f87171')
+    .attr('fill', '#1f77b4')
     .attr('opacity', 0.8)
     .style('cursor', 'pointer');
 
@@ -1679,13 +1686,6 @@ function renderClusteringChart() {
     );
   }).on('mouseleave', hideTip);
 
-  // Legend
-  const leg = g.append('g').attr('transform', `translate(${iw - 130}, 8)`);
-  [{c:'#22d3ee',l:'p < 0.05'},{c:'#f87171',l:'p >= 0.05'}].forEach(({c,l}, i) => {
-    leg.append('circle').attr('cx', 5).attr('cy', i * 18).attr('r', 5).attr('fill', c).attr('opacity', 0.8);
-    leg.append('text').attr('x', 16).attr('y', i * 18 + 4)
-      .attr('fill', '#94a3b8').attr('font-size', '11px').text(l);
-  });
 }
 
 // ── CHART 5: Score Ranking ──
@@ -1713,20 +1713,20 @@ function renderRankingChart() {
 
   g.append('text').attr('class', 'axis-label')
     .attr('x', iw / 2).attr('y', ih + 38).attr('text-anchor', 'middle')
-    .text('Criticality Score Decile');
+    .text('Criticality Score Decile \u2192 Higher');
   g.append('text').attr('class', 'axis-label')
     .attr('transform', 'rotate(-90)')
     .attr('x', -ih / 2).attr('y', -40).attr('text-anchor', 'middle')
-    .text('PPV (Surgical-Zone Enrichment)');
+    .text('Surgical-Zone Enrichment (PPV)');
 
-  // Bars
+  // Bars (uniform blue matching original)
   const bars = g.selectAll('.bar').data(deciles).enter().append('rect')
     .attr('x', d => x(d.d))
     .attr('width', x.bandwidth())
     .attr('y', ih)
     .attr('height', 0)
     .attr('rx', 3)
-    .attr('fill', (d, i) => d3.interpolateCool(i / 9))
+    .attr('fill', '#1f77b4')
     .attr('opacity', 0.8)
     .style('cursor', 'pointer');
 
@@ -1805,7 +1805,7 @@ function renderFailureChart() {
 
   g.append('text').attr('class', 'axis-label')
     .attr('x', iw / 2).attr('y', ih + 38).attr('text-anchor', 'middle')
-    .text('Delta-Mean (inside - outside SZ)');
+    .text('Delta mean (In SZ - Out SZ)');
   g.append('text').attr('class', 'axis-label')
     .attr('transform', 'rotate(-90)')
     .attr('x', -ih / 2).attr('y', -40).attr('text-anchor', 'middle')
@@ -1817,28 +1817,29 @@ function renderFailureChart() {
   medG.append('line')
     .attr('x1', x(CHART_DATA.fig6.med_fav)).attr('x2', x(CHART_DATA.fig6.med_fav))
     .attr('y1', 0).attr('y2', ih)
-    .attr('stroke', '#22d3ee').attr('stroke-width', 1)
+    .attr('stroke', '#3b82f6').attr('stroke-width', 1)
     .attr('stroke-dasharray', '6,4');
   medG.append('text')
     .attr('x', x(CHART_DATA.fig6.med_fav) + 4).attr('y', 10)
-    .attr('fill', '#22d3ee').attr('font-size', '9px')
+    .attr('fill', '#3b82f6').attr('font-size', '9px')
     .text('Fav. median');
   medG.append('line')
     .attr('x1', x(CHART_DATA.fig6.med_unfav)).attr('x2', x(CHART_DATA.fig6.med_unfav))
     .attr('y1', 0).attr('y2', ih)
-    .attr('stroke', '#f87171').attr('stroke-width', 1)
+    .attr('stroke', '#ef4444').attr('stroke-width', 1)
     .attr('stroke-dasharray', '6,4');
   medG.append('text')
     .attr('x', x(CHART_DATA.fig6.med_unfav) + 4).attr('y', 24)
-    .attr('fill', '#f87171').attr('font-size', '9px')
+    .attr('fill', '#ef4444').attr('font-size', '9px')
     .text('Unfav. median');
 
-  // Dots
+  // Dots (matching original: blue-500 for favorable, red-500 for unfavorable)
   const dots = g.selectAll('.dot').data(pts).enter().append('circle')
     .attr('cx', d => x(d.d)).attr('cy', ih / 2)
     .attr('r', 0)
-    .attr('fill', d => d.o === 'F' ? '#22d3ee' : '#f87171')
-    .attr('opacity', 0.8)
+    .attr('fill', d => d.o === 'F' ? '#3b82f6' : '#ef4444')
+    .attr('stroke', '#ffffff').attr('stroke-width', 0.5)
+    .attr('opacity', 0.85)
     .style('cursor', 'pointer');
 
   dots.transition().duration(800).delay((d, i) => i * 12)
@@ -1857,8 +1858,8 @@ function renderFailureChart() {
 
   // Legend
   const leg = g.append('g').attr('transform', `translate(${iw - 140}, 8)`);
-  [{c:'#22d3ee',l:'Favorable (I/II)'},{c:'#f87171',l:'Unfavorable (III/IV)'}].forEach(({c,l}, i) => {
-    leg.append('circle').attr('cx', 5).attr('cy', i * 18).attr('r', 5).attr('fill', c).attr('opacity', 0.8);
+  [{c:'#3b82f6',l:'Favorable (I/II)'},{c:'#ef4444',l:'Unfavorable (III/IV)'}].forEach(({c,l}, i) => {
+    leg.append('circle').attr('cx', 5).attr('cy', i * 18).attr('r', 5).attr('fill', c).attr('opacity', 0.85);
     leg.append('text').attr('x', 16).attr('y', i * 18 + 4)
       .attr('fill', '#94a3b8').attr('font-size', '11px').text(l);
   });
