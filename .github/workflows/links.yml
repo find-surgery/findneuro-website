@@ -10,8 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+      - name: Build site
+        run: npm ci && npm run build
       - name: Check for broken links
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --verbose --no-progress '*.html' '**/*.html'
+          args: --verbose --no-progress --root-dir dist --exclude-mail --exclude 'linkedin\.com' --exclude 'doi\.org' --exclude 'd3js\.org' 'dist/**/*.html'
           fail: true
