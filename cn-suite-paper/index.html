@@ -743,37 +743,41 @@
     <div class="slide-inner">
       <div class="slide-label anim">Results - Spatial Analysis</div>
       <h2 class="section-title anim d1">High-Critical Contacts Form Compact 3D Clusters</h2>
-      <p class="body-text anim d2">A critical question for surgical planning: are flagged contacts targetable focal subnetworks, or diffusely scattered? 3D coordinate-based clustering analysis (n=34 with available coordinates) shows they are <strong>significantly clustered</strong> - roughly <strong>half the inter-contact distance expected by chance</strong>.</p>
-      <div class="stat-row anim d3">
-        <div class="stat-card">
-          <div class="stat-value">8.96 mm</div>
-          <div class="stat-label">Observed mean NN distance</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value red">17.21 mm</div>
-          <div class="stat-label">Expected by chance</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value green">85%</div>
-          <div class="stat-label">Patients individually significant</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value green">p = 1.2×10⁻¹⁰</div>
-          <div class="stat-label">Wilcoxon test</div>
-        </div>
-      </div>
-      <div class="two-col anim d4">
+      <div class="two-col anim d2">
         <div>
-          <div class="figure-wrap">
-            <img src="figures/paper_critical_contact_clustering_3d.svg" alt="3D nearest-neighbor compactness">
+          <p class="body-text">3D clustering analysis (n=34) shows high-critical contacts are <strong>significantly clustered</strong> - roughly <strong>half the distance expected by chance</strong>.</p>
+          <div class="stat-row" style="margin-top:10px; grid-template-columns: 1fr 1fr;">
+            <div class="stat-card">
+              <div class="stat-value">8.96 mm</div>
+              <div class="stat-label">Observed mean NN dist.</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value red">17.21 mm</div>
+              <div class="stat-label">Expected by chance</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value green">85%</div>
+              <div class="stat-label">Patients significant</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value green">p = 1.2e-10</div>
+              <div class="stat-label">Wilcoxon test</div>
+            </div>
           </div>
-          <div class="figure-caption">Figure 4a. Observed vs. expected nearest-neighbor distance. Points below diagonal = spatial clustering.</div>
         </div>
-        <div>
-          <div class="figure-wrap">
-            <img src="figures/paper_critical_contact_clustering_contiguity.svg" alt="Clustered fraction analysis">
+        <div class="two-col" style="gap:16px;">
+          <div>
+            <div class="figure-wrap">
+              <img src="figures/paper_critical_contact_clustering_3d.svg" alt="3D nearest-neighbor compactness">
+            </div>
+            <div class="figure-caption">Fig 4a. Observed vs. expected NN distance.</div>
           </div>
-          <div class="figure-caption">Figure 4b. Observed vs. expected clustered fraction (≥1 high-critical neighbor within 10mm). Points above diagonal = clustering. Observed: 0.77 vs. expected: 0.39.</div>
+          <div>
+            <div class="figure-wrap">
+              <img src="figures/paper_critical_contact_clustering_contiguity.svg" alt="Clustered fraction analysis">
+            </div>
+            <div class="figure-caption">Fig 4b. Observed vs. expected clustered fraction.</div>
+          </div>
         </div>
       </div>
     </div>
