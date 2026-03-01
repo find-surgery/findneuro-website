@@ -118,7 +118,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px 60px;
+  padding: 12px 60px;
   opacity: 0;
   transform: translateX(60px);
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -142,7 +142,7 @@ html, body {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 /* -- TYPOGRAPHY -- */
@@ -420,7 +420,7 @@ h2.section-title {
   .two-col, .two-col-text-fig, .two-col-fig-text {
     grid-template-columns: 1fr;
   }
-  .slide { padding: 24px 20px; }
+  .slide { padding: 12px 20px; }
   .controls { right: 16px; bottom: 16px; }
   .stat-row { grid-template-columns: repeat(2, 1fr); }
 }
