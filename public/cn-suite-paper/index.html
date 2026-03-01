@@ -524,7 +524,7 @@
 <nav class="navbar">
   <div class="nav-logo"><a href="/"><img src="/assets/White_500px.png" alt="FIND Neuro"></a></div>
   <div class="nav-progress-wrap" id="navDots"></div>
-  <div class="nav-slide-num" id="slideNum">1 / 14</div>
+  <div class="nav-slide-num" id="slideNum">1 / 15</div>
 </nav>
 
 <!-- ── SLIDE VIEWPORT ── -->
@@ -573,12 +573,36 @@
     </div>
   </div>
 
-  <!-- SLIDE 2: What CN-Suite Does -->
+  <!-- SLIDE 2: Existing Approaches -->
   <div class="slide" data-slide="2">
+    <div class="slide-inner">
+      <div class="slide-label anim">Background</div>
+      <h2 class="section-title anim d1">Existing Computational Approaches</h2>
+      <p class="body-text anim d2">Contemporary surgical decision-making increasingly views epilepsy as a network disorder<span class="cite">[10,21]<span class="cite-popup"><span class="cite-ref">Kramer MA, Cash SS. Epilepsy as a disorder of cortical network organization. <em>Neuroscientist</em>. 2012;18(4):360-372. <a href="https://doi.org/10.1177/1073858411422754" target="_blank">DOI</a></span><span class="cite-ref">Spencer SS. Neural networks in human epilepsy: evidence of and implications for treatment. <em>Epilepsia</em>. 2002;43(3):219-227. <a href="https://doi.org/10.1046/j.1528-1157.2002.28901.x" target="_blank">DOI</a></span></span></span>, and several computational approaches have been developed to augment the interpretation of iEEG data:</p>
+      <div class="two-col anim d3">
+        <div>
+          <h3 style="color:#fff; font-size:18px; margin-bottom:12px;">Undirected Methods</h3>
+          <p class="body-text" style="font-size:17px;"><strong>High-frequency oscillations (HFOs, 80-500 Hz)</strong><span class="cite">[16,17]<span class="cite-popup"><span class="cite-ref">Jacobs J et al. High-frequency oscillations (HFOs) in clinical epilepsy. <em>Prog Neurobiol</em>. 2012;98(3):302-315. <a href="https://doi.org/10.1016/j.pneurobio.2012.03.001" target="_blank">DOI</a></span><span class="cite-ref">Frauscher B et al. High-frequency oscillations: the state of clinical research. <em>Epilepsia</em>. 2017;58(8):1316-1329. <a href="https://doi.org/10.1111/epi.13829" target="_blank">DOI</a></span></span></span> - the most extensively validated iEEG biomarker for epileptogenic zone localization. HFO resection rates correlate with seizure outcomes.</p>
+          <p class="body-text" style="font-size:17px; margin-top:10px;"><strong>Functional connectivity metrics</strong> - eigenvector centrality, degree centrality<span class="cite">[22]<span class="cite-popup"><span class="cite-ref">Bullmore E, Sporns O. Complex brain networks: graph theoretical analysis of structural and functional systems. <em>Nat Rev Neurosci</em>. 2009;10(3):186-198. <a href="https://doi.org/10.1038/nrn2575" target="_blank">DOI</a></span></span></span>, and phase-locking values<span class="cite">[23]<span class="cite-popup"><span class="cite-ref">Lachaux JP et al. Measuring phase synchrony in brain signals. <em>Hum Brain Mapp</em>. 1999;8(4):194-208. <a href="https://doi.org/10.1002/(SICI)1097-0193(1999)8:4%3C194::AID-HBM4%3E3.0.CO;2-C" target="_blank">DOI</a></span></span></span> identify highly connected nodes but cannot infer directionality.</p>
+        </div>
+        <div>
+          <h3 style="color:#fff; font-size:18px; margin-bottom:12px;">Directed Methods</h3>
+          <p class="body-text" style="font-size:17px;">Granger causality<span class="cite">[18]<span class="cite-popup"><span class="cite-ref">Blinowska KJ et al. Granger causality and information flow in multivariate processes. <em>Phys Rev E</em>. 2004;70(5):050902. <a href="https://doi.org/10.1103/PhysRevE.70.050902" target="_blank">DOI</a></span></span></span>, partial directed coherence<span class="cite">[24]<span class="cite-popup"><span class="cite-ref">Baccala LA, Sameshima K. Partial directed coherence: a new concept in neural structure determination. <em>Biol Cybern</em>. 2001;84(6):463-474. <a href="https://doi.org/10.1007/PL00007990" target="_blank">DOI</a></span></span></span>, and information-theoretic approaches<span class="cite">[19]<span class="cite-popup"><span class="cite-ref">Wilke C et al. Graph analysis of epileptogenic networks in human partial epilepsy. <em>Epilepsia</em>. 2011;52(1):84-93. <a href="https://doi.org/10.1111/j.1528-1167.2010.02785.x" target="_blank">DOI</a></span></span></span> have been used to infer causal relationships in seizure networks.</p>
+          <p class="body-text" style="font-size:17px; margin-top:10px;"><strong>EZTrack</strong><span class="cite">[13]<span class="cite-popup"><span class="cite-ref">U.S. FDA. 510(k) Premarket Notification K201910: EZTrack. Silver Spring, MD: FDA; 2021. <a href="https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K201910" target="_blank">FDA</a></span></span></span> is the only FDA-cleared computational tool that analyzes iEEG network dynamics. It computes undirected eigenvector centrality from broadband iEEG correlation matrices, identifying highly connected network hubs without inferring causal directionality.</p>
+        </div>
+      </div>
+      <div class="key-point warn anim d4">
+        <strong>Gap:</strong> Undirected methods cannot distinguish primary "driver" regions from secondary "responder" regions. No existing platform has combined directed connectivity analysis with a locked, pre-specified machine learning classifier validated in multiple independent centers.
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: What CN-Suite Does -->
+  <div class="slide" data-slide="3">
     <div class="slide-inner">
       <div class="slide-label anim">Platform Overview</div>
       <h2 class="section-title anim d1">How CN-Suite Works</h2>
-      <p class="body-text anim d2">CN-Suite is a Software as a Medical Device (SaMD) that computes quantitative <strong>"criticality scores"</strong> for each brain region sampled by intracranial electrodes. Instead of relying on visual pattern recognition, it quantifies <strong>directed information flow</strong><span class="cite">[10,21]<span class="cite-popup"><span class="cite-ref">Kramer MA, Cash SS. Epilepsy as a disorder of cortical network organization. <em>Neuroscientist</em>. 2012;18(4):360-372. <a href="https://doi.org/10.1177/1073858411422754" target="_blank">DOI</a></span><span class="cite-ref">Spencer SS. Neural networks in human epilepsy: evidence of and implications for treatment. <em>Epilepsia</em>. 2002;43(3):219-227. <a href="https://doi.org/10.1046/j.1528-1157.2002.28901.x" target="_blank">DOI</a></span></span></span> between neural signals to distinguish seizure "drivers" from passive "responders."</p>
+      <p class="body-text anim d2">CN-Suite is a Software as a Medical Device (SaMD) that computes quantitative <strong>"criticality scores"</strong> for each brain region sampled by intracranial electrodes. Instead of relying on visual pattern recognition, it quantifies <strong>directed information flow</strong> between neural signals to distinguish seizure "drivers" from passive "responders."</p>
       <div class="two-col anim d3">
         <div>
           <h3 style="color:#fff; font-size:18px; margin-bottom:12px;">Signal Processing</h3>
@@ -599,10 +623,7 @@
           </div>
         </div>
       </div>
-      <div class="key-point anim d4">
-        <strong>Key differentiator vs. EZTrack<span class="cite">[13]<span class="cite-popup"><span class="cite-ref">U.S. FDA. 510(k) Premarket Notification K201910: EZTrack. Silver Spring, MD: FDA; 2021. <a href="https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K201910" target="_blank">FDA</a></span></span></span> (the only other FDA-cleared iEEG analysis tool):</strong> EZTrack uses undirected eigenvector centrality<span class="cite">[22]<span class="cite-popup"><span class="cite-ref">Bullmore E, Sporns O. Complex brain networks: graph theoretical analysis of structural and functional systems. <em>Nat Rev Neurosci</em>. 2009;10(3):186-198. <a href="https://doi.org/10.1038/nrn2575" target="_blank">DOI</a></span></span></span> - it finds highly connected hubs but cannot distinguish drivers from responders. CN-Suite uses directed transfer entropy to infer causal information flow.
-      </div>
-      <div class="key-point good anim d5">
+      <div class="key-point good anim d4">
         <strong>Beyond surgery:</strong> Because the underlying network causality framework quantifies directed information flow rather than simply localizing seizure onset, it extends naturally to neuromodulation targeting for responsive neurostimulation (RNS) and deep brain stimulation (DBS), where optimal electrode placement within distributed seizure networks remains an unresolved clinical challenge.
       </div>
     </div>
@@ -952,6 +973,7 @@
 const SLIDE_TITLES = [
   "Intro",
   "Problem",
+  "Existing",
   "CN-Suite",
   "Design",
   "Cohort",
