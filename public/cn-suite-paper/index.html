@@ -64,56 +64,44 @@
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 2px;
     min-width: 0;
-    padding: 0 12px;
+    padding: 0 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
 
-  .nav-dot {
-    flex: 1;
-    height: 3px;
-    border-radius: 2px;
-    background: var(--border);
+  .nav-progress-wrap::-webkit-scrollbar { display: none; }
+
+  .nav-item {
+    flex-shrink: 0;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: all 0.4s ease;
-    position: relative;
-    min-width: 8px;
-  }
-
-  .nav-dot.active {
-    background: var(--accent);
-    box-shadow: 0 0 8px var(--accent-glow);
-  }
-
-  .nav-dot.visited {
-    background: rgba(34, 211, 238, 0.35);
-  }
-
-  .nav-dot:hover {
-    background: var(--accent);
-    transform: scaleY(2);
-  }
-
-  .nav-dot .nav-tooltip {
-    position: absolute;
-    bottom: 14px;
-    left: 50%;
-    transform: translateX(-50%) translateY(4px);
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    color: var(--text-primary);
-    font-size: 13px;
-    padding: 4px 10px;
-    border-radius: 6px;
+    transition: all 0.3s ease;
     white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.2s ease;
+    color: var(--text-muted);
   }
 
-  .nav-dot:hover .nav-tooltip {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
+  .nav-item:hover {
+    color: var(--text-primary);
+    background: rgba(148, 163, 184, 0.1);
+  }
+
+  .nav-item.active {
+    color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .nav-item.visited {
+    color: var(--text-secondary);
+  }
+
+  .nav-sep {
+    flex-shrink: 0;
+    color: var(--border);
+    font-size: 10px;
   }
 
   .nav-slide-num {
@@ -890,20 +878,20 @@
 
 <script>
 const SLIDE_TITLES = [
-  "Title",
-  "The Problem",
-  "How CN-Suite Works",
-  "Study Design",
-  "Demographics",
-  "Effect Size (Primary)",
-  "Threshold Sweep",
-  "Contact-Level Metrics",
-  "Surgery-Size Effect",
-  "Spatial Compactness",
-  "Score Ranking",
-  "Failure Mechanism",
-  "Limitations",
-  "Conclusions"
+  "Intro",
+  "Problem",
+  "CN-Suite",
+  "Design",
+  "Cohort",
+  "Effect Size",
+  "Threshold",
+  "Contacts",
+  "Surgery Size",
+  "Clustering",
+  "Ranking",
+  "Failure",
+  "Limits",
+  "Conclusion"
 ];
 
 let current = 0;
@@ -912,13 +900,19 @@ const total = slides.length;
 const navWrap = document.getElementById('navDots');
 const slideNum = document.getElementById('slideNum');
 
-// Build nav dots
+// Build nav items
 SLIDE_TITLES.forEach((title, i) => {
-  const dot = document.createElement('div');
-  dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
-  dot.innerHTML = `<span class="nav-tooltip">${title}</span>`;
-  dot.addEventListener('click', () => goTo(i));
-  navWrap.appendChild(dot);
+  if (i > 0) {
+    const sep = document.createElement('span');
+    sep.className = 'nav-sep';
+    sep.textContent = '/';
+    navWrap.appendChild(sep);
+  }
+  const item = document.createElement('span');
+  item.className = 'nav-item' + (i === 0 ? ' active' : '');
+  item.textContent = title;
+  item.addEventListener('click', () => goTo(i));
+  navWrap.appendChild(item);
 });
 
 function goTo(idx) {
@@ -941,14 +935,17 @@ function navigate(dir) {
 }
 
 function updateNav() {
-  const dots = navWrap.querySelectorAll('.nav-dot');
-  dots.forEach((d, i) => {
+  const items = navWrap.querySelectorAll('.nav-item');
+  items.forEach((d, i) => {
     d.classList.toggle('active', i === current);
     d.classList.toggle('visited', i < current);
   });
   slideNum.textContent = `${current + 1} / ${total}`;
   document.getElementById('prevBtn').disabled = current === 0;
   document.getElementById('nextBtn').disabled = current === total - 1;
+  // Scroll active item into view
+  const active = navWrap.querySelector('.nav-item.active');
+  if (active) active.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
 }
 
 // Keyboard navigation
