@@ -27,16 +27,17 @@ export function renderFailureChart(tip: TooltipApi): void {
   const favBox = boxStats(favD);
   const unfBox = boxStats(unfD);
 
-  const yL = d3.scaleLinear().domain([0, 0.8]).range([lh, 0]);
+  const allDeltaMean = allPts.map(p => p.d);
+  const yMin = Math.floor(d3.min(allDeltaMean)! * 10) / 10;
+  const yMax = Math.ceil(d3.max(allDeltaMean)! * 10) / 10;
+  const yL = d3.scaleLinear().domain([yMin, yMax]).range([lh, 0]);
   const boxW = lw * 0.22;
 
   // Grid lines
-  [0.0, 0.2, 0.4, 0.6, 0.8].forEach(v => {
-    gL.append('line')
-      .attr('x1', 0).attr('x2', lw)
-      .attr('y1', yL(v)).attr('y2', yL(v))
-      .attr('stroke', '#b0b0b0').attr('stroke-opacity', 0.3).attr('stroke-width', 0.8);
-  });
+  gL.append('g').attr('class', 'grid')
+    .call(d3.axisLeft(yL).ticks(5).tickSize(-lw).tickFormat('' as any))
+    .selectAll('line').attr('stroke', '#b0b0b0').attr('stroke-opacity', 0.3).attr('stroke-width', 0.8);
+  gL.select('.grid path').attr('stroke', 'none');
 
   gL.append('g').attr('class', 'axis')
     .call(d3.axisLeft(yL).ticks(5).tickFormat(d => (d as number).toFixed(1)));
