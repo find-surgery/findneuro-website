@@ -196,7 +196,11 @@ export function renderFailureChart(tip: TooltipApi): void {
   }).on('mouseleave', tip.hide);
 
   // Legend
-  const leg = gR.append('g').attr('transform', `translate(${rw - 140}, 8)`);
+  const leg = gR.append('g').attr('transform', `translate(${rw - 148}, 6)`);
+  leg.append('rect')
+    .attr('x', -8).attr('y', -10)
+    .attr('width', 156).attr('height', 46)
+    .attr('fill', 'rgba(255,255,255,0.92)').attr('stroke', '#ccc').attr('rx', 4);
   [{c:COLORS.favorable,l:'Favorable (I/II)'},{c:COLORS.unfavorable,l:'Unfavorable (III/IV)'}].forEach(({c,l}, i) => {
     leg.append('circle').attr('cx', 5).attr('cy', i * 18).attr('r', 5).attr('fill', c).attr('opacity', 0.85);
     leg.append('text').attr('x', 16).attr('y', i * 18 + 4)
