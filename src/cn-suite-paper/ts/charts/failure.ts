@@ -132,7 +132,7 @@ export function renderFailureChart(tip: TooltipApi): void {
   const gR = svg.append('g').attr('transform', `translate(${rx0 + rm.left},${rm.top})`);
 
   const pts = allPts.filter(d => d.f !== null) as (FailurePatient & { f: number })[];
-  const xR = d3.scaleLinear().domain([0, 0.9]).range([0, rw]);
+  const xR = d3.scaleLinear().domain([yMin, 0.9]).range([0, rw]);
   const yR = d3.scaleLinear().domain([0, 1]).range([rh, 0]);
 
   gR.append('g').attr('class', 'grid').attr('transform', `translate(0,${rh})`)
