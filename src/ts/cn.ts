@@ -129,6 +129,21 @@ export function initCNData(s: SceneState, cn: CNState): void {
   cn.critScores[cn.critSubset[1]] = 0.65;
   cn.critScores[cn.critSubset[2]] = 0.3;
   cn.critScores[cn.critSubset[3]] = 0.0;
+
+  /* Pulsing torus ring around the most critical contact */
+  cn.critRingMat = new THREE.MeshBasicMaterial({
+    color: 0xff2222, transparent: true, opacity: 0,
+    side: THREE.DoubleSide,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  });
+  cn.critRing = new THREE.Mesh(
+    new THREE.TorusGeometry(0.08, 0.008, 8, 32),
+    cn.critRingMat,
+  );
+  const critPos = cn.contactPositions[cn.critSubset[0]];
+  cn.critRing.position.set(critPos.x, critPos.y, critPos.z);
+  cn.critRing.visible = false;
+  cn.electrodeGroup.add(cn.critRing);
 }
 
 /** Update connection line geometry to match current highlight/connected contacts */
@@ -209,6 +224,7 @@ export function setCNStepTo(
     });
     if (cn.electrodeGroup) cn.electrodeGroup.visible = true;
     if (cn.connectionLines) cn.connectionLines.visible = (step === 2);
+    if (cn.critRing) cn.critRing.visible = (step === 3);
     if (step === 2) updateConnectionGeometry(cn);
   }
 }
@@ -228,6 +244,7 @@ export function stopCNVisualization(
   s.brain.children.forEach(child => { child.visible = true; });
   if (cn.electrodeGroup) cn.electrodeGroup.visible = false;
   if (cn.connectionLines) cn.connectionLines.visible = false;
+  if (cn.critRing) cn.critRing.visible = false;
 
   setBrainFloatingTo(s, null, 0, canvasOriginalParent, canvasNextSibling);
 
@@ -313,6 +330,14 @@ export function updateCNVisualization(cn: CNState, elapsed: number, dt: number):
         cn.contactColors[i * 3 + 1] = 0.04;
         cn.contactColors[i * 3 + 2] = 0.08;
       }
+    }
+
+    /* Pulsing ring around the most critical contact */
+    if (cn.critRing && cn.critRingMat) {
+      const critPulse = Math.sin(elapsed * 4) * 0.15 + 0.4;
+      cn.critRingMat.opacity = critPulse;
+      cn.critRing.rotation.x = elapsed * 2;
+      cn.critRing.rotation.y = elapsed * 1.3;
     }
   }
 

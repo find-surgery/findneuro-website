@@ -55,6 +55,8 @@ import type { DragState, AliceState, CNState, AnimationState } from './types.ts'
     connectedContacts: [],
     critScores: new Float32Array(0),
     critSubset: [],
+    critRing: null,
+    critRingMat: null,
     cycleTimer: 0,
     cycleIndex: 0,
     cyclePairs: [],

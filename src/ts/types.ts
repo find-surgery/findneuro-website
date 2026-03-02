@@ -154,6 +154,8 @@ export interface CNState {
   connectedContacts: number[];
   critScores: Float32Array;
   critSubset: number[];
+  critRing: THREE.Mesh | null;
+  critRingMat: THREE.MeshBasicMaterial | null;
   cycleTimer: number;
   cycleIndex: number;
   cyclePairs: CyclePair[];
