@@ -48,9 +48,9 @@
     <!-- Three.js + brain data: defer in head for early download without blocking paint -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" integrity="sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9" crossorigin="anonymous"></script>
     <script defer src="/brain_data.js"></script>
-  <script type="module" crossorigin src="/assets/main-Ds_p8Ovh.js"></script>
+  <script type="module" crossorigin src="/assets/main-CZo9JhmI.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
-  <link rel="stylesheet" crossorigin href="/assets/main-C14Hdd_B.css">
+  <link rel="stylesheet" crossorigin href="/assets/main-CkdX87FM.css">
 </head>
 <body>
 <noscript>
@@ -242,7 +242,9 @@
             </div>
 
             <div class="cn-content">
-                <div class="cn-brain" id="cn-brain-target"></div>
+                <div class="cn-brain" id="cn-brain-target">
+                    <canvas class="cn-seeg" id="cn-seeg-canvas"></canvas>
+                </div>
 
                 <div class="cn-text">
                     <div class="cn-panel cn-panel--active" data-cn-panel="1">
