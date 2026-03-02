@@ -385,7 +385,7 @@ export function updateSEEG(cn: CNState, elapsed: number): void {
     state.causalTimer = CAUSAL_FIRE_INTERVAL * 0.8;
   }
 
-  state.targetOpacity = (newMode === 'electrodes' || newMode === 'connectivity') ? 1 : 0;
+  state.targetOpacity = newMode === 'electrodes' ? 1 : 0;
 
   // Smooth opacity transitions
   const speed = 0.06;
