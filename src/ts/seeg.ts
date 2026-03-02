@@ -117,7 +117,7 @@ function drawSignals(): void {
     const yCenter = chHeight * ci + chHeight * 0.5;
 
     // Channel label
-    ctx.fillStyle = `rgba(0, 180, 220, ${0.5 * state.opacity})`;
+    ctx.fillStyle = `rgba(0, 180, 220, ${0.3 * state.opacity})`;
     ctx.font = '9px "JetBrains Mono", monospace';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
@@ -125,7 +125,7 @@ function drawSignals(): void {
 
     // Separator line
     if (ci > 0) {
-      ctx.strokeStyle = `rgba(0, 180, 220, ${0.06 * state.opacity})`;
+      ctx.strokeStyle = `rgba(0, 180, 220, ${0.04 * state.opacity})`;
       ctx.lineWidth = 0.5;
       ctx.beginPath();
       ctx.moveTo(labelW, chHeight * ci);
@@ -134,7 +134,7 @@ function drawSignals(): void {
     }
 
     // Signal trace
-    ctx.strokeStyle = `rgba(0, 212, 255, ${0.7 * state.opacity})`;
+    ctx.strokeStyle = `rgba(0, 212, 255, ${0.35 * state.opacity})`;
     ctx.lineWidth = 1;
     ctx.beginPath();
 
@@ -152,7 +152,7 @@ function drawSignals(): void {
     ctx.stroke();
 
     // Glow pass for spikes (thicker, more transparent)
-    ctx.strokeStyle = `rgba(0, 212, 255, ${0.2 * state.opacity})`;
+    ctx.strokeStyle = `rgba(0, 212, 255, ${0.12 * state.opacity})`;
     ctx.lineWidth = 3;
     ctx.beginPath();
     for (let s = 0; s < samplesVisible; s++) {

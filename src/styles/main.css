@@ -646,19 +646,19 @@ body::after {
 .cn-brain canvas {
     width: 100% !important; height: 100% !important;
     pointer-events: auto; cursor: grab;
+    position: relative; z-index: 1;
 }
 .cn-brain canvas:active { cursor: grabbing; }
 .cn-seeg {
     position: absolute;
-    right: -8px; bottom: 8px;
-    width: 52%; height: 55%;
-    background: rgba(4, 10, 18, 0.82);
-    border: 1px solid rgba(0, 212, 255, 0.12);
+    left: -10%; top: 5%;
+    width: 120%; height: 90%;
+    background: transparent;
+    border: none;
     border-radius: 8px;
     pointer-events: none;
-    z-index: 2;
+    z-index: 0;
     display: none;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.06);
 }
 .cn-text {
     position: relative; min-height: 320px;
@@ -705,7 +705,7 @@ body::after {
 @media (max-width: 768px) {
     .cn-content { grid-template-columns: 1fr; gap: 32px; }
     .cn-brain { max-width: 280px; }
-    .cn-seeg { width: 48%; height: 50%; right: -4px; bottom: 4px; }
+    .cn-seeg { left: -5%; top: 5%; width: 110%; height: 90%; }
     .cn-steps { gap: 0; flex-wrap: nowrap; }
     .cn-step { padding: 8px 14px 8px 10px; font-size: 0.78rem; }
     .cn-step__connector { width: 20px; }
