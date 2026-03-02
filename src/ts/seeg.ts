@@ -13,6 +13,8 @@ interface SEEGState {
   causalTimer: number;
   causalSourceFired: boolean;
   causalPropagating: boolean;
+  lastCycleIndex: number;  // tracks cn.cycleIndex to detect changes
+  sourceChannel: number;   // which channel index is currently the source
 }
 
 interface SEEGChannel {
@@ -52,6 +54,8 @@ let state: SEEGState = {
   causalTimer: 0,
   causalSourceFired: false,
   causalPropagating: false,
+  lastCycleIndex: -1,
+  sourceChannel: 0,
 };
 
 /** Initialize the sEEG display canvas and channel data */
@@ -86,25 +90,54 @@ export function initSEEG(): void {
   }
 }
 
-/** Assign roles for Phase 2: source, targets, bystanders */
-function assignCausalRoles(): void {
+/** Assign roles for Phase 2 with a given source channel index.
+ *  The source rotates each time the 3D brain cycles to a new contact pair.
+ *  The 5 channels after the source (wrapping) become targets; the rest are bystanders. */
+function assignCausalRoles(srcIdx: number): void {
   const chs = state.channels;
-  // Channel 0 = source, 1-5 = targets with staggered delays, 6-7 = bystanders
-  for (let i = 0; i < chs.length; i++) {
-    if (i === 0) {
-      chs[i].role = 'source';
-      chs[i].causalDelay = 0;
-      chs[i].causalAtten = 1;
-    } else if (i <= 5) {
-      chs[i].role = 'target';
-      chs[i].causalDelay = TARGET_DELAYS[i - 1];
-      chs[i].causalAtten = TARGET_ATTENUATIONS[i - 1];
+  const n = chs.length;
+  state.sourceChannel = srcIdx;
+
+  let targetCount = 0;
+  for (let i = 0; i < n; i++) {
+    const ch = chs[i];
+    ch.spikeDecay = 0;
+    ch.causalCountdown = -1;
+
+    if (i === srcIdx) {
+      ch.role = 'source';
+      ch.causalDelay = 0;
+      ch.causalAtten = 1;
     } else {
-      chs[i].role = 'bystander';
-      chs[i].causalDelay = 0;
-      chs[i].causalAtten = 0;
+      // Fill targets in order after source, wrapping around
+      const dist = (i - srcIdx + n) % n; // 1-based distance from source
+      if (dist <= 5) {
+        ch.role = 'target';
+        ch.causalDelay = TARGET_DELAYS[targetCount];
+        ch.causalAtten = TARGET_ATTENUATIONS[targetCount];
+        targetCount++;
+      } else {
+        ch.role = 'bystander';
+        ch.causalDelay = 0;
+        ch.causalAtten = 0;
+      }
     }
-    chs[i].causalCountdown = -1;
+  }
+}
+
+/** Fire the source immediately and arm all target countdowns */
+function fireCausalBurst(): void {
+  state.causalTimer = 0;
+  state.causalSourceFired = true;
+  state.causalPropagating = true;
+
+  const src = state.channels[state.sourceChannel];
+  src.spikeDecay = 0.9;
+
+  for (const ch of state.channels) {
+    if (ch.role === 'target') {
+      ch.causalCountdown = ch.causalDelay;
+    }
   }
 }
 
@@ -147,20 +180,7 @@ function advancePhase2(elapsed: number, dt: number): void {
 
   // Fire a new burst from source periodically
   if (state.causalTimer >= CAUSAL_FIRE_INTERVAL) {
-    state.causalTimer = 0;
-    state.causalSourceFired = true;
-    state.causalPropagating = true;
-
-    // Trigger source spike
-    const src = state.channels[0];
-    src.spikeDecay = 0.9;
-
-    // Arm target countdowns
-    for (const ch of state.channels) {
-      if (ch.role === 'target') {
-        ch.causalCountdown = ch.causalDelay;
-      }
-    }
+    fireCausalBurst();
   }
 
   // Advance each channel
@@ -312,7 +332,7 @@ function drawSignals(): void {
 
     // Phase 2: draw propagation arrows from source to active targets
     if (state.mode === 'connectivity' && ch.role === 'target' && ch.causalCountdown >= 0) {
-      const srcY = chHeight * 0.5;
+      const srcY = chHeight * state.sourceChannel + chHeight * 0.5;
       const arrowX = cssW - 16;
       ctx.strokeStyle = `rgba(255, 160, 60, ${0.25 * state.opacity})`;
       ctx.lineWidth = 1;
@@ -346,12 +366,23 @@ export function updateSEEG(cn: CNState, elapsed: number): void {
   // Handle mode transitions
   if (newMode !== state.mode) {
     if (newMode === 'connectivity') {
-      assignCausalRoles();
+      state.lastCycleIndex = cn.cycleIndex;
+      assignCausalRoles(cn.cycleIndex % SEEG_CHANNELS);
       state.causalTimer = CAUSAL_FIRE_INTERVAL * 0.8; // fire soon after entering
     } else if (state.mode === 'connectivity') {
       clearCausalRoles();
+      state.lastCycleIndex = -1;
     }
     state.mode = newMode;
+  }
+
+  // Detect cycle changes in the 3D brain and rotate which channel is source
+  if (state.mode === 'connectivity' && cn.cycleIndex !== state.lastCycleIndex) {
+    state.lastCycleIndex = cn.cycleIndex;
+    const newSrc = cn.cycleIndex % SEEG_CHANNELS;
+    assignCausalRoles(newSrc);
+    // Fire immediately from new source
+    state.causalTimer = CAUSAL_FIRE_INTERVAL * 0.8;
   }
 
   state.targetOpacity = (newMode === 'electrodes' || newMode === 'connectivity') ? 1 : 0;
