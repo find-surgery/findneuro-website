@@ -7,6 +7,7 @@ import { buildEpiNetwork, setupNetworkHint } from './network.ts';
 import { initDragHandlers, initMouseAndScroll, initBrainClickHandlers } from './interaction.ts';
 import { initAliceObservers, initSolCardInteractions, stopAliceVisualization } from './alice.ts';
 import { initCNData, initCNObservers, stopCNVisualization } from './cn.ts';
+import { initSEEG } from './seeg.ts';
 import { startAnimationLoop, getAnimateFn, initBrainVisibilityObserver, initNarrativeObservers } from './animation.ts';
 import { initUI } from './ui.ts';
 import { initBackground } from './background.ts';
@@ -120,6 +121,9 @@ import type { DragState, AliceState, CNState, AnimationState } from './types.ts'
         animate,
       );
     }
+
+    /* sEEG signal overlay for CN Phase 1 */
+    initSEEG();
 
     /* Critical Nodes interactive */
     initCNObservers(

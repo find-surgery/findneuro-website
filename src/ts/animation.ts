@@ -2,6 +2,7 @@ import { CAMERA, NETWORK } from './constants.ts';
 import { triggerSpike, updateEpiNetwork } from './network.ts';
 import { updateMouseGlow } from './interaction.ts';
 import { updateCNVisualization } from './cn.ts';
+import { updateSEEG } from './seeg.ts';
 import { AliceMode, CNMode } from './types.ts';
 import type { SceneState, BrainState, NetworkState, DragState, AliceState, CNState, AnimationState } from './types.ts';
 
@@ -57,8 +58,10 @@ export function startAnimationLoop(
     /* CN mode takes over rendering when active */
     if (cn.mode > CNMode.Off) {
       updateCNVisualization(cn, elapsed, dt);
+      updateSEEG(cn, elapsed);
       updateMouseGlow(brain, animState);
     } else if (net) {
+      updateSEEG(cn, elapsed); // fade out when leaving CN
       updateEpiNetwork(net, brain, elapsed, alice);
       updateMouseGlow(brain, animState);
     }
