@@ -1,5 +1,8 @@
-import { resolve } from 'path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   root: 'src',
@@ -11,6 +14,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'src/index.html'),
         'cn-suite-paper': resolve(__dirname, 'src/cn-suite-paper/index.html'),
+        shap: resolve(__dirname, 'src/shap/index.html'),
       },
       external: ['three'],
       output: {
