@@ -433,20 +433,20 @@
       <h2 class="section-title anim d1">What Drives Criticality? Network Topology, Not Waveform</h2>
       <div class="two-col-text-fig anim d2">
         <div>
-          <p class="body-text">Post-hoc SHAP analysis (19,257 observations; 4,235 high-critical) reveals a <strong>three-tier feature hierarchy</strong>. The four highest-ranked features are all network-topology measures (|SHAP| 0.27-0.39): change in betweenness centrality (rank 1), eigenvector centrality (rank 2), clustering coefficient (rank 3), and temporal betweenness (rank 4). Waveform features first appear at rank 5 (|SHAP| 0.19) - after a gap <em>twice</em> the within-tier step.</p>
-          <p class="body-text" style="margin-top:10px;">A critical contact simultaneously becomes a <strong>routing bridge</strong> (betweenness &#x2191;), connects to <strong>influential hubs</strong> (eigenvector &#x2191;), and anchors a <strong>cohesive local subnetwork</strong> (clustering &#x2191;). The three centrality features are not collinear (raw &#x03C1; = -0.49) yet converge in SHAP space (&#x03C1; = 0.06) - the model assigns independent credit to each.</p>
-          <div class="key-point good" style="margin-top:10px;">
-            <strong>Grading, not just classification:</strong> &#x0394; Eigenvector centrality correlates with continuous criticality score at &#x03C1; = 0.798 (p = 4.0 &#x00D7; 10&#x207B;&#x00B9;&#x2074;), while waveform features show &#x03C1; = -0.025. The score reflects depth of seizure-induced network reorganization - supporting ranked prioritization of surgical targets.
+          <p class="body-text" style="font-size:16px;">SHAP analysis (19,257 observations; 4,235 high-critical) reveals a <strong>three-tier feature hierarchy</strong>. The top four features are all network-topology measures (|SHAP| 0.27-0.39): &#x0394; betweenness, eigenvector, clustering, and temporal BC. Waveform features first appear at rank 5 - after a gap <em>twice</em> the within-tier step.</p>
+          <p class="body-text" style="margin-top:8px; font-size:16px;">A critical contact becomes a <strong>routing bridge</strong> (betweenness &#x2191;), connects to <strong>influential hubs</strong> (eigenvector &#x2191;), and anchors a <strong>cohesive subnetwork</strong> (clustering &#x2191;). These are not collinear (raw &#x03C1; = -0.49) yet converge in SHAP space (&#x03C1; = 0.06) - the model credits each independently.</p>
+          <div class="key-point good" style="margin-top:8px; font-size:15px;">
+            <strong>Grading, not just classification:</strong> &#x0394; Eigenvector &#x2194; criticality score &#x03C1; = 0.798 (p = 4.0 &#x00D7; 10&#x207B;&#x00B9;&#x2074;); waveform &#x03C1; = -0.025. The score reflects network reorganization depth - supporting ranked target prioritization.
           </div>
-          <p class="body-text" style="margin-top:10px; font-size:14px;">
-            <a href="/shap" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:600; border-bottom:1px solid var(--accent);">View full interactive SHAP analysis &#x2192;</a>
+          <p class="body-text" style="margin-top:6px; font-size:14px;">
+            <a href="/shap" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:600; border-bottom:1px solid var(--accent);">Full interactive SHAP analysis &#x2192;</a>
           </p>
         </div>
         <div>
           <div class="figure-wrap">
             <div class="chart-container" id="chart-shapNetwork"></div>
           </div>
-          <div class="figure-caption">Network transformation at seizure onset. C* gains connections to both clusters, becoming a routing bridge (betweenness), hub neighbor (eigenvector), and clique anchor (clustering). Below: SHAP feature hierarchy by tier.</div>
+          <div class="figure-caption">Network transformation at seizure onset. C* bridges both clusters (betweenness), connects to hubs (eigenvector), and forms a local clique (clustering). Below: SHAP hierarchy by tier.</div>
         </div>
       </div>
     </div>
