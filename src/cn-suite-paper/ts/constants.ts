@@ -13,6 +13,7 @@ export const SLIDE_TITLES = [
   "Ranking",
   "Failure",
   "Limits",
+  "SHAP",
   "Conclusion"
 ];
 
