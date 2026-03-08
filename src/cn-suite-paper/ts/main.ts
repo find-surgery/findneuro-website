@@ -8,6 +8,7 @@ import { renderSurgeryBucket } from './charts/surgery-bucket';
 import { renderClusteringChart } from './charts/clustering';
 import { renderRankingChart } from './charts/ranking';
 import { renderFailureChart } from './charts/failure';
+import { renderShapNetwork } from './charts/shap-network';
 
 const tip = initTooltip();
 
@@ -20,6 +21,7 @@ const chartRenderers: Record<string, () => void> = {
   clustering: () => renderClusteringChart(tip),
   ranking: () => renderRankingChart(tip),
   failure: () => renderFailureChart(tip),
+  shapNetwork: () => renderShapNetwork(tip),
 };
 
 function renderChartsForSlide(idx: number): void {

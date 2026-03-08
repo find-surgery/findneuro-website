@@ -22,7 +22,8 @@ export const SLIDE_CHARTS: Record<number, string[]> = {
   9: ['surgeryScatter', 'surgeryBucket'],
   10: ['clustering'],
   11: ['ranking'],
-  12: ['failure']
+  12: ['failure'],
+  14: ['shapNetwork']
 };
 
 export const COLORS = {
