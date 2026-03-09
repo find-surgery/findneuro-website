@@ -9,6 +9,7 @@ import { renderClusteringChart } from './charts/clustering';
 import { renderRankingChart } from './charts/ranking';
 import { renderFailureChart } from './charts/failure';
 import { renderShapNetwork } from './charts/shap-network';
+import { renderFlowOrder } from './charts/flow-order';
 
 const tip = initTooltip();
 
@@ -22,6 +23,7 @@ const chartRenderers: Record<string, () => void> = {
   ranking: () => renderRankingChart(tip),
   failure: () => renderFailureChart(tip),
   shapNetwork: () => renderShapNetwork(tip),
+  flowOrder: () => renderFlowOrder(tip),
 };
 
 function renderChartsForSlide(idx: number): void {
