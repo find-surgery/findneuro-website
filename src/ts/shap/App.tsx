@@ -427,7 +427,7 @@ function GradingPanel() {
         </div>
         <div style={{ background: CARD, borderRadius: 11, padding: '14px 18px', border: `1px solid ${BDR}` }}>
           <div style={{ fontSize: 12, fontWeight: 700, color: MUT, marginBottom: 7 }}>Tier 2+3: Classifiers Only</div>
-          <p style={{ fontSize: 12, color: MUT, lineHeight: 1.65, margin: 0 }}>Temporal betweenness ({'\u03c1'}=0.21, ns) and catch22/HFO features ({'\u03c1'}{'\u2248'}{'\u22120.025'}) contribute to threshold classification but carry no graded signal about criticality <em>degree</em>.</p>
+          <p style={{ fontSize: 12, color: MUT, lineHeight: 1.65, margin: 0 }}>Time-averaged betweenness ({'\u03c1'}=0.21, ns) and waveform/HFO features ({'\u03c1'}{'\u2248'}{'\u22120.025'}) contribute to threshold classification but carry no graded signal about criticality <em>degree</em>.</p>
         </div>
       </div>
 

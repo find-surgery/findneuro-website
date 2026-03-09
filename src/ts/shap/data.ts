@@ -27,12 +27,12 @@ export const FEATS: Feature[] = [
   { label: '\u0394 Betweenness Centrality', s: '\u0394BC', t: 1, hc: .3903, lc: .3028, p: '3.5e-6', r: 1 },
   { label: '\u0394 Eigenvector Centrality', s: '\u0394EC', t: 1, hc: .3656, lc: .2160, p: '<1e-6', r: 2 },
   { label: '\u0394 Clustering (onset)', s: '\u0394Clust', t: 1, hc: .3162, lc: .2228, p: '<1e-6', r: 3 },
-  { label: 'Temporal Betweenness', s: 'TBC', t: 2, hc: .2700, lc: .1830, p: '-', r: 4 },
-  { label: 'catch22 #1', s: 'c22\u2460', t: 3, hc: .1900, lc: .1310, p: '-', r: 5 },
-  { label: 'catch22 #2', s: 'c22\u2461', t: 3, hc: .1630, lc: .1120, p: '-', r: 8 },
-  { label: 'HFO-adjacent #1', s: 'HFO\u2460', t: 3, hc: .1450, lc: .0990, p: '-', r: 9 },
-  { label: 'catch22 #3', s: 'c22\u2462', t: 3, hc: .1280, lc: .0880, p: '-', r: 11 },
-  { label: 'HFO-adjacent #2', s: 'HFO\u2461', t: 3, hc: .1050, lc: .0740, p: '-', r: 21 },
+  { label: 'Betweenness (time-averaged)', s: 'BC(avg)', t: 2, hc: .2700, lc: .1830, p: '-', r: 4 },
+  { label: 'Waveform shape #1', s: 'WF\u2460', t: 3, hc: .1900, lc: .1310, p: '-', r: 5 },
+  { label: 'Waveform shape #2', s: 'WF\u2461', t: 3, hc: .1630, lc: .1120, p: '-', r: 8 },
+  { label: 'HFO-related #1', s: 'HFO\u2460', t: 3, hc: .1450, lc: .0990, p: '-', r: 9 },
+  { label: 'Waveform shape #3', s: 'WF\u2462', t: 3, hc: .1280, lc: .0880, p: '-', r: 11 },
+  { label: 'HFO-related #2', s: 'HFO\u2461', t: 3, hc: .1050, lc: .0740, p: '-', r: 21 },
 ];
 
 export const CORR: Correlation[] = [
@@ -45,8 +45,8 @@ export const GRAD: GradientFeature[] = [
   { name: '\u0394 Eigenvector', rho: .798, t: 1, sig: true, p: '4.0\u00d710\u207b\u00b9\u2074' },
   { name: '\u0394 Clustering', rho: .476, t: 1, sig: true, p: '1.4\u00d710\u207b\u2074' },
   { name: '\u0394 Betweenness', rho: .318, t: 1, sig: true, p: '0.014' },
-  { name: 'Temporal BC', rho: .206, t: 2, sig: false, p: '0.118' },
-  { name: 'catch22 #1', rho: -.025, t: 3, sig: false, p: '0.848' },
+  { name: 'BC (time-avg.)', rho: .206, t: 2, sig: false, p: '0.118' },
+  { name: 'Waveform shape', rho: -.025, t: 3, sig: false, p: '0.848' },
 ];
 
 export const MODES: NetworkMode[] = [

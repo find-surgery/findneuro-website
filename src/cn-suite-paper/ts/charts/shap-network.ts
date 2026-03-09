@@ -34,9 +34,9 @@ const FEATS: Feat[] = [
   { label: '\u0394 Betweenness',  shap: 0.390, tier: 1 },
   { label: '\u0394 Eigenvector',  shap: 0.366, tier: 1 },
   { label: '\u0394 Clustering',   shap: 0.316, tier: 1 },
-  { label: 'Temporal BC',         shap: 0.270, tier: 2 },
-  { label: 'catch22 #1',          shap: 0.190, tier: 3 },
-  { label: 'HFO-adj #1',          shap: 0.145, tier: 3 },
+  { label: 'BC (time-avg.)',        shap: 0.270, tier: 2 },
+  { label: 'Waveform shape',       shap: 0.190, tier: 3 },
+  { label: 'HFO-related',          shap: 0.145, tier: 3 },
 ];
 
 const CRIT = '#f97316';
