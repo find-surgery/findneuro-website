@@ -12,8 +12,8 @@ export const SLIDE_TITLES = [
   "Clustering",
   "Ranking",
   "Failure",
-  "Limits",
   "SHAP",
+  "Limits",
   "Conclusion"
 ];
 
@@ -23,7 +23,7 @@ export const SLIDE_CHARTS: Record<number, string[]> = {
   10: ['clustering'],
   11: ['ranking'],
   12: ['failure'],
-  14: ['shapNetwork']
+  13: ['shapNetwork']
 };
 
 export const COLORS = {
