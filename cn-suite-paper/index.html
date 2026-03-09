@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" href="/assets/White_500px.png">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script type="module" crossorigin src="/assets/cn-suite-paper-CfVStP3u.js"></script>
+  <script type="module" crossorigin src="/assets/cn-suite-paper-DAWG5dIw.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
   <link rel="stylesheet" crossorigin href="/assets/cn-suite-paper-CRSTYN2b.css">
 </head>
@@ -17,7 +17,7 @@
 <nav class="navbar">
   <div class="nav-logo"><a href="/"><img src="/assets/White_500px.png" alt="FIND Neuro"></a></div>
   <div class="nav-progress-wrap" id="navDots"></div>
-  <div class="nav-slide-num" id="slideNum">1 / 16</div>
+  <div class="nav-slide-num" id="slideNum">1 / 17</div>
 </nav>
 
 <!-- SLIDE VIEWPORT -->
@@ -432,8 +432,31 @@
     </div>
   </div>
 
-  <!-- SLIDE 13: Limitations -->
+  <!-- SLIDE 13: Flow-Order Timing -->
   <div class="slide" data-slide="13">
+    <div class="slide-inner">
+      <div class="slide-label anim">Results - Temporal Dynamics</div>
+      <h2 class="section-title anim d1">Critical Nodes Lead Information Flow at Seizure Onset</h2>
+      <div class="two-col-text-fig anim d2">
+        <div>
+          <p class="body-text" style="font-size:16px;">Using directed connectivity and lag matrices, we estimated each electrode's earliest-arrival delay from high-source-score seeds. The relationship between criticality and flow timing is <strong>phase-dependent</strong>: pre-ictally, high-critical contacts arrive <em>later</em> (17.0 ms vs 12.8 ms), but around and after seizure onset they arrive <em>earlier</em> (peri: 12.0 vs 14.7 ms; post: 10.0 vs 16.0 ms).</p>
+          <p class="body-text" style="margin-top:8px; font-size:16px;">Pooled continuous association confirms a dose-response gradient (Spearman rho = 0.14, p &lt; 10<sup>-24</sup>; 43/59 patients positive). The effect strengthens with stronger edges (q = 0.90: rho = 0.245, p &lt; 10<sup>-7</sup>), indicating that early-flow enrichment is concentrated in high-confidence propagation backbones.</p>
+          <div class="key-point good" style="margin-top:8px; font-size:15px;">
+            <strong>Timing flip:</strong> Critical nodes are not always "early" - they transition from late arrivals pre-ictally to early arrivals at seizure onset. This phase-dependent reversal suggests critical nodes actively reorganize to lead information flow during seizures, rather than being statically positioned.
+          </div>
+        </div>
+        <div>
+          <div class="figure-wrap">
+            <div class="chart-container" id="chart-flowOrder"></div>
+          </div>
+          <div class="figure-caption">Median earliest-arrival delay (ms) by seizure phase for high-critical (CS >= 0.15) vs low-critical contacts. Pre-ictally, critical contacts arrive later; peri/post-ictally, they arrive earlier. All contrasts significant (Mann-Whitney p &lt; 10<sup>-9</sup>).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 14: Limitations -->
+  <div class="slide" data-slide="14">
     <div class="slide-inner">
       <div class="slide-label anim">Caveats</div>
       <h2 class="section-title anim d1">Limitations</h2>
@@ -452,8 +475,8 @@
     </div>
   </div>
 
-  <!-- SLIDE 14: Conclusion -->
-  <div class="slide" data-slide="14">
+  <!-- SLIDE 15: Conclusion -->
+  <div class="slide" data-slide="15">
     <div class="slide-inner" style="align-items:center; text-align:center;">
       <div class="slide-label anim">Conclusion</div>
       <h2 class="section-title anim d1" style="max-width:800px;">Four Convergent Findings Define Clinical Value</h2>
