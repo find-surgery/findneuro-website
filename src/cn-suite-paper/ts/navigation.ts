@@ -7,6 +7,20 @@ export interface NavigationState {
   navigate: (dir: number) => void;
 }
 
+function titleToSlug(title: string): string {
+  return title.toLowerCase().replace(/\s+/g, '-');
+}
+
+const SLUG_TO_INDEX: Record<string, number> = {};
+SLIDE_TITLES.forEach((t, i) => { SLUG_TO_INDEX[titleToSlug(t)] = i; });
+
+function slideFromHash(): number {
+  const hash = window.location.hash.slice(1);
+  if (!hash) return -1;
+  const slug = decodeURIComponent(hash).toLowerCase().replace(/\s+/g, '-');
+  return slug in SLUG_TO_INDEX ? SLUG_TO_INDEX[slug] : -1;
+}
+
 export function initNavigation(
   onSlideChange: (idx: number) => void
 ): NavigationState {
@@ -32,6 +46,11 @@ export function initNavigation(
     item.addEventListener('click', () => goTo(i));
     navWrap.appendChild(item);
   });
+
+  function updateHash(): void {
+    const slug = titleToSlug(SLIDE_TITLES[current]);
+    history.replaceState(null, '', '#' + slug);
+  }
 
   function updateNav(): void {
     const items = navWrap.querySelectorAll('.nav-item');
@@ -59,6 +78,7 @@ export function initNavigation(
     current = idx;
     slides[current].classList.add('active');
     updateNav();
+    updateHash();
     onSlideChange(idx);
   }
 
@@ -89,7 +109,17 @@ export function initNavigation(
   prevBtn.addEventListener('click', () => navigate(-1));
   nextBtn.addEventListener('click', () => navigate(1));
 
+  // Jump to hash-specified slide on load (no animation)
+  const initialSlide = slideFromHash();
+  if (initialSlide > 0) {
+    slides[0].classList.remove('active');
+    slides[initialSlide].classList.add('active');
+    current = initialSlide;
+    onSlideChange(initialSlide);
+  }
+
   updateNav();
+  updateHash();
 
   return { current, total, goTo, navigate };
 }
