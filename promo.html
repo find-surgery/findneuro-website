@@ -138,7 +138,7 @@ html,body{
   position:fixed;inset:0;z-index:100;
   background:var(--bg);
   opacity:1;
-  transition:opacity 0.5s ease;
+  transition:opacity 0.25s ease;
   pointer-events:none;
 }
 #fade.hidden{opacity:0}
@@ -651,7 +651,7 @@ html,body{
     let currentSlide = -1;
     let timelineIdx = 0;
     let startTime = performance.now();
-    const LOOP_FADE_DURATION = 500; // ms for fade-to-black before restart
+    const LOOP_FADE_DURATION = 250; // ms for fade-to-black before restart
 
     function resetTimeline() {
       // Fade to black
