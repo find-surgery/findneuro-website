@@ -650,7 +650,48 @@ html,body{
     /* ── Slide Controller ── */
     let currentSlide = -1;
     let timelineIdx = 0;
-    const startTime = performance.now();
+    let startTime = performance.now();
+    const LOOP_FADE_DURATION = 1000; // ms for fade-to-black before restart
+
+    function resetTimeline() {
+      // Fade to black
+      const fade = document.getElementById('fade');
+      fade.classList.remove('hidden');
+      fade.classList.add('out');
+
+      setTimeout(() => {
+        // Clear all slide states
+        if (currentSlide >= 0) {
+          document.getElementById('s' + currentSlide).classList.remove('active', 'exit');
+        }
+        for (let i = 0; i <= 5; i++) {
+          const el = document.getElementById('s' + i);
+          if (el) el.classList.remove('active', 'exit');
+        }
+
+        // Reset brain visuals
+        brainMode = 'calm';
+        currentSlide = -1;
+        timelineIdx = 0;
+        startTime = performance.now();
+        spikes.length = 0;
+
+        // Reset cortex opacity
+        for (const { mat, baseOpacity } of cortexMaterials) mat.opacity = baseOpacity;
+        for (const { mat, baseOpacity } of surfaceParticleMaterials) mat.opacity = baseOpacity;
+        elGroup.visible = false;
+        critGroup.visible = false;
+        critRingMat.color.set(0xff2222);
+        treatGroup.visible = false;
+
+        // Fade back in
+        fade.classList.remove('out');
+        setTimeout(() => fade.classList.add('hidden'), 50);
+
+        // Initial calm spike
+        setTimeout(() => triggerSpike(), 1000);
+      }, LOOP_FADE_DURATION);
+    }
 
     function updateSlides() {
       const elapsed = (performance.now() - startTime) / 1000;
@@ -675,6 +716,7 @@ html,body{
         }
         if (evt.brain === 'fade') {
           document.getElementById('fade').classList.add('out');
+          setTimeout(() => resetTimeline(), LOOP_FADE_DURATION);
         }
         timelineIdx++;
       }
