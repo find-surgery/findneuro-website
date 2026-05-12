@@ -15,6 +15,7 @@ export default defineConfig({
         main: resolve(__dirname, 'src/index.html'),
         'cn-suite-paper': resolve(__dirname, 'src/cn-suite-paper/index.html'),
         shap: resolve(__dirname, 'src/shap/index.html'),
+        'old-website': resolve(__dirname, 'src/old-website/index.html'),
       },
       external: ['three'],
       output: {
