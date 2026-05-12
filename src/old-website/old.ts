@@ -1,3 +1,27 @@
+const reveal = document.getElementById('brain-reveal');
+const skinImg = reveal?.querySelector('.about__media-img--skin') as HTMLElement | null;
+const revealHint = document.getElementById('brain-reveal-hint');
+if (reveal && skinImg) {
+  let raf = 0;
+  const compute = () => {
+    raf = 0;
+    const rect = reveal.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const startY = vh * 0.7;
+    const endY = vh * 0.15;
+    const t = (startY - rect.top) / (startY - endY);
+    const clamped = Math.max(0, Math.min(1, t));
+    skinImg.style.opacity = String(1 - clamped);
+    if (revealHint) revealHint.classList.toggle('is-hidden', clamped > 0.05);
+  };
+  const onScroll = () => {
+    if (!raf) raf = requestAnimationFrame(compute);
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  compute();
+}
+
 const toggle = document.getElementById('nav-toggle');
 const nav = document.getElementById('site-nav');
 if (toggle && nav) {

@@ -86,9 +86,15 @@
 
 <!-- About -->
 <section class="about" id="about">
-    <div class="container about__inner">
-        <div class="about__media">
-            <img src="/assets/old-website/connectivity-with-outer-skin.jpg" alt="Brain connectivity visualization">
+    <div class="container about__inner about__inner--reveal">
+        <div class="about__media" id="brain-reveal">
+            <div class="about__media-sticky">
+                <div class="about__media-stack">
+                    <img class="about__media-img about__media-img--brain" src="/assets/old-website/connectivity.jpg" alt="Brain with electrode network revealed">
+                    <img class="about__media-img about__media-img--skin" src="/assets/old-website/connectivity-with-outer-skin.jpg" alt="Head with outer skin">
+                </div>
+                <div class="about__media-hint" id="brain-reveal-hint">Scroll to reveal the network</div>
+            </div>
         </div>
         <div class="about__copy">
             <div class="eyebrow">About FIND Neuro</div>
