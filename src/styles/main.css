@@ -12,7 +12,7 @@
     --violet: #a78bfa;
     --text: #e8edf5;
     --text-dim: #8892a7;
-    --text-muted: #6b7a8f;
+    --text-muted: #7e8da3;
     --border: rgba(255,255,255,0.05);
     --border-accent: rgba(0,212,255,0.15);
     --font-display: 'Syne', sans-serif;
@@ -1636,11 +1636,13 @@ body::after {
     background: rgba(255,255,255,0.025);
     border: 1px solid var(--border); border-radius: 8px;
     color: var(--text); font-family: var(--font-body);
-    font-size: 0.88rem; outline: none;
-    transition: border-color 0.3s ease;
+    font-size: 0.88rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
-.fg input:focus, .fg textarea:focus, .fg select:focus {
+.fg input:focus-visible, .fg textarea:focus-visible, .fg select:focus-visible {
     border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.25);
 }
 .fg textarea { resize: vertical; min-height: 100px; }
 .fg select option { background: var(--bg-card); }
@@ -1747,6 +1749,42 @@ body::after {
     .workflow__track { grid-template-columns: 1fr; }
     .hero__cta-row { flex-direction: column; }
     .btn { width: 100%; justify-content: center; }
+}
+
+/* ===================================================
+   FOCUS INDICATORS (WCAG 2.4.7)
+   =================================================== */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+.btn:focus-visible,
+.contact__pill:focus-visible,
+.cn-step:focus-visible,
+.t-card__linkedin:focus-visible,
+.recognition__award-link:focus-visible,
+.pub-card__link:focus-visible,
+.member__link:focus-visible {
+    outline-offset: 3px;
+}
+.pub-card:focus-visible,
+.t-card:focus-visible {
+    outline-offset: 4px;
+    border-radius: 16px;
+}
+.dot-nav__item:focus-visible {
+    outline-offset: 4px;
+    border-radius: 50%;
+}
+.hero__announcement:focus-visible {
+    outline-offset: 4px;
+    border-radius: 100px;
+}
+.nav-fixed a:focus-visible,
+.mobile-menu a:focus-visible {
+    border-radius: 4px;
+    outline-offset: 4px;
 }
 
 /* ===================================================
