@@ -119,7 +119,10 @@
         </a>
         <div class="hero__title-row">
             <canvas id="hero-brain" class="hero__brain-canvas" aria-hidden="true"></canvas>
-            <h1 class="hero__logo-heading"><img src="/assets/White_500px.png" alt="FIND Neuro" class="hero__logo"></h1>
+            <h1 class="hero__logo-heading">
+                <img src="/assets/White_500px.png" alt="" class="hero__logo">
+                <span class="visually-hidden">FIND Neuro - Precision Neurosurgery Decision Support</span>
+            </h1>
         </div>
         <p class="hero__sub">
             The foundational decision-support platform for precision neurology. Transforming epilepsy surgery through AI-powered brain network analysis.
@@ -197,7 +200,7 @@
         <div class="section__eyebrow r">The Platform</div>
         <h2 class="section__heading r r-d1">CN-Suite&trade;</h2>
         <p class="section__lead r r-d2">
-            An integrated clinical decision-support platform that turns raw neuroimaging and electrophysiology data into actionable surgical intelligence -with zero workflow disruption.
+            An integrated clinical decision-support platform that turns raw neuroimaging and electrophysiology data into actionable surgical intelligence - with zero workflow disruption.
         </p>
 
         <div class="solution__cards">
@@ -291,7 +294,7 @@
         <div class="section__eyebrow r">The Hook</div>
         <h2 class="section__heading r r-d1">A sEEG viewer built for the cloud.</h2>
         <p class="section__lead r r-d2">
-            Pre-annotated with ictal events, interictal spikes, and sleep stages. Browser-native and orders of magnitude faster than Natus or Nihon Kohden. This alone earns clinical adoption - and gets the data flowing into Critical Nodes.
+            Pre-annotated with ictal events, interictal spikes, and sleep stages. Browser-native, and materially faster than the desktop EEG systems clinicians use today. This alone earns clinical adoption - and gets the data flowing into Critical Nodes.
         </p>
 
         <div class="viewer__compare r r-d2">
@@ -394,10 +397,10 @@
             <div class="evidence__meta">
                 <div class="evidence__meta-title">Multicenter, Outcome-Anchored Validation</div>
                 <div class="evidence__meta-desc">
-                    Retrospective study of over 100 patients across 5 leading U.S. centers with 12-month Engel follow-up - the gold standard for seizure freedom assessment. Achieved high sensitivity and specificity in a strict center-held-out validation, demonstrating cross-site generalization.
+                    Retrospective study of 60 patients across 4 leading U.S. centers with 12-month Engel follow-up - the gold standard for seizure freedom assessment. Achieved high sensitivity and specificity in a strict center-held-out validation, demonstrating cross-site generalization.
                 </div>
                 <div class="evidence__centers">
-                    <span class="evidence__center-chip">5 Leading U.S. Centers</span>
+                    <span class="evidence__center-chip">4 Leading U.S. Centers</span>
                 </div>
             </div>
         </div>
@@ -778,14 +781,14 @@
                 <input type="hidden" name="cta-type" value="demo">
                 <input type="hidden" name="_subject" value="New inquiry from findneuro.com">
                 <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
-                <div class="fg"><label>Name</label><input type="text" name="name" placeholder="Your name" required></div>
-                <div class="fg"><label>Email</label><input type="email" name="email" placeholder="your@email.com" required></div>
-                <div class="fg"><label>Organization</label><input type="text" name="organization" placeholder="Hospital, institution, or company"></div>
+                <div class="fg"><label for="field-name">Name</label><input type="text" id="field-name" name="name" placeholder="Your name" required></div>
+                <div class="fg"><label for="field-email">Email</label><input type="email" id="field-email" name="email" placeholder="your@email.com" required></div>
+                <div class="fg"><label for="field-org">Organization</label><input type="text" id="field-org" name="organization" placeholder="Hospital, institution, or company"></div>
                 <div class="fg">
                     <label for="role-select">I am a...</label>
                     <select name="role" id="role-select"><option value="">Select role</option><option>Clinician / Epileptologist</option><option>Neurosurgeon</option><option>Hospital Administrator</option><option>Investor</option><option>Researcher</option><option>Industry Partner</option><option>Other</option></select>
                 </div>
-                <div class="fg"><label>Message</label><textarea name="message" placeholder="Tell us about your interest..."></textarea></div>
+                <div class="fg"><label for="field-message">Message</label><textarea id="field-message" name="message" placeholder="Tell us about your interest..."></textarea></div>
                 <button type="submit" class="btn btn--glow btn--full btn--submit">Request a Demo</button>
                 <div class="form-status" id="form-status" style="display:none; text-align:center; margin-top:12px; font-size:0.85rem;"></div>
             </form>
