@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sEEG Viewer | FIND Neuro</title>
+    <meta name="description" content="FIND Neuro's cloud-native sEEG viewer - pre-annotated with ictal, interictal, and sleep stages.">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#030711">
+    <link rel="icon" type="image/png" href="/assets/White_500px.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-C4205Nsg.css">
+</head>
+<body>
+
+<header>
+    <nav class="nav-fixed" aria-label="Main">
+        <a href="/" class="nav-fixed__logo"><img src="/assets/White_500px.png" alt=""></a>
+        <a href="/">Home</a>
+        <a href="/#solution">CN-Suite</a>
+        <a href="/#team">Team</a>
+        <a href="/#contact">Contact</a>
+    </nav>
+</header>
+
+<main>
+
+<!-- HERO -->
+<section class="section section--solid seeg-viewer-hero">
+    <div class="container">
+        <div class="section__eyebrow r">CN-Suite Platform</div>
+        <h1 class="section__heading r r-d1">A sEEG viewer built for the cloud.</h1>
+        <p class="section__lead r r-d2">
+            Pre-annotated with ictal events, interictal spikes, and sleep stages. Browser-native, and materially faster than the desktop EEG systems clinicians use today. This alone earns clinical adoption - and gets the data flowing into Critical Nodes.
+        </p>
+
+        <div class="viewer__compare r r-d2">
+            <div class="viewer__col viewer__col--legacy">
+                <div class="viewer__col-tag">Today</div>
+                <div class="viewer__col-name">Natus / Nihon Kohden</div>
+                <ul class="viewer__list">
+                    <li><span class="viewer__x">&times;</span>Heavy desktop software, local install per workstation</li>
+                    <li><span class="viewer__x">&times;</span>Raw signal - clinicians annotate by hand</li>
+                    <li><span class="viewer__x">&times;</span>Slow scrubbing through multi-day records</li>
+                    <li><span class="viewer__x">&times;</span>Site-locked - no remote review</li>
+                </ul>
+            </div>
+            <div class="viewer__arrow" aria-hidden="true">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 16h20m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="viewer__col viewer__col--cn">
+                <div class="viewer__col-tag viewer__col-tag--cn">CN-Suite Viewer</div>
+                <div class="viewer__col-name">Cloud-native, pre-annotated</div>
+                <ul class="viewer__list">
+                    <li><span class="viewer__check">&check;</span>Browser-native - nothing to install, login from anywhere</li>
+                    <li><span class="viewer__check">&check;</span>Pre-tagged ictal, interictal, and sleep stages on arrival</li>
+                    <li><span class="viewer__check">&check;</span>Real-time scrubbing across hours of continuous record</li>
+                    <li><span class="viewer__check">&check;</span>Multi-reader, multi-site collaboration built in</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="viewer__pipeline r r-d3">
+            <div class="viewer__pipeline-head">
+                <div class="viewer__pipeline-eyebrow">Data Pipeline</div>
+                <div class="viewer__pipeline-title">From hospital to cloud, automatically.</div>
+            </div>
+            <div class="viewer__pipeline-track">
+                <div class="viewer__pipe-step">
+                    <div class="viewer__pipe-num">01</div>
+                    <div class="viewer__pipe-label">On-prem compressor</div>
+                    <p class="viewer__pipe-desc">Sits behind the hospital firewall, compresses raw sEEG losslessly. No PHI leaves the network unencrypted.</p>
+                </div>
+                <div class="viewer__pipe-connector" aria-hidden="true"></div>
+                <div class="viewer__pipe-step">
+                    <div class="viewer__pipe-num">02</div>
+                    <div class="viewer__pipe-label">AWS uploader</div>
+                    <p class="viewer__pipe-desc">HIPAA-compliant, end-to-end encrypted transfer to the FIND Neuro cloud. Resumable across unstable links.</p>
+                </div>
+                <div class="viewer__pipe-connector" aria-hidden="true"></div>
+                <div class="viewer__pipe-step">
+                    <div class="viewer__pipe-num">03</div>
+                    <div class="viewer__pipe-label">Annotated &amp; ready</div>
+                    <p class="viewer__pipe-desc">Recordings appear in the viewer pre-tagged with seizure events and sleep stages, ready for review and Critical Nodes analysis.</p>
+                </div>
+            </div>
+        </div>
+
+        <p class="viewer__close r r-d4">
+            The viewer is the adoption hook. The pipeline is how the data starts flowing. Together, they unlock everything Critical Nodes can do.
+        </p>
+
+        <div class="seeg-viewer-cta r r-d4">
+            <a href="/#contact" class="btn btn--glow">Get in touch
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10m-4-4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer__inner">
+            <div class="footer__brand">FIND Neuro <span>Precision Neurosurgery Decision Support</span></div>
+        </div>
+        <div class="footer__copy">
+            &copy; 2026 FIND Neuro (FIND Surgical Sciences, Inc.) - All rights reserved.<br>
+            Spun out of Massachusetts General Hospital &amp; Harvard Medical School.<br>
+            <a href="/privacy/" class="footer__legal-link">Privacy Policy</a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
