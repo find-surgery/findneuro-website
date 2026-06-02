@@ -3,5 +3,6 @@ Allow: /
 Disallow: /promo.html
 Disallow: /shap
 Disallow: /old-website/
+Disallow: /seeg-viewer/
 
 Sitemap: https://findneuro.com/sitemap.xml

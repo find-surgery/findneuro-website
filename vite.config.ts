@@ -18,6 +18,7 @@ export default defineConfig({
         shap: resolve(__dirname, 'src/shap/index.html'),
         'old-website': resolve(__dirname, 'src/old-website/index.html'),
         privacy: resolve(__dirname, 'src/privacy/index.html'),
+        'seeg-viewer': resolve(__dirname, 'src/seeg-viewer/index.html'),
       },
       external: ['three'],
       output: {
