@@ -174,6 +174,5 @@ export interface AnimationState {
 declare global {
   interface Window {
     BRAIN?: BrainData;
-    setCTA?: (type: string) => void;
   }
 }

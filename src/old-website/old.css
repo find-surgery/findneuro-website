@@ -540,6 +540,11 @@ ul { list-style: none; }
 .form-status.success { background: #e8f5e9; color: #1b5e20; }
 .form-status.error { background: #fdecea; color: #8a2317; }
 
+/* Utilities */
+.is-hidden { display: none !important; }
+.footer__legal-link { color: inherit; }
+.footer__legal-link:hover { color: var(--c-accent); }
+
 /* Footer */
 .site-footer {
     padding: 28px 0;

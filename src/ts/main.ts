@@ -1,4 +1,5 @@
 import '../styles/main.css';
+import './analytics.ts';
 
 import { CN } from './constants.ts';
 import { initScene } from './scene.ts';

@@ -194,6 +194,7 @@ export function setCNStepTo(
     btn.classList.remove('cn-step--active', 'cn-step--done');
     if (st === step) btn.classList.add('cn-step--active');
     else if (st < step) btn.classList.add('cn-step--done');
+    btn.setAttribute('aria-pressed', String(st === step));
   });
 
   /* Update text panels */

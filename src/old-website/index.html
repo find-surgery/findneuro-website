@@ -10,6 +10,9 @@
     <meta property="og:image" content="https://findneuro.com/assets/social-preview.jpg">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://findneuro.com/old-website/">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://formspree.io; base-uri 'self'; form-action https://formspree.io; object-src 'none'; upgrade-insecure-requests;">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="robots" content="noindex, nofollow">
     <link rel="icon" type="image/png" href="/assets/White_500px.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,7 +25,7 @@
 <div class="announce">
     <div class="container announce__inner">
         <span class="announce__pill">New</span>
-        <span class="announce__text">Alumni Track Winner &middot; Harvard President's Innovation Challenge 2026.</span>
+        <span class="announce__text">Alumni Track Winner &middot; Harvard President's Innovation Challenge 2026</span>
         <a class="announce__link" href="https://news.harvard.edu/gazette/story/2026/05/moved-to-act/" target="_blank" rel="noopener">Read the story &rarr;</a>
     </div>
 </div>
@@ -183,7 +186,7 @@
         <div class="section__head">
             <div class="eyebrow">Leadership</div>
             <h2 class="section__heading">Our Team</h2>
-            <p class="section__lead">World-class neuroscience expertise combined with proven entrepreneurial and regulatory leadership. A Mass General Hospital &amp; Harvard Medical School spin-out.</p>
+            <p class="section__lead">World-class neuroscience expertise combined with proven entrepreneurial and regulatory leadership. Spun out of Massachusetts General Hospital &amp; Harvard Medical School.</p>
         </div>
         <div class="team__grid">
             <div class="member">
@@ -268,7 +271,7 @@
         </div>
         <form id="old-contact" class="contact__form" action="https://formspree.io/f/mzdarpwd" method="POST">
             <input type="hidden" name="_subject" value="New inquiry from old-website page">
-            <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+            <input type="text" name="_gotcha" class="is-hidden" tabindex="-1" autocomplete="off">
             <label>Name <span class="req">*</span>
                 <input type="text" name="name" required>
             </label>
@@ -286,7 +289,10 @@
 
 <footer class="site-footer">
     <div class="container site-footer__inner">
-        <div>&copy; 2026 FIND Neuro (FIND Surgical Sciences, Inc.) - All rights reserved.</div>
+        <div>
+            &copy; 2026 FIND Neuro (FIND Surgical Sciences, Inc.) - All rights reserved.
+            &nbsp;<a href="/privacy/" class="footer__legal-link">Privacy</a>
+        </div>
         <div><a href="/">&larr; Back to current site</a></div>
     </div>
 </footer>

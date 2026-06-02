@@ -17,7 +17,6 @@ const ctaTexts: Record<string, string> = {
   general: "Whether you're a clinician, researcher, or potential partner - reach out and let's start a conversation.",
 };
 
-/** Switch the contact form CTA type (demo/deck/general) */
 function setCTA(type: string): void {
   document.querySelectorAll('.contact__pill').forEach(p => {
     p.classList.toggle('contact__pill--active', (p as HTMLElement).dataset.cta === type);
@@ -32,14 +31,15 @@ function setCTA(type: string): void {
   if (text) text.textContent = ctaTexts[type] || ctaTexts.general;
 }
 
-/** Initialize the loader hide animation */
 function initLoader(): void {
+  const hide = () => document.getElementById('loader')?.classList.add('hidden');
   window.addEventListener('load', () => {
-    setTimeout(() => document.getElementById('loader')!.classList.add('hidden'), LOADER_HIDE_DELAY);
+    setTimeout(hide, LOADER_HIDE_DELAY);
   });
+  // Safety: hide loader after 6s no matter what, so a script failure can't trap users.
+  setTimeout(hide, 6000);
 }
 
-/** Initialize the Formspree contact form submission */
 function initContactForm(): void {
   const contactForm = document.getElementById('contact-form') as HTMLFormElement | null;
   if (!contactForm) return;
@@ -47,10 +47,11 @@ function initContactForm(): void {
   contactForm.addEventListener('submit', async function(this: HTMLFormElement, e: Event) {
     e.preventDefault();
     const btn = this.querySelector('.btn--submit') as HTMLButtonElement;
-    const status = document.getElementById('form-status')!;
+    const status = document.getElementById('form-status') as HTMLElement;
     const origText = btn.textContent;
     btn.textContent = 'Sending...';
     btn.disabled = true;
+    status.classList.remove('form-status--success', 'form-status--error');
     try {
       const resp = await fetch(FORMSPREE_URL, {
         method: 'POST',
@@ -59,9 +60,9 @@ function initContactForm(): void {
       });
       if (resp.ok) {
         btn.textContent = 'Sent!';
-        btn.style.background = '#059669';
-        status.style.display = 'block';
-        status.style.color = '#059669';
+        btn.classList.add('is-success');
+        status.classList.add('form-status--success');
+        status.hidden = false;
         status.textContent = 'Thank you! We will be in touch shortly.';
         this.reset();
       } else {
@@ -70,44 +71,82 @@ function initContactForm(): void {
     } catch {
       btn.textContent = origText;
       btn.disabled = false;
-      status.style.display = 'block';
-      status.style.color = '#ef4444';
+      status.classList.add('form-status--error');
+      status.hidden = false;
       status.textContent = 'Something went wrong. Please email us at info@findneuro.com';
     }
   });
 }
 
-/** Initialize mobile menu hamburger toggle */
+function initCTAButtons(): void {
+  document.querySelectorAll<HTMLElement>('.contact__pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      const type = pill.dataset.cta;
+      if (type) setCTA(type);
+    });
+  });
+  document.querySelectorAll<HTMLElement>('[data-set-cta]').forEach(el => {
+    el.addEventListener('click', () => {
+      const type = el.dataset.setCta;
+      const hidden = document.querySelector('[name=cta-type]') as HTMLInputElement | null;
+      if (hidden && type) hidden.value = type;
+    });
+  });
+}
+
 function initMobileMenu(): void {
   const mobileToggle = document.getElementById('mobile-toggle')!;
   const mobileMenu = document.getElementById('mobile-menu')!;
-  mobileToggle.addEventListener('click', () => {
-    mobileToggle.classList.toggle('active');
-    mobileMenu.classList.toggle('active');
-  });
-  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  const close = () => {
     mobileToggle.classList.remove('active');
     mobileMenu.classList.remove('active');
-  }));
+    mobileToggle.setAttribute('aria-expanded', 'false');
+  };
+  mobileToggle.addEventListener('click', () => {
+    const open = !mobileToggle.classList.contains('active');
+    mobileToggle.classList.toggle('active', open);
+    mobileMenu.classList.toggle('active', open);
+    mobileToggle.setAttribute('aria-expanded', String(open));
+  });
+  mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
 }
 
-/** Initialize dot navigation and section tracking via IntersectionObserver */
+function activateKeyboard(el: HTMLElement, action: () => void): void {
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      action();
+    }
+  });
+}
+
 function initDotNav(): void {
-  const dots = document.querySelectorAll('.dot-nav__item');
-  const sectionIds = Array.from(dots).map(d => (d as HTMLElement).dataset.section!);
+  const dots = document.querySelectorAll<HTMLElement>('.dot-nav__item');
+  const sectionIds = Array.from(dots).map(d => d.dataset.section!);
 
   dots.forEach(dot => {
-    dot.addEventListener('click', () => {
-      const target = document.getElementById((dot as HTMLElement).dataset.section!);
+    const label = dot.dataset.label || 'Section';
+    dot.setAttribute('role', 'button');
+    dot.setAttribute('tabindex', '0');
+    dot.setAttribute('aria-label', `Go to ${label} section`);
+    const go = () => {
+      const target = document.getElementById(dot.dataset.section!);
       if (target) target.scrollIntoView({ behavior: 'smooth' });
-    });
+    };
+    dot.addEventListener('click', go);
+    activateKeyboard(dot, go);
   });
 
   const sectionObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const id = entry.target.id;
-        dots.forEach(d => d.classList.toggle('active', (d as HTMLElement).dataset.section === id));
+        dots.forEach(d => {
+          const isActive = d.dataset.section === id;
+          d.classList.toggle('active', isActive);
+          if (isActive) d.setAttribute('aria-current', 'true');
+          else d.removeAttribute('aria-current');
+        });
       }
     });
   }, { threshold: 0.3 });
@@ -118,7 +157,6 @@ function initDotNav(): void {
   });
 }
 
-/** Initialize scroll-reveal animations for elements with class 'r' */
 function initScrollReveals(): void {
   const revealObs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
@@ -126,37 +164,30 @@ function initScrollReveals(): void {
   document.querySelectorAll('.r').forEach(el => revealObs.observe(el));
 }
 
-/** Initialize publication card flip behavior */
-function initPubCards(): void {
-  document.querySelectorAll('.pub-card').forEach(card => {
+function initFlipCards(selector: string, ignoreSelector: string): void {
+  document.querySelectorAll<HTMLElement>(selector).forEach(card => {
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', 'Flip card to see more');
+    const flip = () => {
+      const flipped = card.classList.toggle('flipped');
+      card.setAttribute('aria-pressed', String(flipped));
+    };
     card.addEventListener('click', (e) => {
-      // Don't flip when clicking the paper link
-      if ((e.target as HTMLElement).closest('.pub-card__link')) return;
-      card.classList.toggle('flipped');
+      if ((e.target as HTMLElement).closest(ignoreSelector)) return;
+      flip();
     });
+    activateKeyboard(card, flip);
   });
 }
 
-/** Initialize team card flip behavior */
-function initTeamCards(): void {
-  document.querySelectorAll('.t-card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      if ((e.target as HTMLElement).closest('.t-card__linkedin')) return;
-      card.classList.toggle('flipped');
-    });
-  });
-}
-
-/** Initialize all UI components (no Three.js dependencies) */
 export function initUI(): void {
-  // Expose setCTA globally for onclick handlers in HTML
-  window.setCTA = setCTA;
-
   initLoader();
   initContactForm();
+  initCTAButtons();
   initMobileMenu();
   initDotNav();
   initScrollReveals();
-  initPubCards();
-  initTeamCards();
+  initFlipCards('.pub-card', '.pub-card__link');
+  initFlipCards('.t-card', '.t-card__linkedin');
 }

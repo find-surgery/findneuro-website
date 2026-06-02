@@ -59,6 +59,19 @@ body::after {
     border: 0;
 }
 
+.is-hidden { display: none !important; }
+.form-status {
+    text-align: center;
+    margin-top: 12px;
+    font-size: 0.85rem;
+}
+.form-status--success { color: #059669; }
+.form-status--error { color: #ef4444; }
+.btn--submit.is-success { background: #059669; }
+.footer__legal-link { color: var(--text-muted); text-decoration: none; }
+.footer__legal-link:hover { color: var(--text-dim); }
+.hero__badge--inline { margin: 0 auto 24px; }
+
 /* ===================================================
    LOADER
    =================================================== */
@@ -187,8 +200,8 @@ body::after {
 
 /* Mobile toggle */
 .mobile-toggle {
-    display: none; position: fixed; top: 24px; right: 24px;
-    z-index: 200; width: 36px; height: 36px;
+    display: none; position: fixed; top: 20px; right: 20px;
+    z-index: 200; width: 44px; height: 44px;
     background: rgba(255,255,255,0.05); border: 1px solid var(--border);
     border-radius: 8px; cursor: pointer;
     align-items: center; justify-content: center;
@@ -1054,7 +1067,7 @@ body::after {
 }
 .story__photo {
     width: 120px; height: 120px; border-radius: 50%;
-    background-size: cover; background-position: center;
+    overflow: hidden;
     margin-bottom: 24px;
     border: 3px solid rgba(124,58,237,0.25);
     box-shadow: 0 0 40px rgba(124,58,237,0.15);
@@ -1490,11 +1503,16 @@ body::after {
     width: 80px; height: 80px; border-radius: 50%;
     margin: 0 auto 16px;
     display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
     font-family: var(--font-display); font-weight: 700;
     font-size: 1.1rem; color: #fff;
-    background-size: cover; background-position: center;
     border: 2px solid var(--border);
     transition: border-color 0.3s ease;
+}
+.t-card__avatar img,
+.adv-card__photo img,
+.story__photo img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
 }
 .t-card:hover .t-card__avatar { border-color: var(--border-accent); }
 .t-card__avatar--fallback-1 { background: linear-gradient(135deg, #059669, #00d4ff); }
@@ -1540,7 +1558,7 @@ body::after {
 }
 .adv-card__photo {
     width: 44px; height: 44px; border-radius: 50%;
-    background-size: cover; background-position: center top;
+    overflow: hidden;
     flex-shrink: 0; border: 1.5px solid var(--border);
 }
 .adv-card__name {
@@ -1563,7 +1581,7 @@ body::after {
 .contact__pill {
     font-family: var(--font-display); font-weight: 600;
     font-size: 0.82rem; letter-spacing: 0.03em;
-    padding: 10px 24px; border-radius: 100px;
+    padding: 12px 24px; min-height: 44px; border-radius: 100px;
     border: 1px solid var(--border); background: transparent;
     color: var(--text-dim); cursor: pointer;
     transition: all 0.3s var(--ease);
@@ -1724,4 +1742,17 @@ body::after {
     .workflow__track { grid-template-columns: 1fr; }
     .hero__cta-row { flex-direction: column; }
     .btn { width: 100%; justify-content: center; }
+}
+
+/* ===================================================
+   REDUCED MOTION
+   =================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+    .r { opacity: 1; transform: none; }
 }

@@ -10,12 +10,14 @@ export default defineConfig({
   build: {
     outDir: '../dist',
     emptyOutDir: true,
+    chunkSizeWarningLimit: 700,
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'src/index.html'),
         'cn-suite-paper': resolve(__dirname, 'src/cn-suite-paper/index.html'),
         shap: resolve(__dirname, 'src/shap/index.html'),
         'old-website': resolve(__dirname, 'src/old-website/index.html'),
+        privacy: resolve(__dirname, 'src/privacy/index.html'),
       },
       external: ['three'],
       output: {
