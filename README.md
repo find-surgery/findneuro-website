@@ -73,6 +73,11 @@ Runs on push to `main` and weekly (Monday 6am UTC). Four checks:
 Runs on push to `main` and pull requests. Audits the live site against resource budgets defined in `.github/lighthouse-budget.json`:
 - Script resources <= 3600 KB (Three.js + brain_data.js + app bundle)
 - Total resources <= 6000 KB
+- Script count <= 8. The page's real footprint is 7: Three.js, brain_data.js, the app
+  bundle, Vite's modulepreload polyfill, GA's gtag.js, and the LinkedIn Insight tag -
+  which loads a second legacy script (insight.old.min.js) on its own, so the tracker
+  costs two requests. The size budgets are the meaningful guard; the count only catches
+  an unexpected new script host.
 - Timing budgets are omitted - the continuous `requestAnimationFrame` loop for 3D brain rendering prevents meaningful TTI measurement in CI.
 
 ### Link Checker (`links.yml`)

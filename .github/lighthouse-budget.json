@@ -2,7 +2,7 @@
   {
     "path": "/*",
     "resourceCounts": [
-      { "resourceType": "script", "budget": 6 },
+      { "resourceType": "script", "budget": 8 },
       { "resourceType": "total", "budget": 45 }
     ],
     "resourceSizes": [
