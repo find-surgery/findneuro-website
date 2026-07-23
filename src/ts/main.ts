@@ -11,6 +11,7 @@ import { initCNData, initCNObservers, stopCNVisualization } from './cn.ts';
 import { initSEEG } from './seeg.ts';
 import { startAnimationLoop, getAnimateFn, initBrainVisibilityObserver, initNarrativeObservers } from './animation.ts';
 import { initUI } from './ui.ts';
+import { initPitchVideo } from './video.ts';
 import { initBackground } from './background.ts';
 import type { DragState, AliceState, CNState, AnimationState } from './types.ts';
 
@@ -24,6 +25,7 @@ import type { DragState, AliceState, CNState, AnimationState } from './types.ts'
 
   /* Initialize UI (no Three.js dependencies) */
   initUI();
+  initPitchVideo();
 
   const canvas = document.getElementById('hero-brain') as HTMLCanvasElement;
   const isMobile = window.innerWidth < 768;

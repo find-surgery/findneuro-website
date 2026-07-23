@@ -92,3 +92,6 @@ export const LOGO_SCROLL_THRESHOLD = 0.6;
 
 /** Mouse glow effect threshold */
 export const MOUSE_GLOW_THRESHOLD = 0.82;
+
+/** Default subtitle language for the pitch video ('' = subtitles off) */
+export const DEFAULT_SUBTITLE_LANG = 'en';

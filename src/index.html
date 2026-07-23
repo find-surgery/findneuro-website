@@ -16,7 +16,7 @@
     <meta name="twitter:title" content="FIND Neuro | Precision Neurosurgery Decision Support">
     <meta name="twitter:description" content="The operating system for precision neurology. Transforming epilepsy surgery through AI-powered brain network analysis.">
     <meta name="twitter:image" content="https://findneuro.com/assets/social-preview.jpg">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://snap.licdn.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://px.ads.linkedin.com https://www.google-analytics.com https://www.googletagmanager.com https://i.ytimg.com; frame-src https://www.youtube-nocookie.com https://www.youtube.com; connect-src https://formspree.io https://snap.licdn.com https://px.ads.linkedin.com https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://formspree.io; object-src 'none'; upgrade-insecure-requests;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com https://snap.licdn.com https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://px.ads.linkedin.com https://www.google-analytics.com https://www.googletagmanager.com; connect-src https://formspree.io https://snap.licdn.com https://px.ads.linkedin.com https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://formspree.io; object-src 'none'; upgrade-insecure-requests;">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <noscript><link rel="stylesheet" href="/noscript.css"></noscript>
     <link rel="icon" type="image/png" href="/assets/White_500px.png">
@@ -449,15 +449,20 @@
         <div class="recognition__grid">
             <div class="recognition__video r r-d1">
                 <div class="recognition__video-frame">
-                    <iframe
-                        src="https://www.youtube-nocookie.com/embed/IZIttYCAgxw?rel=0"
-                        title="FIND Neuro - 2026 Harvard President's Innovation Challenge Pitch"
-                        loading="lazy"
-                        frameborder="0"
-                        sandbox="allow-scripts allow-same-origin allow-presentation"
-                        allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        referrerpolicy="strict-origin-when-cross-origin"
-                        allowfullscreen></iframe>
+                    <!-- preload="none" + tiny poster: the 30 MB mp4 costs nothing at page load
+                         (Lighthouse budget) and only streams when the visitor presses play. -->
+                    <video id="pitch-video" controls preload="none" playsinline
+                        poster="/assets/video/harvard-pic-2026-pitch-poster.jpg"
+                        aria-label="FIND Neuro - 2026 Harvard President's Innovation Challenge Pitch">
+                        <source src="/assets/video/harvard-pic-2026-pitch.mp4" type="video/mp4" />
+                        <track kind="subtitles" srclang="en" label="English" src="/assets/video/harvard-pic-2026-pitch.en.vtt" />
+                        <track kind="subtitles" srclang="ja" label="日本語" src="/assets/video/harvard-pic-2026-pitch.ja.vtt" />
+                    </video>
+                </div>
+                <div class="recognition__subtitles" role="group" aria-label="Subtitles">
+                    <button type="button" class="subtitle-pill" data-subtitle-lang="" aria-pressed="false">Subtitles off</button>
+                    <button type="button" class="subtitle-pill subtitle-pill--active" data-subtitle-lang="en" aria-pressed="true">English</button>
+                    <button type="button" class="subtitle-pill" data-subtitle-lang="ja" aria-pressed="false">日本語</button>
                 </div>
                 <div class="recognition__video-caption">Watch our pitch on the President's Innovation Challenge stage</div>
             </div>
