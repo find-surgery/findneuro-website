@@ -28,7 +28,12 @@ html,body{
   position:fixed;top:0;left:0;
   width:100vw;height:100vh;
   z-index:1;
+  transition:opacity 0.5s ease;
 }
+/* The video slide hands the whole screen to the player: no brain, no text,
+   just the logo and the dots. */
+body.is-video #brain-canvas{opacity:0}
+body.is-video #slides{width:100vw;padding:0}
 #logo{
   position:fixed;top:5vh;left:6vw;z-index:20;
   height:7vh;
@@ -202,6 +207,28 @@ html,body{
   height:17vh;
   margin-top:3vh;
 }
+.slide--video{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.slide__video-frame{
+  display:inline-block;
+  line-height:0;
+  border:1px solid rgba(0,212,255,0.16);
+  border-radius:10px;
+  overflow:hidden;
+  background:#000;
+  box-shadow:0 24px 90px rgba(0,0,0,0.6);
+}
+.slide__video{
+  display:block;
+  height:84vh;
+  width:auto;
+  max-width:92vw;
+  pointer-events:auto;
+}
 .slide__url{
   font-family:'JetBrains Mono',monospace;
   font-size:1.2vw;
@@ -228,6 +255,7 @@ html,body{
 }
 #dots{display:flex;gap:0.7vw}
 .dot{
+  cursor:pointer;
   width:0.55vw;height:0.55vw;min-width:6px;min-height:6px;
   border-radius:50%;
   background:rgba(232,234,240,0.2);
@@ -372,6 +400,17 @@ html,body{
     <div class="slide__proof">Spun out of <strong>Massachusetts General Hospital</strong> &amp; <strong>Harvard Medical School</strong>, where the research was funded by <strong>DARPA</strong>.</div>
     <div class="slide__url">findneuro.com</div>
   </div>
+
+  <!-- Slide 3: The platform -->
+  <div class="slide slide--video" id="s3">
+    <div class="slide__video-frame">
+      <video class="slide__video" id="demo-video" controls playsinline preload="none"
+             poster="./assets/video/cn-suite-demo-poster.jpg"
+             aria-label="FIND Neuro CN-Suite platform walkthrough">
+        <source src="./assets/video/cn-suite-demo.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
 </div>
 
 <div id="nav">
@@ -379,6 +418,7 @@ html,body{
     <div class="dot" data-dot="0"></div>
     <div class="dot" data-dot="1"></div>
     <div class="dot" data-dot="2"></div>
+    <div class="dot" data-dot="3"></div>
   </div>
   <div id="hint">Click to continue</div>
 </div>
@@ -394,6 +434,7 @@ html,body{
     { brain: 'chaos',   cortex: 0 },  /* The problem  - cortex visible, network firing */
     { brain: 'targets', cortex: 1 },  /* What we do   - cortex fades, electrodes + critical node */
     { brain: 'treat',   cortex: 1 },  /* Where we are - treatment pulses from the critical node */
+    { brain: 'treat',   cortex: 1, video: true },  /* The platform - player owns the screen */
   ];
   const NUM_SLIDES = SLIDES.length;
 
@@ -1055,6 +1096,8 @@ html,body{
     const CORTEX_FADE_SPEED = 0.7;
     const dots = Array.from(document.querySelectorAll('.dot'));
     const hint = document.getElementById('hint');
+    const video = document.getElementById('demo-video');
+    let videoSlide = false;
 
     function goTo(next) {
       if (next < 0 || next >= NUM_SLIDES || next === slideIdx) return;
@@ -1075,6 +1118,26 @@ html,body{
       dots.forEach((d, i) => d.classList.toggle('on', i === slideIdx));
       hint.classList.toggle('gone', slideIdx === NUM_SLIDES - 1);
 
+      /* Warm the file one slide early so the player does not stall on open */
+      if (video && slideIdx === NUM_SLIDES - 2 && video.preload !== 'auto') {
+        video.preload = 'auto';
+        video.load();
+      }
+
+      /* Video slide: hand the screen over, start muted so it never surprises
+         a room, and stop when we leave */
+      videoSlide = !!SLIDES[slideIdx].video;
+      document.body.classList.toggle('is-video', videoSlide);
+      if (video) {
+        if (videoSlide) {
+          video.muted = true;
+          const p = video.play();
+          if (p && p.catch) p.catch(() => {});
+        } else {
+          video.pause();
+        }
+      }
+
       if (brainMode === 'chaos') {
         for (let i = 0; i < 6; i++) setTimeout(() => triggerFocusSpike(), i * 400);
       }
@@ -1087,7 +1150,20 @@ html,body{
     function back() { goTo(slideIdx - 1); }
 
     document.addEventListener('click', next);
+    dots.forEach((d, i) => d.addEventListener('click', (e) => {
+      e.stopPropagation();   /* otherwise the document handler advances too */
+      goTo(i);
+    }));
+    /* Clicks on the player drive the player, not the deck */
+    const videoFrame = document.querySelector('.slide__video-frame');
+    if (videoFrame) videoFrame.addEventListener('click', (e) => e.stopPropagation());
     document.addEventListener('keydown', (e) => {
+      /* On the video slide, space belongs to the player */
+      if (videoSlide && video && (e.key === ' ' || e.key === 'k')) {
+        e.preventDefault();
+        if (video.paused) video.play().catch(() => {}); else video.pause();
+        return;
+      }
       if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') {
         e.preventDefault(); next();
       } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
@@ -1105,14 +1181,6 @@ html,body{
       const dt = Math.min(elapsed - lastTime, 0.1);
       lastTime = elapsed;
 
-      /* Auto-rotate brain - never stops */
-      brainGroup.rotation.z += 0.35 * dt;
-
-      /* Keep the network alive between clicks. On 'treat' nothing new fires -
-         the seizure activity stops, which is the point of the slide. */
-      if (brainMode === 'chaos' && Math.random() < 0.02) triggerFocusSpike();
-      else if (brainMode === 'targets' && Math.random() < 0.006) triggerSpike();
-
       /* Ramp for the treatment: 0 on slide 2, 1 once slide 3 has settled */
       treatT += ((brainMode === 'treat' ? 1 : 0) - treatT) * Math.min(1, dt * 0.9);
 
@@ -1127,6 +1195,18 @@ html,body{
         }
         seegDrawn = seegAlpha > 0.01;
       }
+
+      /* Nothing 3D is on screen during the video, so skip all of it and leave
+         the frames to the player */
+      if (videoSlide) return;
+
+      /* Auto-rotate brain - never stops */
+      brainGroup.rotation.z += 0.35 * dt;
+
+      /* Keep the network alive between clicks. On 'treat' nothing new fires -
+         the seizure activity stops, which is the point of the slide. */
+      if (brainMode === 'chaos' && Math.random() < 0.02) triggerFocusSpike();
+      else if (brainMode === 'targets' && Math.random() < 0.006) triggerSpike();
 
       /* Cortex fade: gradually reveal subcortical + electrodes */
       const fadeTarget = slideIdx >= 0 ? SLIDES[slideIdx].cortex : 0;
