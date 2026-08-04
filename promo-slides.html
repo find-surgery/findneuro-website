@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIND Neuro - Promo Slides</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c14;
+  --text:#e8eaf0;
+  --text-dim:rgba(232,234,240,0.55);
+  --accent:#00d4ff;
+}
+html,body{
+  width:100vw;height:100vh;overflow:hidden;
+  background:var(--bg);color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  cursor:pointer;
+  -webkit-user-select:none;user-select:none;
+}
+#brain-canvas{
+  position:fixed;top:0;right:0;
+  width:55vw;height:100vh;
+  z-index:1;
+}
+#slides{
+  position:fixed;top:0;left:0;
+  width:50vw;height:100vh;
+  z-index:10;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 6vw;
+}
+.slide{
+  position:absolute;
+  opacity:0;
+  transform:translateY(30px);
+  transition:opacity 0.7s ease,transform 0.7s ease;
+  width:calc(100% - 12vw);
+  pointer-events:none;
+}
+.slide.active{
+  opacity:1;
+  transform:translateY(0);
+}
+.slide.exit{
+  opacity:0;
+  transform:translateY(-30px);
+}
+.slide__eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.85vw;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:0.15em;
+  margin-bottom:1.5vh;
+}
+.slide__heading{
+  font-weight:800;
+  font-size:3.2vw;
+  line-height:1.15;
+  letter-spacing:-0.03em;
+  margin-bottom:2vh;
+}
+.slide__sub{
+  font-size:1.4vw;
+  color:var(--text-dim);
+  line-height:1.6;
+  max-width:36vw;
+}
+.slide__find{
+  font-weight:800;
+  font-size:4.5vw;
+  line-height:1.15;
+  letter-spacing:-0.03em;
+}
+.slide__find-rest{
+  color:var(--text-dim);
+}
+.slide__find--accent{
+  background:linear-gradient(135deg,var(--accent),#38bdf8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.slide__find--accent .slide__find-rest{
+  background:linear-gradient(135deg,var(--accent),#38bdf8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.slide__outcome{
+  margin-top:3vh;
+  padding:1.5vh 1.5vw;
+  background:rgba(0,212,255,0.04);
+  border-left:2px solid var(--accent);
+  border-radius:0 8px 8px 0;
+  font-weight:600;
+  font-size:1.35vw;
+  line-height:1.45;
+}
+.slide__outcome-label{
+  display:block;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:400;
+  font-size:0.65vw;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  margin-bottom:0.4vh;
+}
+.slide__stats{
+  display:flex;flex-wrap:wrap;gap:2.2vw 2.6vw;margin-top:3vh;
+}
+.slide__stat-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:2.2vw;font-weight:700;color:var(--accent);
+  line-height:1.1;
+}
+.slide__stat-label{
+  font-size:0.85vw;color:var(--text-dim);margin-top:0.5vh;line-height:1.4;
+}
+.slide__logo{
+  height:4.5vh;margin-bottom:2.5vh;
+}
+.slide__url{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.2vw;
+  color:var(--accent);
+  letter-spacing:0.05em;
+  margin-top:3.5vh;
+}
+.slide__proof{
+  font-size:0.95vw;
+  color:var(--text-dim);
+  margin-top:2.5vh;
+  font-style:italic;
+}
+/* Progress dots + hint */
+#nav{
+  position:fixed;left:6vw;bottom:5vh;z-index:20;
+  display:flex;align-items:center;gap:1.2vw;
+}
+#dots{display:flex;gap:0.7vw}
+.dot{
+  width:0.55vw;height:0.55vw;min-width:6px;min-height:6px;
+  border-radius:50%;
+  background:rgba(232,234,240,0.2);
+  transition:background 0.4s ease,transform 0.4s ease;
+}
+.dot.on{background:var(--accent);transform:scale(1.3)}
+#hint{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7vw;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  opacity:0.7;
+  animation:hintPulse 2.6s ease-in-out infinite;
+  transition:opacity 0.5s ease;
+}
+#hint.gone{opacity:0}
+@keyframes hintPulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
+/* Global fade overlay */
+#fade{
+  position:fixed;inset:0;z-index:100;
+  background:var(--bg);
+  opacity:1;
+  transition:opacity 0.35s ease;
+  pointer-events:none;
+}
+#fade.hidden{opacity:0}
+/* Narrow / portrait screens: brain fills the screen, text overlays it */
+@media (max-width:900px),(max-aspect-ratio:1/1){
+  #brain-canvas{width:100vw;opacity:0.5}
+  #slides{
+    width:100vw;padding:0 8vw;
+    background:linear-gradient(to right,rgba(10,12,20,0.92),rgba(10,12,20,0.6));
+  }
+  .slide{width:calc(100% - 16vw)}
+  .slide__eyebrow{font-size:11px}
+  .slide__heading{font-size:30px}
+  .slide__sub{font-size:15px;max-width:none}
+  .slide__find{font-size:38px}
+  .slide__outcome{font-size:15px;padding:12px 14px}
+  .slide__outcome-label{font-size:9px}
+  .slide__stats{gap:18px 26px}
+  .slide__stat-num{font-size:24px}
+  .slide__stat-label{font-size:11px}
+  .slide__url{font-size:14px}
+  .slide__proof{font-size:12px}
+  .slide__logo{height:32px}
+  #nav{left:8vw;gap:14px}
+  #hint{font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<div id="fade"></div>
+
+<canvas id="brain-canvas"></canvas>
+
+<div id="slides">
+  <!-- Slide 0: The Problem -->
+  <div class="slide" id="s0">
+    <div class="slide__eyebrow">The Problem</div>
+    <div class="slide__heading">Epilepsy surgery saves lives.<br>Too often, it never happens.</div>
+    <div class="slide__stats">
+      <div>
+        <div class="slide__stat-num">1.2M</div>
+        <div class="slide__stat-label">Drug-resistant epilepsy<br>patients in the U.S.</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">~8,000</div>
+        <div class="slide__stat-label">Surgeries<br>per year</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">$24B</div>
+        <div class="slide__stat-label">Annual U.S.<br>expenditure</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">~50%</div>
+        <div class="slide__stat-label">Success<br>rate</div>
+      </div>
+    </div>
+    <div class="slide__outcome">
+      <span class="slide__outcome-label">The question</span>
+      How do we get more of these patients to surgery, with higher confidence, and better outcomes?
+    </div>
+  </div>
+
+  <!-- Slide 1: What We Do -->
+  <div class="slide" id="s1">
+    <div class="slide__eyebrow">What We Do</div>
+    <div class="slide__find">FIND<span class="slide__find-rest"> the critical nodes</span></div>
+    <div class="slide__sub" style="margin-top:2vh">The first tool to analyze the brain's neurodynamics and tell the surgical team where to target - validated on a 100-patient retrospective study.</div>
+    <div class="slide__outcome">
+      <span class="slide__outcome-label">The outcome</span>
+      Where to target, and what to spare.
+    </div>
+  </div>
+
+  <!-- Slide 2: Where We Are -->
+  <div class="slide" id="s2">
+    <img class="slide__logo" src="./assets/White_500px.png" alt="FIND Neuro">
+    <div class="slide__eyebrow">Where We Are</div>
+    <div class="slide__heading">Cleared, connected,<br>and going live.</div>
+    <div class="slide__stats">
+      <div>
+        <div class="slide__stat-num">2 weeks</div>
+        <div class="slide__stat-label">To expected<br>FDA clearance</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">7</div>
+        <div class="slide__stat-label">Hospitals with<br>IRB + DUA in place</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">2</div>
+        <div class="slide__stat-label">Sites going<br>live now</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">4</div>
+        <div class="slide__stat-label">Patents plus a<br>proprietary database</div>
+      </div>
+    </div>
+    <div class="slide__url">findneuro.com</div>
+  </div>
+</div>
+
+<div id="nav">
+  <div id="dots">
+    <div class="dot" data-dot="0"></div>
+    <div class="dot" data-dot="1"></div>
+    <div class="dot" data-dot="2"></div>
+  </div>
+  <div id="hint">Click to continue</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" integrity="sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9" crossorigin="anonymous"></script>
+<script src="./brain_data.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  /* ── Slides: brain state per slide ── */
+  const SLIDES = [
+    { brain: 'chaos',   cortex: 0 },  /* The problem  - cortex visible, network firing */
+    { brain: 'targets', cortex: 1 },  /* What we do   - cortex fades, electrodes + critical node */
+    { brain: 'treat',   cortex: 1 },  /* Where we are - treatment pulses from the critical node */
+  ];
+  const NUM_SLIDES = SLIDES.length;
+
+  /* ── Scene Setup ── */
+  const canvas = document.getElementById('brain-canvas');
+  const scene = new THREE.Scene();
+  const clock = new THREE.Clock();
+  const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
+  camera.position.set(0, 0, 3.8);
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+
+  scene.add(new THREE.AmbientLight(0x112233, 0.6));
+  const dL = new THREE.DirectionalLight(0x88ccff, 0.7);
+  dL.position.set(3, 4, 5); scene.add(dL);
+  const fL = new THREE.DirectionalLight(0x4466aa, 0.3);
+  fL.position.set(-3, -1, 2); scene.add(fL);
+  const rL = new THREE.PointLight(0x7c3aed, 0.5, 12);
+  rL.position.set(-3, 1, -4); scene.add(rL);
+  const tL = new THREE.PointLight(0x00d4ff, 0.3, 10);
+  tL.position.set(0, 5, 0); scene.add(tL);
+
+  const brainGroup = new THREE.Group();
+  brainGroup.rotation.x = -Math.PI / 2;
+  scene.add(brainGroup);
+
+  /* ── Glow Texture ── */
+  function makeTexture(size, falloff) {
+    const c = document.createElement('canvas');
+    c.width = c.height = size;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(falloff, 'rgba(255,255,255,0.6)');
+    g.addColorStop(0.5, 'rgba(255,255,255,0.12)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, size, size);
+    return new THREE.CanvasTexture(c);
+  }
+
+  /* ── Subcortical Colors ── */
+  const SUB_COLORS = {
+    'Left-Hippocampus':[1,.45,.1],'Right-Hippocampus':[1,.45,.1],
+    'Left-Amygdala':[.95,.25,.2],'Right-Amygdala':[.95,.25,.2],
+    'Left-Thalamus-Proper':[.55,.25,.9],'Right-Thalamus-Proper':[.55,.25,.9],
+    'Left-Caudate':[.15,.75,.45],'Right-Caudate':[.15,.75,.45],
+    'Left-Putamen':[.1,.65,.75],'Right-Putamen':[.1,.65,.75],
+    'Left-Pallidum':[.4,.7,.95],'Right-Pallidum':[.4,.7,.95],
+    'Brain-Stem':[.45,.42,.55],
+  };
+
+  /* ── Cortex materials (for fade animation) ── */
+  const cortexMaterials = [];
+  const surfaceParticleMaterials = [];
+
+  /* ── Build Brain ── */
+  let meshColors, baseColors, numVerts;
+  const B = window.BRAIN;
+  if (B) {
+    const verts = new Float32Array(B.v);
+    const faces = new Uint32Array(B.f);
+    numVerts = verts.length / 3;
+
+    const meshGeo = new THREE.BufferGeometry();
+    meshGeo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+    meshGeo.setIndex(new THREE.BufferAttribute(faces, 1));
+    meshGeo.computeVertexNormals();
+
+    meshColors = new Float32Array(numVerts * 3);
+    baseColors = new Float32Array(numVerts * 3);
+    for (let i = 0; i < numVerts; i++) {
+      const c = B.c[i] || 0;
+      const y = verts[i * 3 + 2];
+      const t = (y + 1.5) / 3.0;
+      if (c > 0) {
+        baseColors[i*3]=0.06+t*0.05; baseColors[i*3+1]=0.22+t*0.12; baseColors[i*3+2]=0.42+t*0.15;
+      } else {
+        baseColors[i*3]=0.02+t*0.02; baseColors[i*3+1]=0.08+t*0.06; baseColors[i*3+2]=0.22+t*0.08;
+      }
+      meshColors[i*3]=baseColors[i*3]; meshColors[i*3+1]=baseColors[i*3+1]; meshColors[i*3+2]=baseColors[i*3+2];
+    }
+    meshGeo.setAttribute('color', new THREE.BufferAttribute(meshColors, 3));
+
+    const solidMat = new THREE.MeshPhongMaterial({
+      vertexColors:true, transparent:true, opacity:0.18, side:THREE.DoubleSide,
+      specular:new THREE.Color(0x00aadd), shininess:18,
+      emissive:new THREE.Color(0x000a14), depthWrite:false,
+    });
+    cortexMaterials.push({ mat: solidMat, baseOpacity: 0.18 });
+    brainGroup.add(new THREE.Mesh(meshGeo, solidMat));
+
+    /* Subcortical */
+    if (B.sub) {
+      for (const st of B.sub) {
+        const sv = new Float32Array(st.v), sf = new Uint32Array(st.f);
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(sv, 3));
+        geo.setIndex(new THREE.BufferAttribute(sf, 1));
+        geo.computeVertexNormals();
+        const col = SUB_COLORS[st.n] || [0.5, 0.5, 0.5];
+        brainGroup.add(new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
+          color:new THREE.Color(col[0]*0.6, col[1]*0.6, col[2]*0.6),
+          emissive:new THREE.Color(col[0]*0.15, col[1]*0.15, col[2]*0.15),
+          transparent:true, opacity:0.75, side:THREE.DoubleSide,
+          specular:new THREE.Color(0.3,0.3,0.3), shininess:25, depthWrite:true,
+        })));
+        brainGroup.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
+          color:new THREE.Color(col[0],col[1],col[2]),
+          wireframe:true, transparent:true, opacity:0.06,
+          blending:THREE.AdditiveBlending, depthWrite:false,
+        })));
+      }
+    }
+
+    /* Wireframe */
+    const wireMat = new THREE.MeshBasicMaterial({
+      color:0x00bbdd, wireframe:true, transparent:true, opacity:0.025,
+      blending:THREE.AdditiveBlending, depthWrite:false,
+    });
+    cortexMaterials.push({ mat: wireMat, baseOpacity: 0.025 });
+    brainGroup.add(new THREE.Mesh(meshGeo, wireMat));
+
+    /* Surface particles */
+    const NUM_P = 1200;
+    const pPos = new Float32Array(NUM_P * 3);
+    const pCol = new Float32Array(NUM_P * 3);
+    for (let i = 0; i < NUM_P; i++) {
+      const idx = Math.floor(Math.random() * numVerts);
+      pPos[i*3]=verts[idx*3]; pPos[i*3+1]=verts[idx*3+1]; pPos[i*3+2]=verts[idx*3+2];
+      pCol[i*3]=0; pCol[i*3+1]=0.6; pCol[i*3+2]=0.9;
+    }
+    const pGeo = new THREE.BufferGeometry();
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+    const tex = makeTexture(64, 0.2);
+    const pMat1 = new THREE.PointsMaterial({
+      size:0.04, map:tex, vertexColors:true, transparent:true, opacity:0.6,
+      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
+    });
+    const pMat2 = new THREE.PointsMaterial({
+      size:0.15, map:tex, vertexColors:true, transparent:true, opacity:0.04,
+      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
+    });
+    surfaceParticleMaterials.push({ mat: pMat1, baseOpacity: 0.6 });
+    surfaceParticleMaterials.push({ mat: pMat2, baseOpacity: 0.04 });
+    brainGroup.add(new THREE.Points(pGeo, pMat1));
+    brainGroup.add(new THREE.Points(pGeo, pMat2));
+
+    /* ── Electrodes (wider shafts, bigger contacts) ── */
+    const elGroup = new THREE.Group();
+    const elTex = makeTexture(64, 0.2);
+    let criticalContactPos = null; // will hold the critical node position
+
+    for (let e = 0; e < 12; e++) {
+      const angle = (e / 12) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
+      const zPos = -0.6 + Math.random() * 1.2;
+      const outerR = 2.0, innerR = 0.2 + Math.random() * 0.35;
+      const start = new THREE.Vector3(Math.cos(angle)*outerR, Math.sin(angle)*outerR, zPos);
+      const end = new THREE.Vector3(Math.cos(angle)*innerR, Math.sin(angle)*innerR, zPos + (Math.random()-0.5)*0.3);
+
+      /* Electrode shaft as cylinder */
+      const dir = new THREE.Vector3().subVectors(end, start);
+      const shaftLen = dir.length();
+      const cylGeo = new THREE.CylinderGeometry(0.012, 0.012, shaftLen, 6);
+      const cylMat = new THREE.MeshBasicMaterial({
+        color:0x00d4ff, transparent:true, opacity:0.15,
+        blending:THREE.AdditiveBlending, depthWrite:false,
+      });
+      const shaft = new THREE.Mesh(cylGeo, cylMat);
+      const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+      shaft.position.copy(mid);
+      shaft.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir.clone().normalize());
+      elGroup.add(shaft);
+
+      /* Contacts */
+      const contacts = 5 + Math.floor(Math.random() * 4);
+      for (let c = 0; c < contacts; c++) {
+        const t = 0.1 + (c / contacts) * 0.7;
+        const pos = new THREE.Vector3().lerpVectors(start, end, t);
+
+        /* Pick critical node: electrode 3, contact 3 (deep in brain) */
+        const isCritical = (e === 3 && c === 3);
+        if (isCritical) criticalContactPos = pos.clone();
+
+        const dGeo = new THREE.BufferGeometry();
+        dGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([pos.x,pos.y,pos.z]), 3));
+        elGroup.add(new THREE.Points(dGeo, new THREE.PointsMaterial({
+          size: isCritical ? 0.14 : 0.09,
+          color: isCritical ? 0xff2222 : 0xff6b35,
+          transparent:true, opacity:0.7,
+          blending:THREE.AdditiveBlending, depthWrite:false, map:elTex,
+        })));
+        /* Outer glow on contacts */
+        elGroup.add(new THREE.Points(dGeo, new THREE.PointsMaterial({
+          size: isCritical ? 0.35 : 0.2,
+          color: isCritical ? 0xff2222 : 0xff6b35,
+          transparent:true, opacity: isCritical ? 0.15 : 0.06,
+          blending:THREE.AdditiveBlending, depthWrite:false, map:elTex,
+        })));
+      }
+    }
+    elGroup.visible = false;
+    brainGroup.add(elGroup);
+
+    /* ── Critical Node Highlight (pulsing ring) ── */
+    const critGroup = new THREE.Group();
+    const critRingMat = new THREE.MeshBasicMaterial({
+      color:0xff2222, transparent:true, opacity:0.4, side:THREE.DoubleSide,
+      blending:THREE.AdditiveBlending, depthWrite:false,
+    });
+    const critRing = new THREE.Mesh(
+      new THREE.TorusGeometry(0.06, 0.008, 8, 32),
+      critRingMat
+    );
+    if (criticalContactPos) critGroup.position.copy(criticalContactPos);
+    critGroup.add(critRing);
+    critGroup.visible = false;
+    brainGroup.add(critGroup);
+
+    /* ── Treatment Rings (expanding energy pulses) ── */
+    const treatGroup = new THREE.Group();
+    const NUM_TREAT_RINGS = 4;
+    const treatRings = [];
+    for (let i = 0; i < NUM_TREAT_RINGS; i++) {
+      const ringMat = new THREE.MeshBasicMaterial({
+        color:0x00d4ff, transparent:true, opacity:0, side:THREE.DoubleSide,
+        blending:THREE.AdditiveBlending, depthWrite:false,
+      });
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(0.02, 0.004, 8, 48),
+        ringMat
+      );
+      treatRings.push({ mesh: ring, mat: ringMat, phase: i / NUM_TREAT_RINGS });
+      treatGroup.add(ring);
+    }
+    /* Central glow sphere for treatment */
+    const treatGlowMat = new THREE.MeshBasicMaterial({
+      color:0x00d4ff, transparent:true, opacity:0,
+      blending:THREE.AdditiveBlending, depthWrite:false,
+    });
+    const treatGlow = new THREE.Mesh(
+      new THREE.SphereGeometry(0.04, 16, 16),
+      treatGlowMat
+    );
+    treatGroup.add(treatGlow);
+    if (criticalContactPos) treatGroup.position.copy(criticalContactPos);
+    treatGroup.visible = false;
+    brainGroup.add(treatGroup);
+
+    /* ── Epileptogenic Network ── */
+    const NET_NODES = 200;
+    const nv = B.v.length / 3;
+    const nodes = [];
+    const stride = Math.floor(nv / NET_NODES);
+    for (let i = 0; i < NET_NODES; i++) {
+      const idx = (i * stride + Math.floor(Math.random() * stride * 0.4)) % nv;
+      nodes.push({ x: B.v[idx*3], y: B.v[idx*3+1], z: B.v[idx*3+2] });
+    }
+
+    const adj = Array.from({ length: NET_NODES }, () => []);
+    const edgeSet = new Set();
+    const edgeData = [];
+
+    for (let i = 0; i < NET_NODES; i++) {
+      const dists = [];
+      for (let j = 0; j < NET_NODES; j++) {
+        if (i === j) continue;
+        const dx = nodes[i].x-nodes[j].x, dy = nodes[i].y-nodes[j].y, dz = nodes[i].z-nodes[j].z;
+        dists.push({ j, d: Math.sqrt(dx*dx+dy*dy+dz*dz) });
+      }
+      dists.sort((a, b) => a.d - b.d);
+      for (let k = 0; k < 6; k++) {
+        const j = dists[k].j;
+        const eKey = Math.min(i,j) * NET_NODES + Math.max(i,j);
+        if (!edgeSet.has(eKey)) {
+          edgeSet.add(eKey);
+          adj[i].push({ n: j, d: dists[k].d });
+          adj[j].push({ n: i, d: dists[k].d });
+          edgeData.push({ from: i, to: j });
+        }
+      }
+    }
+    for (let i = 0; i < 20; i++) {
+      const a = Math.floor(Math.random()*NET_NODES), b = Math.floor(Math.random()*NET_NODES);
+      if (a === b) continue;
+      const eKey = Math.min(a,b)*NET_NODES+Math.max(a,b);
+      if (edgeSet.has(eKey)) continue;
+      edgeSet.add(eKey);
+      const dx=nodes[a].x-nodes[b].x, dy=nodes[a].y-nodes[b].y, dz=nodes[a].z-nodes[b].z;
+      adj[a].push({ n:b, d:Math.sqrt(dx*dx+dy*dy+dz*dz) });
+      adj[b].push({ n:a, d:Math.sqrt(dx*dx+dy*dy+dz*dz) });
+      edgeData.push({ from: a, to: b });
+    }
+
+    /* Precompute nearby mesh verts */
+    const R = 0.12, R2 = R * R;
+    const nodeMeshVerts = [];
+    for (let ni = 0; ni < NET_NODES; ni++) {
+      const nearby = [];
+      for (let vi = 0; vi < numVerts; vi++) {
+        const dx = B.v[vi*3]-nodes[ni].x, dy = B.v[vi*3+1]-nodes[ni].y, dz = B.v[vi*3+2]-nodes[ni].z;
+        const d2 = dx*dx+dy*dy+dz*dz;
+        if (d2 < R2) nearby.push({ vi, f: 1 - Math.sqrt(d2) / R });
+      }
+      nodeMeshVerts.push(nearby);
+    }
+
+    /* Node particles */
+    const nodePos = new Float32Array(NET_NODES * 3);
+    const nodeColors = new Float32Array(NET_NODES * 3);
+    for (let i = 0; i < NET_NODES; i++) {
+      nodePos[i*3]=nodes[i].x; nodePos[i*3+1]=nodes[i].y; nodePos[i*3+2]=nodes[i].z;
+      nodeColors[i*3]=0; nodeColors[i*3+1]=0.06; nodeColors[i*3+2]=0.12;
+    }
+    const nodeGeo = new THREE.BufferGeometry();
+    nodeGeo.setAttribute('position', new THREE.BufferAttribute(nodePos, 3));
+    nodeGeo.setAttribute('color', new THREE.BufferAttribute(nodeColors, 3));
+    const nTex = makeTexture(64, 0.15);
+    const nodePoints = new THREE.Points(nodeGeo, new THREE.PointsMaterial({
+      size:0.055, map:nTex, vertexColors:true, transparent:true, opacity:0.85,
+      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
+    }));
+    brainGroup.add(nodePoints);
+    brainGroup.add(new THREE.Points(nodeGeo, new THREE.PointsMaterial({
+      size:0.2, map:nTex, vertexColors:true, transparent:true, opacity:0.1,
+      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
+    })));
+
+    /* Edge lines */
+    const nEdges = edgeData.length;
+    const edgePos = new Float32Array(nEdges * 6);
+    const edgeColors = new Float32Array(nEdges * 6);
+    for (let i = 0; i < nEdges; i++) {
+      const e = edgeData[i];
+      edgePos[i*6]=nodes[e.from].x; edgePos[i*6+1]=nodes[e.from].y; edgePos[i*6+2]=nodes[e.from].z;
+      edgePos[i*6+3]=nodes[e.to].x; edgePos[i*6+4]=nodes[e.to].y; edgePos[i*6+5]=nodes[e.to].z;
+      for (let c = 0; c < 6; c++) edgeColors[i*6+c] = 0.012;
+    }
+    const edgeGeo = new THREE.BufferGeometry();
+    edgeGeo.setAttribute('position', new THREE.BufferAttribute(edgePos, 3));
+    edgeGeo.setAttribute('color', new THREE.BufferAttribute(edgeColors, 3));
+    const edgeLines = new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({
+      vertexColors:true, transparent:true, opacity:0.7,
+      blending:THREE.AdditiveBlending, depthWrite:false,
+    }));
+    brainGroup.add(edgeLines);
+
+    /* ── Focus & target nodes ── */
+    const focusNodes = [];
+    const seedNode = Math.floor(Math.random() * NET_NODES);
+    focusNodes.push(seedNode);
+    const visited = new Set([seedNode]);
+    const queue = [seedNode];
+    while (focusNodes.length < 15 && queue.length > 0) {
+      const cur = queue.shift();
+      for (const { n } of adj[cur]) {
+        if (!visited.has(n) && focusNodes.length < 15) {
+          visited.add(n);
+          focusNodes.push(n);
+          queue.push(n);
+        }
+      }
+    }
+    const targetNodes = focusNodes.slice(0, 5);
+    const focusSet = new Set(focusNodes);
+    const targetSet = new Set(targetNodes);
+
+    /* ── Spike BFS ── */
+    const spikes = [];
+    function propagate(seed, maxSpikes) {
+      const arrivals = new Float32Array(NET_NODES).fill(-1);
+      arrivals[seed] = 0;
+      const q = [seed];
+      let head = 0;
+      while (head < q.length) {
+        const cur = q[head++];
+        for (const { n, d } of adj[cur]) {
+          if (arrivals[n] < 0) {
+            arrivals[n] = arrivals[cur] + 0.04 + d * 0.12 + Math.random() * 0.02;
+            q.push(n);
+          }
+        }
+      }
+      spikes.push({ start: clock.getElapsedTime(), arrivals, decay: 2.8 });
+      if (spikes.length > maxSpikes) spikes.shift();
+    }
+
+    function triggerSpike() {
+      propagate(Math.floor(Math.random() * NET_NODES), 4);
+    }
+
+    function triggerFocusSpike() {
+      propagate(focusNodes[Math.floor(Math.random() * focusNodes.length)], 6);
+    }
+
+    /* ── Slide Controller (click driven) ── */
+    let slideIdx = -1;
+    let brainMode = 'calm';
+    let cortexFade = 0;          // 0 = cortex opaque, 1 = fully faded
+    const CORTEX_FADE_SPEED = 0.7;
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    const hint = document.getElementById('hint');
+
+    function goTo(next) {
+      if (next < 0 || next >= NUM_SLIDES || next === slideIdx) return;
+      const prev = slideIdx;
+      if (prev >= 0) {
+        const prevEl = document.getElementById('s' + prev);
+        prevEl.classList.remove('active');
+        prevEl.classList.add('exit');
+      }
+      slideIdx = next;
+      setTimeout(() => {
+        const el = document.getElementById('s' + slideIdx);
+        el.classList.remove('exit');
+        el.classList.add('active');
+      }, prev >= 0 ? 220 : 0);
+
+      brainMode = SLIDES[slideIdx].brain;
+      dots.forEach((d, i) => d.classList.toggle('on', i === slideIdx));
+      hint.classList.toggle('gone', slideIdx === NUM_SLIDES - 1);
+
+      if (brainMode === 'chaos') {
+        for (let i = 0; i < 6; i++) setTimeout(() => triggerFocusSpike(), i * 400);
+      }
+      if (brainMode === 'treat') {
+        critRingMat.color.set(0xff2222);
+      }
+    }
+
+    function next() { goTo(slideIdx + 1); }
+    function back() { goTo(slideIdx - 1); }
+
+    document.addEventListener('click', next);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') {
+        e.preventDefault(); next();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
+        e.preventDefault(); back();
+      } else if (e.key === 'Home') {
+        e.preventDefault(); goTo(0);
+      }
+    });
+
+    /* ── Animation Loop ── */
+    let lastTime = 0;
+    function animate() {
+      requestAnimationFrame(animate);
+      const elapsed = clock.getElapsedTime();
+      const dt = Math.min(elapsed - lastTime, 0.1);
+      lastTime = elapsed;
+
+      /* Auto-rotate brain - never stops */
+      brainGroup.rotation.z += 0.35 * dt;
+
+      /* Keep the network alive between clicks */
+      if (brainMode === 'chaos' && Math.random() < 0.02) triggerFocusSpike();
+      if (brainMode !== 'chaos' && Math.random() < 0.005) triggerSpike();
+
+      /* Cortex fade: gradually reveal subcortical + electrodes */
+      const fadeTarget = slideIdx >= 0 ? SLIDES[slideIdx].cortex : 0;
+      cortexFade += (fadeTarget - cortexFade) * Math.min(1, dt * CORTEX_FADE_SPEED * 3);
+      const fadeT = cortexFade;
+      for (const { mat, baseOpacity } of cortexMaterials) {
+        mat.opacity = baseOpacity * (1 - fadeT);
+      }
+      for (const { mat, baseOpacity } of surfaceParticleMaterials) {
+        mat.opacity = baseOpacity * (1 - fadeT);
+      }
+      elGroup.visible = fadeT > 0.05;
+
+      /* Critical node highlight: visible once electrodes show */
+      critGroup.visible = fadeT > 0.3;
+      if (critGroup.visible) {
+        const critPulse = Math.sin(elapsed * 4) * 0.15 + 0.4;
+        critRingMat.opacity = critPulse;
+        critRing.rotation.x = elapsed * 2;
+        critRing.rotation.y = elapsed * 1.3;
+      }
+
+      /* Treatment animation: expanding energy rings */
+      if (brainMode === 'treat') {
+        treatGroup.visible = true;
+        /* Pulsing center glow */
+        const glowPulse = Math.sin(elapsed * 6) * 0.2 + 0.5;
+        treatGlowMat.opacity = glowPulse;
+        treatGlowMat.color.setHSL(0.53, 1, 0.5 + Math.sin(elapsed * 3) * 0.15);
+        treatGlow.scale.setScalar(0.8 + Math.sin(elapsed * 5) * 0.3);
+
+        /* Expanding rings */
+        for (const tr of treatRings) {
+          const cycle = ((elapsed * 0.8 + tr.phase) % 1);
+          const scale = 1 + cycle * 8;
+          tr.mesh.scale.setScalar(scale);
+          tr.mat.opacity = (1 - cycle) * 0.35;
+          tr.mat.color.setHSL(0.53 + cycle * 0.05, 1, 0.55);
+          tr.mesh.rotation.x = elapsed + tr.phase * Math.PI;
+          tr.mesh.rotation.z = elapsed * 0.7 + tr.phase * 2;
+        }
+
+        /* Fade critical node from red to cyan (treated) */
+        critRingMat.color.lerp(new THREE.Color(0x00d4ff), 0.02);
+      } else {
+        treatGroup.visible = false;
+      }
+
+      const nodesLit = (brainMode === 'targets' || brainMode === 'treat');
+
+      /* Update network colors */
+      for (let i = 0; i < NET_NODES; i++) {
+        let r = 0, g = 0.05, b = 0.1;
+        const pulse = Math.sin(elapsed * 1.5 + i * 0.31) * 0.015 + 0.015;
+        g += pulse; b += pulse * 1.5;
+
+        if (nodesLit && targetSet.has(i)) {
+          const tp = Math.sin(elapsed * 3 + i * 0.5) * 0.15 + 0.85;
+          r = 0.05; g = tp * 1.2; b = tp * 0.4;
+        } else if (brainMode === 'chaos' && focusSet.has(i)) {
+          const chaos = Math.sin(elapsed * 8 + i * 1.7) * 0.3 + 0.7;
+          r += chaos * 0.9; g += chaos * 0.08; b += 0.02;
+        } else if (brainMode === 'treat') {
+          const calm = Math.sin(elapsed * 1.2 + i * 0.4) * 0.04 + 0.06;
+          g += calm; b += calm * 2;
+        }
+
+        for (const s of spikes) {
+          const arr = s.arrivals[i];
+          if (arr < 0) continue;
+          const age = (elapsed - s.start) - arr;
+          if (age < 0 || age > 2.2) continue;
+          const intensity = Math.exp(-age * s.decay);
+          r += intensity * 1.4; g += intensity * 0.45; b += intensity * 0.1;
+        }
+
+        nodeColors[i*3] = Math.min(r, 2);
+        nodeColors[i*3+1] = Math.min(g, 1.5);
+        nodeColors[i*3+2] = Math.min(b, 1);
+      }
+      nodePoints.geometry.attributes.color.needsUpdate = true;
+
+      /* Update edge colors */
+      for (let i = 0; i < edgeData.length; i++) {
+        const { from, to } = edgeData[i];
+        let r = 0.006, g = 0.01, b = 0.018;
+
+        if (brainMode === 'chaos' && focusSet.has(from) && focusSet.has(to)) {
+          const p = Math.sin(elapsed * 6 + i * 0.5) * 0.3 + 0.7;
+          r += p * 1.2; g += p * 0.05; b += p * 0.02;
+        }
+
+        for (const s of spikes) {
+          const aF = s.arrivals[from], aT = s.arrivals[to];
+          if (aF < 0 || aT < 0) continue;
+          const ageF = (elapsed - s.start) - aF;
+          const ageT = (elapsed - s.start) - aT;
+          if (ageF < -0.1 && ageT < -0.1) continue;
+          const edgeAge = Math.max(0, Math.min(ageF >= 0 ? ageF : 99, ageT >= 0 ? ageT : 99));
+          if (edgeAge > 2.2) continue;
+          const intensity = Math.exp(-edgeAge * s.decay * 0.6) * 0.75;
+          r += intensity * 0.85; g += intensity * 0.2; b += intensity * 0.04;
+        }
+
+        edgeColors[i*6] = edgeColors[i*6+3] = Math.min(r, 1.5);
+        edgeColors[i*6+1] = edgeColors[i*6+4] = Math.min(g, 1);
+        edgeColors[i*6+2] = edgeColors[i*6+5] = Math.min(b, 0.8);
+      }
+      edgeLines.geometry.attributes.color.needsUpdate = true;
+
+      /* Reset mesh colors to base then apply node glow */
+      for (let i = 0; i < meshColors.length; i++) meshColors[i] = baseColors[i];
+
+      for (let i = 0; i < NET_NODES; i++) {
+        if (nodesLit && targetSet.has(i)) {
+          const tp = Math.sin(elapsed * 3 + i * 0.5) * 0.15 + 0.85;
+          const nearby = nodeMeshVerts[i];
+          if (nearby) {
+            for (const { vi, f } of nearby) {
+              const glow = f * tp * 0.4;
+              meshColors[vi*3] += glow * 0.05;
+              meshColors[vi*3+1] += glow * 0.7;
+              meshColors[vi*3+2] += glow * 0.25;
+            }
+          }
+        }
+        for (const s of spikes) {
+          const arr = s.arrivals[i];
+          if (arr < 0) continue;
+          const age = (elapsed - s.start) - arr;
+          if (age < 0 || age > 2.2) continue;
+          const intensity = Math.exp(-age * s.decay);
+          if (intensity > 0.04) {
+            const nearby = nodeMeshVerts[i];
+            if (nearby) {
+              for (const { vi, f } of nearby) {
+                const glow = f * intensity * 0.5;
+                meshColors[vi*3] += glow * 0.9;
+                meshColors[vi*3+1] += glow * 0.28;
+                meshColors[vi*3+2] += glow * 0.04;
+              }
+            }
+          }
+        }
+      }
+      meshGeo.attributes.color.needsUpdate = true;
+
+      /* Cleanup old spikes */
+      while (spikes.length > 0 && (elapsed - spikes[0].start) > 5) spikes.shift();
+
+      renderer.render(scene, camera);
+    }
+
+    /* ── Start ── */
+    window.addEventListener('resize', () => {
+      camera.aspect = canvas.clientWidth / canvas.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+    });
+
+    setTimeout(() => document.getElementById('fade').classList.add('hidden'), 300);
+    setTimeout(() => goTo(0), 400);
+
+    animate();
+  }
+})();
+</script>
+</body>
+</html>
