@@ -199,7 +199,7 @@ html,body{
 .slide__seeg{
   display:block;
   width:100%;
-  height:14vh;
+  height:17vh;
   margin-top:3vh;
 }
 .slide__url{
@@ -480,10 +480,11 @@ html,body{
         lag: follower ? LAGS[rank] : 0,
         atten: follower ? ATTEN[rank] : 1,
         buf: new Float32Array(LEN), w: 0,
-        freq: 3 + Math.random() * 7,
-        freq2: 12 + Math.random() * 18,
-        amp: 0.2 + Math.random() * 0.18,
-        noise: 0.07 + Math.random() * 0.07,
+        freq: 3 + Math.random() * 8,
+        freq2: 12 + Math.random() * 20,
+        amp: 0.28 + Math.random() * 0.22,
+        noise: 0.09 + Math.random() * 0.09,
+        spikeProb: 0.002 + Math.random() * 0.003,
         phase: Math.random() * Math.PI * 2,
         decay: 0, countdown: -1,
       };
@@ -499,14 +500,19 @@ html,body{
           c.countdown--;
           if (c.countdown === 0) { c.decay = 0.95 * c.atten; c.countdown = -1; }
         }
-        const base = Math.sin(t * c.freq + c.phase) * c.amp * (c.follower ? 0.32 : 0.5);
-        const fast = Math.sin(t * c.freq2 + c.phase * 2.3) * c.amp * 0.22;
-        const noise = (Math.random() - 0.5) * c.noise;
+        const base = Math.sin(t * c.freq + c.phase) * c.amp * (c.follower ? 0.8 : 1);
+        const fast = Math.sin(t * c.freq2 + c.phase * 2.3) * c.amp * 0.3;
+        const noise = (Math.random() - 0.5) * c.noise * 2;
         let spike = 0;
         if (c.decay > 0) {
-          spike = c.decay;
+          spike = c.decay * (c.follower ? 1 : 0.9);
           c.decay *= 0.84;
           if (c.decay < 0.02) c.decay = 0;
+        } else if (Math.random() < c.spikeProb) {
+          /* Spontaneous interictal activity, so the channels stay alive
+             between the propagating bursts */
+          c.decay = 0.45 + Math.random() * 0.35;
+          spike = c.decay;
         }
         c.buf[c.w] = base + fast + noise + spike;
         c.w = (c.w + 1) % LEN;
@@ -563,15 +569,23 @@ html,body{
           ctx.stroke();
         }
 
-        ctx.strokeStyle = 'rgba(' + rgb + ',' + ((c.follower ? 0.5 : 0.8) * alpha) + ')';
-        ctx.beginPath();
-        for (let s = 0; s < samples; s++) {
-          const idx = (c.w - samples + s + LEN * 2) % LEN;
-          const x = labelW + (s / samples) * traceW;
-          const y = yc - c.buf[idx] * rowH * 0.36;
-          if (s === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        /* Trace, then a wider low-alpha pass over it for the glow */
+        for (const pass of [0, 1]) {
+          const glow = pass === 1;
+          ctx.lineWidth = glow ? (c.follower ? 3 : 4) : (c.follower ? 1 : 1.5);
+          const a = glow
+            ? (c.follower ? 0.12 : 0.2)
+            : (c.follower ? 0.5 : 0.8);
+          ctx.strokeStyle = 'rgba(' + rgb + ',' + (a * alpha) + ')';
+          ctx.beginPath();
+          for (let s = 0; s < samples; s++) {
+            const idx = (c.w - samples + s + LEN * 2) % LEN;
+            const x = labelW + (s / samples) * traceW;
+            const y = yc - c.buf[idx] * rowH * 0.62;
+            if (s === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
         }
-        ctx.stroke();
       }
     }
 
