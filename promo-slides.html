@@ -156,12 +156,14 @@ html,body{
   font-size:1.2vw;
   color:var(--accent);
   letter-spacing:0.05em;
-  margin-top:3.5vh;
+  margin-top:1.6vh;
 }
 .slide__proof{
   font-size:0.95vw;
   color:var(--text-dim);
-  margin-top:2.5vh;
+  margin-top:3vh;
+  max-width:36vw;
+  line-height:1.5;
   font-style:italic;
 }
 /* Progress dots + hint */
@@ -298,6 +300,7 @@ html,body{
         <div class="slide__fact-detail">Exclusive license from MGB &amp; proprietary datasets</div>
       </div>
     </div>
+    <div class="slide__proof">Spun out of Massachusetts General Hospital &amp; Harvard Medical School, where the research was funded by DARPA.</div>
     <div class="slide__url">findneuro.com</div>
   </div>
 </div>
@@ -657,7 +660,7 @@ html,body{
     const linkGeo = new THREE.BufferGeometry();
     linkGeo.setAttribute('position', new THREE.BufferAttribute(linkPos, 3));
     const linkMat = new THREE.LineBasicMaterial({
-      color:0x00d4ff, transparent:true, opacity:0,
+      color:0xff6b35, transparent:true, opacity:0,
       blending:THREE.AdditiveBlending, depthWrite:false,
     });
     hubGroup.add(new THREE.LineSegments(linkGeo, linkMat));
@@ -957,10 +960,10 @@ html,body{
           pulsePos[i*3+1] = hubSats[i].y * t;
           pulsePos[i*3+2] = hubSats[i].z * t;
           /* Spoke lights up ahead of the pulse, brightest at the hub end */
-          const bi = (0.15 + 0.9 * p) * treatT * 0.7;
-          const bo = (0.45 - 0.3 * p) * treatT * 0.45;
-          spokeCol[i*6] = 0; spokeCol[i*6+1] = bi * 0.7; spokeCol[i*6+2] = bi;
-          spokeCol[i*6+3] = 0; spokeCol[i*6+4] = bo * 0.7; spokeCol[i*6+5] = bo;
+          const bi = (0.15 + 0.9 * p) * treatT * 0.85;
+          const bo = (0.45 - 0.3 * p) * treatT * 0.55;
+          spokeCol[i*6] = bi; spokeCol[i*6+1] = bi * 0.42; spokeCol[i*6+2] = bi * 0.16;
+          spokeCol[i*6+3] = bo; spokeCol[i*6+4] = bo * 0.42; spokeCol[i*6+5] = bo * 0.16;
         }
         pulseGeo.attributes.position.needsUpdate = true;
         spokeGeo.attributes.color.needsUpdate = true;
