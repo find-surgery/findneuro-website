@@ -213,7 +213,8 @@ html,body{
   animation:hintPulse 2.6s ease-in-out infinite;
   transition:opacity 0.5s ease;
 }
-#hint.gone{opacity:0}
+/* animation:none matters - a running animation outranks the opacity here */
+#hint.gone{opacity:0;animation:none}
 @keyframes hintPulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
 /* Global fade overlay */
 #fade{
@@ -323,7 +324,7 @@ html,body{
         <div class="slide__fact-detail">2 sites are going live this month</div>
       </div>
       <div>
-        <div class="slide__fact-title">4 Patents</div>
+        <div class="slide__fact-title">4 Patent Applications</div>
         <div class="slide__fact-detail">Exclusive license from MGB &amp; proprietary datasets</div>
       </div>
     </div>
