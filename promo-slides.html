@@ -31,12 +31,14 @@ html,body{
   transition:opacity 0.5s ease;
 }
 /* The video slide hands the whole screen to the player: no brain, no text,
-   just the logo and the dots. */
+   no logo, just the dots. */
 body.is-video #brain-canvas{opacity:0}
+body.is-video #logo{opacity:0}
 body.is-video #slides{width:100vw;padding:0}
 #logo{
   position:fixed;top:5vh;left:6vw;z-index:20;
   height:7vh;
+  transition:opacity 0.4s ease;
 }
 #slides{
   position:fixed;top:0;left:0;
@@ -437,6 +439,25 @@ body.is-video #slides{width:100vw;padding:0}
     { brain: 'treat',   cortex: 1, video: true },  /* The platform - player owns the screen */
   ];
   const NUM_SLIDES = SLIDES.length;
+
+  /* Shareable deep links: /promo-slides.html#demo, or #1 .. #4 */
+  const SLUGS = ['problem', 'solution', 'traction', 'demo'];
+  const HINTS = ['Click to continue', 'Click to continue', 'Click to watch our demo', ''];
+
+  function slideFromUrl() {
+    let raw = location.hash.replace(/^#/, '');
+    if (!raw) {
+      const q = location.search.match(/[?&]slide=([^&]+)/);
+      raw = q ? q[1] : '';
+    }
+    raw = decodeURIComponent(raw).trim().toLowerCase();
+    if (!raw) return 0;
+    const bySlug = SLUGS.indexOf(raw);
+    if (bySlug >= 0) return bySlug;
+    const n = parseInt(raw, 10);
+    if (n >= 1 && n <= NUM_SLIDES) return n - 1;
+    return 0;
+  }
 
   /* ── Scene Setup ── */
   const canvas = document.getElementById('brain-canvas');
@@ -1116,7 +1137,16 @@ body.is-video #slides{width:100vw;padding:0}
 
       brainMode = SLIDES[slideIdx].brain;
       dots.forEach((d, i) => d.classList.toggle('on', i === slideIdx));
-      hint.classList.toggle('gone', slideIdx === NUM_SLIDES - 1);
+      if (HINTS[slideIdx]) hint.textContent = HINTS[slideIdx];
+      hint.classList.toggle('gone', !HINTS[slideIdx]);
+
+      /* Keep the URL on the current slide so it can be copied and shared.
+         replaceState, so this never fires hashchange back at us. */
+      try {
+        history.replaceState(null, '', '#' + SLUGS[slideIdx]);
+      } catch (e) {
+        /* file:// in some browsers - not worth breaking navigation over */
+      }
 
       /* Warm the file one slide early so the player does not stall on open */
       if (video && slideIdx === NUM_SLIDES - 2 && video.preload !== 'auto') {
@@ -1385,8 +1415,11 @@ body.is-video #slides{width:100vw;padding:0}
     fitCamera();
     window.addEventListener('resize', fitCamera);
 
+    /* Someone editing the hash by hand, or using back/forward */
+    window.addEventListener('hashchange', () => goTo(slideFromUrl()));
+
     setTimeout(() => document.getElementById('fade').classList.add('hidden'), 300);
-    setTimeout(() => goTo(0), 400);
+    setTimeout(() => goTo(slideFromUrl()), 400);
 
     animate();
   }
