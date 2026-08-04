@@ -133,9 +133,29 @@ html,body{
 .slide__stat-num--danger{
   color:var(--danger);
 }
+.slide__award{
+  display:inline-block;
+  margin-top:0.5vh;
+  padding:0.9vh 1.3vw;
+  border:1px solid rgba(0,212,255,0.4);
+  background:rgba(0,212,255,0.08);
+  border-radius:999px;
+  font-size:1.05vw;
+  font-weight:600;
+  color:var(--accent);
+}
+.slide__award-mark{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:400;
+  font-size:0.75vw;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  opacity:0.8;
+  margin-right:0.5vw;
+}
 .slide__facts{
   display:grid;grid-template-columns:1fr 1fr;
-  gap:2.6vh 2.6vw;margin-top:3vh;max-width:38vw;
+  gap:2.4vh 2.6vw;margin-top:2.6vh;max-width:38vw;
 }
 .slide__fact-title{
   font-size:1.55vw;font-weight:700;color:var(--accent);
@@ -218,6 +238,8 @@ html,body{
   .slide__stats{gap:18px 26px}
   .slide__stat-num{font-size:24px}
   .slide__stat-label{font-size:11px}
+  .slide__award{font-size:12px;padding:6px 12px;margin-top:2px}
+  .slide__award-mark{font-size:9px;margin-right:6px}
   .slide__facts{gap:16px 20px;max-width:none}
   .slide__fact-title{font-size:16px}
   .slide__fact-title--lead{font-size:19px}
@@ -282,6 +304,7 @@ html,body{
   <div class="slide" id="s2">
     <div class="slide__eyebrow">Where We Are</div>
     <div class="slide__heading">Cleared, connected,<br>and going live.</div>
+    <div class="slide__award"><span class="slide__award-mark">Winner</span>2026 Harvard President's Innovation Challenge</div>
     <div class="slide__facts">
       <div>
         <div class="slide__fact-title slide__fact-title--lead">FDA Clearance</div>
