@@ -584,13 +584,91 @@ html,body{
       blending:THREE.AdditiveBlending, depthWrite:false,
     });
     const treatGlow = new THREE.Mesh(
-      new THREE.SphereGeometry(0.09, 16, 16),
+      new THREE.SphereGeometry(0.045, 16, 16),
       treatGlowMat
     );
     treatGroup.add(treatGlow);
     if (criticalContactPos) treatGroup.position.copy(criticalContactPos);
     treatGroup.visible = false;
     brainGroup.add(treatGroup);
+
+    /* ── The critical node's local network: it sits at the hub ── */
+    const hubGroup = new THREE.Group();
+    const HUB_SATS = 9;
+    const hubSats = [];
+    for (let i = 0; i < HUB_SATS; i++) {
+      const phi = Math.acos(1 - 2 * (i + 0.5) / HUB_SATS);
+      const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
+      const rad = 0.19 + Math.random() * 0.15;
+      hubSats.push(new THREE.Vector3(
+        Math.sin(phi) * Math.cos(theta) * rad,
+        Math.sin(phi) * Math.sin(theta) * rad,
+        Math.cos(phi) * rad * 0.85
+      ));
+    }
+
+    /* Spokes: first vertex of each pair is the hub itself, at the origin */
+    const spokePos = new Float32Array(HUB_SATS * 6);
+    const spokeCol = new Float32Array(HUB_SATS * 6);
+    for (let i = 0; i < HUB_SATS; i++) {
+      spokePos[i*6+3] = hubSats[i].x;
+      spokePos[i*6+4] = hubSats[i].y;
+      spokePos[i*6+5] = hubSats[i].z;
+    }
+    const spokeGeo = new THREE.BufferGeometry();
+    spokeGeo.setAttribute('position', new THREE.BufferAttribute(spokePos, 3));
+    spokeGeo.setAttribute('color', new THREE.BufferAttribute(spokeCol, 3));
+    hubGroup.add(new THREE.LineSegments(spokeGeo, new THREE.LineBasicMaterial({
+      vertexColors:true, transparent:true, opacity:0.9,
+      blending:THREE.AdditiveBlending, depthWrite:false,
+    })));
+
+    /* A few satellite-to-satellite links, so it reads as a network not a star */
+    const hubLinks = [];
+    for (let i = 0; i < HUB_SATS; i++) {
+      const j = (i + 2 + Math.floor(Math.random() * 2)) % HUB_SATS;
+      if (i !== j) hubLinks.push([i, j]);
+    }
+    const linkPos = new Float32Array(hubLinks.length * 6);
+    for (let i = 0; i < hubLinks.length; i++) {
+      const a = hubSats[hubLinks[i][0]], b = hubSats[hubLinks[i][1]];
+      linkPos[i*6]=a.x; linkPos[i*6+1]=a.y; linkPos[i*6+2]=a.z;
+      linkPos[i*6+3]=b.x; linkPos[i*6+4]=b.y; linkPos[i*6+5]=b.z;
+    }
+    const linkGeo = new THREE.BufferGeometry();
+    linkGeo.setAttribute('position', new THREE.BufferAttribute(linkPos, 3));
+    const linkMat = new THREE.LineBasicMaterial({
+      color:0x00d4ff, transparent:true, opacity:0,
+      blending:THREE.AdditiveBlending, depthWrite:false,
+    });
+    hubGroup.add(new THREE.LineSegments(linkGeo, linkMat));
+
+    /* Satellite nodes */
+    const satPos = new Float32Array(HUB_SATS * 3);
+    for (let i = 0; i < HUB_SATS; i++) {
+      satPos[i*3]=hubSats[i].x; satPos[i*3+1]=hubSats[i].y; satPos[i*3+2]=hubSats[i].z;
+    }
+    const satGeo = new THREE.BufferGeometry();
+    satGeo.setAttribute('position', new THREE.BufferAttribute(satPos, 3));
+    const satMat = new THREE.PointsMaterial({
+      size:0.045, color:0x7fe9ff, map:elTex, transparent:true, opacity:0,
+      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
+    });
+    hubGroup.add(new THREE.Points(satGeo, satMat));
+
+    /* Traffic running inward along the spokes, converging on the hub */
+    const pulsePos = new Float32Array(HUB_SATS * 3);
+    const pulseGeo = new THREE.BufferGeometry();
+    pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePos, 3));
+    const pulseMat = new THREE.PointsMaterial({
+      size:0.055, color:0x00d4ff, map:elTex, transparent:true, opacity:0,
+      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
+    });
+    hubGroup.add(new THREE.Points(pulseGeo, pulseMat));
+
+    if (criticalContactPos) hubGroup.position.copy(criticalContactPos);
+    hubGroup.visible = false;
+    brainGroup.add(hubGroup);
 
     /* ── Epileptogenic Network ── */
     const NET_NODES = 200;
@@ -837,21 +915,41 @@ html,body{
         treatGlowMat.color.setHSL(0.53, 1, 0.5 + Math.sin(elapsed * 3) * 0.15);
         treatGlow.scale.setScalar((0.8 + Math.sin(elapsed * 5) * 0.3) * treatT);
 
-        /* Expanding rings - a shockwave that sweeps out through the network */
+        /* Expanding rings, kept inside the local network */
         for (const tr of treatRings) {
-          const cycle = ((elapsed * 0.55 + tr.phase) % 1);
-          const scale = 1 + cycle * 13;
-          tr.mesh.scale.setScalar(scale);
-          tr.mat.opacity = (1 - cycle) * 0.45 * treatT;
+          const cycle = ((elapsed * 0.5 + tr.phase) % 1);
+          tr.mesh.scale.setScalar(1 + cycle * 4.5);
+          tr.mat.opacity = (1 - cycle) * 0.22 * treatT;
           tr.mat.color.setHSL(0.53 + cycle * 0.05, 1, 0.55);
           tr.mesh.rotation.x = elapsed + tr.phase * Math.PI;
           tr.mesh.rotation.z = elapsed * 0.7 + tr.phase * 2;
         }
 
+        /* Local network: traffic converges on the critical node */
+        hubGroup.visible = true;
+        satMat.opacity = 0.7 * treatT;
+        linkMat.opacity = 0.13 * treatT;
+        pulseMat.opacity = 0.85 * treatT;
+        for (let i = 0; i < HUB_SATS; i++) {
+          const p = (elapsed * 0.5 + i / HUB_SATS) % 1;
+          const t = 1 - p;
+          pulsePos[i*3] = hubSats[i].x * t;
+          pulsePos[i*3+1] = hubSats[i].y * t;
+          pulsePos[i*3+2] = hubSats[i].z * t;
+          /* Spoke lights up ahead of the pulse, brightest at the hub end */
+          const bi = (0.12 + 0.85 * p) * treatT * 0.55;
+          const bo = (0.42 - 0.3 * p) * treatT * 0.35;
+          spokeCol[i*6] = 0; spokeCol[i*6+1] = bi * 0.7; spokeCol[i*6+2] = bi;
+          spokeCol[i*6+3] = 0; spokeCol[i*6+4] = bo * 0.7; spokeCol[i*6+5] = bo;
+        }
+        pulseGeo.attributes.position.needsUpdate = true;
+        spokeGeo.attributes.color.needsUpdate = true;
+
         /* Fade critical node from red to cyan (treated) */
         critRingMat.color.lerp(new THREE.Color(0x00d4ff), 0.02);
       } else {
         treatGroup.visible = false;
+        hubGroup.visible = false;
       }
 
       const nodesLit = (brainMode === 'targets' || brainMode === 'treat');
