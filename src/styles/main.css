@@ -351,6 +351,14 @@ body::after {
     border-color: rgba(255,255,255,0.25);
     background: rgba(255,255,255,0.04);
 }
+.btn--ghost {
+    background: transparent; color: var(--text-dim);
+    border: 1px solid transparent;
+}
+.btn--ghost:hover {
+    color: var(--accent);
+    background: rgba(0,212,255,0.06);
+}
 .hero__scroll-hint {
     position: absolute; bottom: 36px; left: 50%;
     transform: translateX(-50%);
