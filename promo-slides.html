@@ -603,7 +603,7 @@ html,body{
       blending:THREE.AdditiveBlending, depthWrite:false,
     });
     const treatGlow = new THREE.Mesh(
-      new THREE.SphereGeometry(0.045, 16, 16),
+      new THREE.SphereGeometry(0.03, 16, 16),
       treatGlowMat
     );
     treatGroup.add(treatGlow);
@@ -618,7 +618,7 @@ html,body{
     for (let i = 0; i < HUB_SATS; i++) {
       const phi = Math.acos(1 - 2 * (i + 0.5) / HUB_SATS);
       const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
-      const rad = 0.19 + Math.random() * 0.15;
+      const rad = 0.3 + Math.random() * 0.18;
       hubSats.push(new THREE.Vector3(
         Math.sin(phi) * Math.cos(theta) * rad,
         Math.sin(phi) * Math.sin(theta) * rad,
@@ -670,7 +670,7 @@ html,body{
     const satGeo = new THREE.BufferGeometry();
     satGeo.setAttribute('position', new THREE.BufferAttribute(satPos, 3));
     const satMat = new THREE.PointsMaterial({
-      size:0.045, color:0x7fe9ff, map:elTex, transparent:true, opacity:0,
+      size:0.065, color:0x7fe9ff, map:elTex, transparent:true, opacity:0,
       blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
     });
     hubGroup.add(new THREE.Points(satGeo, satMat));
@@ -680,7 +680,7 @@ html,body{
     const pulseGeo = new THREE.BufferGeometry();
     pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePos, 3));
     const pulseMat = new THREE.PointsMaterial({
-      size:0.055, color:0x00d4ff, map:elTex, transparent:true, opacity:0,
+      size:0.075, color:0x00d4ff, map:elTex, transparent:true, opacity:0,
       blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
     });
     hubGroup.add(new THREE.Points(pulseGeo, pulseMat));
@@ -934,11 +934,12 @@ html,body{
         treatGlowMat.color.setHSL(0.53, 1, 0.5 + Math.sin(elapsed * 3) * 0.15);
         treatGlow.scale.setScalar((0.8 + Math.sin(elapsed * 5) * 0.3) * treatT);
 
-        /* Expanding rings, kept inside the local network */
+        /* Expanding rings, small enough to stay at the hub and not compete
+           with the network around it */
         for (const tr of treatRings) {
           const cycle = ((elapsed * 0.5 + tr.phase) % 1);
-          tr.mesh.scale.setScalar(1 + cycle * 4.5);
-          tr.mat.opacity = (1 - cycle) * 0.22 * treatT;
+          tr.mesh.scale.setScalar(1 + cycle * 1.6);
+          tr.mat.opacity = (1 - cycle) * 0.18 * treatT;
           tr.mat.color.setHSL(0.53 + cycle * 0.05, 1, 0.55);
           tr.mesh.rotation.x = elapsed + tr.phase * Math.PI;
           tr.mesh.rotation.z = elapsed * 0.7 + tr.phase * 2;
@@ -946,9 +947,9 @@ html,body{
 
         /* Local network: traffic converges on the critical node */
         hubGroup.visible = true;
-        satMat.opacity = 0.7 * treatT;
-        linkMat.opacity = 0.13 * treatT;
-        pulseMat.opacity = 0.85 * treatT;
+        satMat.opacity = 0.8 * treatT;
+        linkMat.opacity = 0.18 * treatT;
+        pulseMat.opacity = 0.9 * treatT;
         for (let i = 0; i < HUB_SATS; i++) {
           const p = (elapsed * 0.5 + i / HUB_SATS) % 1;
           const t = 1 - p;
@@ -956,8 +957,8 @@ html,body{
           pulsePos[i*3+1] = hubSats[i].y * t;
           pulsePos[i*3+2] = hubSats[i].z * t;
           /* Spoke lights up ahead of the pulse, brightest at the hub end */
-          const bi = (0.12 + 0.85 * p) * treatT * 0.55;
-          const bo = (0.42 - 0.3 * p) * treatT * 0.35;
+          const bi = (0.15 + 0.9 * p) * treatT * 0.7;
+          const bo = (0.45 - 0.3 * p) * treatT * 0.45;
           spokeCol[i*6] = 0; spokeCol[i*6+1] = bi * 0.7; spokeCol[i*6+2] = bi;
           spokeCol[i*6+3] = 0; spokeCol[i*6+4] = bo * 0.7; spokeCol[i*6+5] = bo;
         }
