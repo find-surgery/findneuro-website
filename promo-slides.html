@@ -75,6 +75,13 @@ html,body{
 .slide__heading--tight{
   font-size:2.6vw;
 }
+/* Space between sentences, but not between the wrapped lines of one */
+.slide__heading-line{
+  display:block;
+}
+.slide__heading-line + .slide__heading-line{
+  margin-top:1.4vh;
+}
 .slide__sub{
   font-size:1.4vw;
   color:var(--text-dim);
@@ -189,6 +196,12 @@ html,body{
 .slide__stat-label{
   font-size:0.85vw;color:var(--text-dim);margin-top:0.5vh;line-height:1.4;
 }
+.slide__seeg{
+  display:block;
+  width:100%;
+  height:14vh;
+  margin-top:3vh;
+}
 .slide__url{
   font-family:'JetBrains Mono',monospace;
   font-size:1.2vw;
@@ -269,6 +282,7 @@ html,body{
   .slide__fact-title--lead{font-size:19px}
   .slide__fact-detail{font-size:11.5px}
   .slide__fact-names{font-size:11px}
+  .slide__seeg{height:90px;margin-top:18px}
   .slide__url{font-size:14px}
   .slide__proof{font-size:12px}
   #nav{left:8vw;gap:14px}
@@ -288,7 +302,11 @@ html,body{
   <!-- Slide 0: The Problem -->
   <div class="slide" id="s0">
     <div class="slide__eyebrow">The Problem</div>
-    <div class="slide__heading slide__heading--tight">Epilepsy surgery saves lives.<br>Too often, it never happens.<br>When it does, it fails to stop the seizures half the time.</div>
+    <div class="slide__heading slide__heading--tight">
+      <span class="slide__heading-line">Epilepsy surgery saves lives.</span>
+      <span class="slide__heading-line">Too often, it never happens.</span>
+      <span class="slide__heading-line">When it does, it fails to stop the seizures half the time.</span>
+    </div>
     <div class="slide__stats">
       <div>
         <div class="slide__stat-num">1.2M</div>
@@ -323,6 +341,7 @@ html,body{
       <span class="slide__outcome-label">The outcome</span>
       Where to target, and what to spare.
     </div>
+    <canvas id="seeg-canvas" class="slide__seeg" aria-hidden="true"></canvas>
   </div>
 
   <!-- Slide 2: Where We Are -->
@@ -434,6 +453,130 @@ html,body{
     tL.position.set(offset, 5, 0);
     renderer.setSize(w, h);
   }
+
+  /* ── sEEG traces under the slide 2 text ──
+     Same idea as the #cn-how panel on the site: one channel leads, the rest
+     follow it with a lag and an attenuation, which is the signal the
+     criticality ranking is reading. */
+  const seeg = (function() {
+    const el = document.getElementById('seeg-canvas');
+    if (!el) return null;
+    const ctx = el.getContext('2d');
+    if (!ctx) return null;
+
+    const LABELS = ['LA1', 'LA2', 'LH1', 'RH1', 'RA1', 'RA2'];
+    const LEN = 300;
+    const LEAD = 2;                          // index of the leading channel
+    const LAGS = [11, 17, 24, 32, 41];       // samples behind the lead
+    const ATTEN = [0.8, 0.66, 0.54, 0.42, 0.32];
+    const SAMPLE_HZ = 85;
+    const FIRE_EVERY = 1.8;                  // seconds between bursts
+
+    const chans = LABELS.map((label, i) => {
+      const follower = i !== LEAD;
+      const rank = follower ? ((i - LEAD + LABELS.length) % LABELS.length) - 1 : -1;
+      return {
+        label, follower,
+        lag: follower ? LAGS[rank] : 0,
+        atten: follower ? ATTEN[rank] : 1,
+        buf: new Float32Array(LEN), w: 0,
+        freq: 3 + Math.random() * 7,
+        freq2: 12 + Math.random() * 18,
+        amp: 0.2 + Math.random() * 0.18,
+        noise: 0.07 + Math.random() * 0.07,
+        phase: Math.random() * Math.PI * 2,
+        decay: 0, countdown: -1,
+      };
+    });
+
+    let k = 0, acc = 0, fireT = FIRE_EVERY;
+
+    function pushSample() {
+      k++;
+      const t = k / SAMPLE_HZ;
+      for (const c of chans) {
+        if (c.countdown > 0) {
+          c.countdown--;
+          if (c.countdown === 0) { c.decay = 0.95 * c.atten; c.countdown = -1; }
+        }
+        const base = Math.sin(t * c.freq + c.phase) * c.amp * (c.follower ? 0.32 : 0.5);
+        const fast = Math.sin(t * c.freq2 + c.phase * 2.3) * c.amp * 0.22;
+        const noise = (Math.random() - 0.5) * c.noise;
+        let spike = 0;
+        if (c.decay > 0) {
+          spike = c.decay;
+          c.decay *= 0.84;
+          if (c.decay < 0.02) c.decay = 0;
+        }
+        c.buf[c.w] = base + fast + noise + spike;
+        c.w = (c.w + 1) % LEN;
+      }
+    }
+
+    function advance(dt) {
+      fireT += dt;
+      if (fireT >= FIRE_EVERY) {
+        fireT = 0;
+        chans[LEAD].decay = 0.95;
+        for (const c of chans) if (c.follower) c.countdown = c.lag;
+      }
+      acc += dt;
+      const step = 1 / SAMPLE_HZ;
+      let guard = 0;
+      while (acc >= step && guard++ < 10) { acc -= step; pushSample(); }
+    }
+
+    function draw(alpha) {
+      const w = el.clientWidth, h = el.clientHeight;
+      if (!w || !h) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const pw = Math.round(w * dpr), ph = Math.round(h * dpr);
+      if (el.width !== pw || el.height !== ph) {
+        el.width = pw; el.height = ph;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      ctx.clearRect(0, 0, w, h);
+      if (alpha <= 0.01) return;
+
+      const rowH = h / chans.length;
+      const labelW = Math.max(24, w * 0.055);
+      const traceW = w - labelW - 2;
+      const samples = Math.max(40, Math.min(LEN, Math.floor(traceW / 1.1)));
+      ctx.font = Math.max(7, Math.min(11, w * 0.013)) + 'px "JetBrains Mono", monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.lineWidth = 1;
+
+      for (let ci = 0; ci < chans.length; ci++) {
+        const c = chans[ci];
+        const yc = rowH * ci + rowH * 0.5;
+        const rgb = c.follower ? '255,160,60' : '239,68,68';
+
+        ctx.fillStyle = 'rgba(' + (c.follower ? '0,180,220' : '239,68,68') + ',' + (0.45 * alpha) + ')';
+        ctx.fillText(c.label, 0, yc);
+
+        if (ci > 0) {
+          ctx.strokeStyle = 'rgba(0,180,220,' + (0.05 * alpha) + ')';
+          ctx.beginPath();
+          ctx.moveTo(labelW, rowH * ci);
+          ctx.lineTo(w, rowH * ci);
+          ctx.stroke();
+        }
+
+        ctx.strokeStyle = 'rgba(' + rgb + ',' + ((c.follower ? 0.5 : 0.8) * alpha) + ')';
+        ctx.beginPath();
+        for (let s = 0; s < samples; s++) {
+          const idx = (c.w - samples + s + LEN * 2) % LEN;
+          const x = labelW + (s / samples) * traceW;
+          const y = yc - c.buf[idx] * rowH * 0.36;
+          if (s === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    }
+
+    return { advance, draw };
+  })();
 
   /* ── Glow Texture ── */
   function makeTexture(size, falloff) {
@@ -893,6 +1036,8 @@ html,body{
     let brainMode = 'calm';
     let cortexFade = 0;          // 0 = cortex opaque, 1 = fully faded
     let treatT = 0;              // 0 = untreated, 1 = treatment fully on
+    let seegAlpha = 0;
+    let seegDrawn = false;
     const CORTEX_FADE_SPEED = 0.7;
     const dots = Array.from(document.querySelectorAll('.dot'));
     const hint = document.getElementById('hint');
@@ -956,6 +1101,18 @@ html,body{
 
       /* Ramp for the treatment: 0 on slide 2, 1 once slide 3 has settled */
       treatT += ((brainMode === 'treat' ? 1 : 0) - treatT) * Math.min(1, dt * 0.9);
+
+      /* sEEG panel only runs while slide 2 is up */
+      if (seeg) {
+        seegAlpha += ((slideIdx === 1 ? 1 : 0) - seegAlpha) * Math.min(1, dt * 4);
+        if (seegAlpha > 0.01) {
+          seeg.advance(dt);
+          seeg.draw(seegAlpha);
+        } else if (seegDrawn) {
+          seeg.draw(0);
+        }
+        seegDrawn = seegAlpha > 0.01;
+      }
 
       /* Cortex fade: gradually reveal subcortical + electrodes */
       const fadeTarget = slideIdx >= 0 ? SLIDES[slideIdx].cortex : 0;
