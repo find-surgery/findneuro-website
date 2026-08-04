@@ -405,9 +405,9 @@ body.is-video #slides{width:100vw;padding:0}
   <div class="slide slide--video" id="s3">
     <div class="slide__video-frame">
       <video class="slide__video" id="demo-video" controls playsinline preload="none"
-             poster="./assets/video/cn-suite-demo-poster.jpg"
+             poster="./assets/video/cn-suite-demo-crop-poster.jpg"
              aria-label="FIND Neuro CN-Suite platform walkthrough">
-        <source src="./assets/video/cn-suite-demo.mp4" type="video/mp4">
+        <source src="./assets/video/cn-suite-demo-crop.mp4" type="video/mp4">
       </video>
     </div>
   </div>
@@ -1124,19 +1124,11 @@ body.is-video #slides{width:100vw;padding:0}
         video.load();
       }
 
-      /* Video slide: hand the screen over, start muted so it never surprises
-         a room, and stop when we leave */
+      /* Video slide: hand the screen over. Playback waits for a deliberate
+         press - no autoplay - but leaving the slide stops it. */
       videoSlide = !!SLIDES[slideIdx].video;
       document.body.classList.toggle('is-video', videoSlide);
-      if (video) {
-        if (videoSlide) {
-          video.muted = true;
-          const p = video.play();
-          if (p && p.catch) p.catch(() => {});
-        } else {
-          video.pause();
-        }
-      }
+      if (video && !videoSlide) video.pause();
 
       if (brainMode === 'chaos') {
         for (let i = 0; i < 6; i++) setTimeout(() => triggerFocusSpike(), i * 400);
