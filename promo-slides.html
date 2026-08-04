@@ -494,7 +494,9 @@ html,body{
 
     for (let e = 0; e < 12; e++) {
       const angle = (e / 12) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
-      const zPos = -0.6 + Math.random() * 1.2;
+      /* Floor on the trajectory height: nothing is implanted down by the skull
+         base, so no shaft is allowed into the inferior band. */
+      const zPos = -0.15 + Math.random() * 0.95;
       const outerR = 1.65, innerR = 0.2 + Math.random() * 0.35;
       const start = new THREE.Vector3(Math.cos(angle)*outerR, Math.sin(angle)*outerR, zPos);
       const end = new THREE.Vector3(Math.cos(angle)*innerR, Math.sin(angle)*innerR, zPos + (Math.random()-0.5)*0.3);
@@ -570,7 +572,7 @@ html,body{
         blending:THREE.AdditiveBlending, depthWrite:false,
       });
       const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(0.02, 0.004, 8, 48),
+        new THREE.TorusGeometry(0.06, 0.012, 8, 64),
         ringMat
       );
       treatRings.push({ mesh: ring, mat: ringMat, phase: i / NUM_TREAT_RINGS });
@@ -582,7 +584,7 @@ html,body{
       blending:THREE.AdditiveBlending, depthWrite:false,
     });
     const treatGlow = new THREE.Mesh(
-      new THREE.SphereGeometry(0.04, 16, 16),
+      new THREE.SphereGeometry(0.09, 16, 16),
       treatGlowMat
     );
     treatGroup.add(treatGlow);
@@ -740,6 +742,7 @@ html,body{
     let slideIdx = -1;
     let brainMode = 'calm';
     let cortexFade = 0;          // 0 = cortex opaque, 1 = fully faded
+    let treatT = 0;              // 0 = untreated, 1 = treatment fully on
     const CORTEX_FADE_SPEED = 0.7;
     const dots = Array.from(document.querySelectorAll('.dot'));
     const hint = document.getElementById('hint');
@@ -766,9 +769,9 @@ html,body{
       if (brainMode === 'chaos') {
         for (let i = 0; i < 6; i++) setTimeout(() => triggerFocusSpike(), i * 400);
       }
-      if (brainMode === 'treat') {
-        critRingMat.color.set(0xff2222);
-      }
+      /* The ring starts red on every slide and only turns cyan once the
+         treatment on slide 3 has run for a beat */
+      critRingMat.color.set(0xff2222);
     }
 
     function next() { goTo(slideIdx + 1); }
@@ -796,9 +799,13 @@ html,body{
       /* Auto-rotate brain - never stops */
       brainGroup.rotation.z += 0.35 * dt;
 
-      /* Keep the network alive between clicks */
+      /* Keep the network alive between clicks. On 'treat' nothing new fires -
+         the seizure activity stops, which is the point of the slide. */
       if (brainMode === 'chaos' && Math.random() < 0.02) triggerFocusSpike();
-      if (brainMode !== 'chaos' && Math.random() < 0.005) triggerSpike();
+      else if (brainMode === 'targets' && Math.random() < 0.006) triggerSpike();
+
+      /* Ramp for the treatment: 0 on slide 2, 1 once slide 3 has settled */
+      treatT += ((brainMode === 'treat' ? 1 : 0) - treatT) * Math.min(1, dt * 0.9);
 
       /* Cortex fade: gradually reveal subcortical + electrodes */
       const fadeTarget = slideIdx >= 0 ? SLIDES[slideIdx].cortex : 0;
@@ -826,16 +833,16 @@ html,body{
         treatGroup.visible = true;
         /* Pulsing center glow */
         const glowPulse = Math.sin(elapsed * 6) * 0.2 + 0.5;
-        treatGlowMat.opacity = glowPulse;
+        treatGlowMat.opacity = glowPulse * treatT;
         treatGlowMat.color.setHSL(0.53, 1, 0.5 + Math.sin(elapsed * 3) * 0.15);
-        treatGlow.scale.setScalar(0.8 + Math.sin(elapsed * 5) * 0.3);
+        treatGlow.scale.setScalar((0.8 + Math.sin(elapsed * 5) * 0.3) * treatT);
 
-        /* Expanding rings */
+        /* Expanding rings - a shockwave that sweeps out through the network */
         for (const tr of treatRings) {
-          const cycle = ((elapsed * 0.8 + tr.phase) % 1);
-          const scale = 1 + cycle * 8;
+          const cycle = ((elapsed * 0.55 + tr.phase) % 1);
+          const scale = 1 + cycle * 13;
           tr.mesh.scale.setScalar(scale);
-          tr.mat.opacity = (1 - cycle) * 0.35;
+          tr.mat.opacity = (1 - cycle) * 0.45 * treatT;
           tr.mat.color.setHSL(0.53 + cycle * 0.05, 1, 0.55);
           tr.mesh.rotation.x = elapsed + tr.phase * Math.PI;
           tr.mesh.rotation.z = elapsed * 0.7 + tr.phase * 2;
@@ -856,8 +863,12 @@ html,body{
         g += pulse; b += pulse * 1.5;
 
         if (nodesLit && targetSet.has(i)) {
+          /* Targets read green while they are being identified, then shift to
+             cyan as the treatment takes hold */
           const tp = Math.sin(elapsed * 3 + i * 0.5) * 0.15 + 0.85;
-          r = 0.05; g = tp * 1.2; b = tp * 0.4;
+          r = 0.05 * (1 - treatT);
+          g = tp * (1.2 - 0.48 * treatT);
+          b = tp * (0.4 + 0.95 * treatT);
         } else if (brainMode === 'chaos' && focusSet.has(i)) {
           const chaos = Math.sin(elapsed * 8 + i * 1.7) * 0.3 + 0.7;
           r += chaos * 0.9; g += chaos * 0.08; b += 0.02;
@@ -889,6 +900,10 @@ html,body{
         if (brainMode === 'chaos' && focusSet.has(from) && focusSet.has(to)) {
           const p = Math.sin(elapsed * 6 + i * 0.5) * 0.3 + 0.7;
           r += p * 1.2; g += p * 0.05; b += p * 0.02;
+        } else if (treatT > 0.01) {
+          /* Network settles into a slow cyan breath once treated */
+          const calm = (Math.sin(elapsed * 1.1 + i * 0.18) * 0.5 + 0.5) * 0.07 * treatT;
+          g += calm * 0.55; b += calm;
         }
 
         for (const s of spikes) {
@@ -919,9 +934,9 @@ html,body{
           if (nearby) {
             for (const { vi, f } of nearby) {
               const glow = f * tp * 0.4;
-              meshColors[vi*3] += glow * 0.05;
-              meshColors[vi*3+1] += glow * 0.7;
-              meshColors[vi*3+2] += glow * 0.25;
+              meshColors[vi*3] += glow * 0.05 * (1 - treatT);
+              meshColors[vi*3+1] += glow * (0.7 - 0.3 * treatT);
+              meshColors[vi*3+2] += glow * (0.25 + 0.5 * treatT);
             }
           }
         }
