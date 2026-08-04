@@ -15,6 +15,7 @@
   --text:#e8eaf0;
   --text-dim:rgba(232,234,240,0.55);
   --accent:#00d4ff;
+  --danger:#ff4d4d;
 }
 html,body{
   width:100vw;height:100vh;overflow:hidden;
@@ -24,9 +25,13 @@ html,body{
   -webkit-user-select:none;user-select:none;
 }
 #brain-canvas{
-  position:fixed;top:0;right:0;
-  width:55vw;height:100vh;
+  position:fixed;top:0;left:0;
+  width:100vw;height:100vh;
   z-index:1;
+}
+#logo{
+  position:fixed;top:5vh;left:6vw;z-index:20;
+  height:7vh;
 }
 #slides{
   position:fixed;top:0;left:0;
@@ -111,6 +116,12 @@ html,body{
   letter-spacing:0.1em;
   margin-bottom:0.4vh;
 }
+.slide__outcome-next{
+  display:block;
+  margin-top:1.2vh;
+  color:var(--text-dim);
+  font-weight:500;
+}
 .slide__stats{
   display:flex;flex-wrap:wrap;gap:2.2vw 2.6vw;margin-top:3vh;
 }
@@ -119,11 +130,11 @@ html,body{
   font-size:2.2vw;font-weight:700;color:var(--accent);
   line-height:1.1;
 }
+.slide__stat-num--danger{
+  color:var(--danger);
+}
 .slide__stat-label{
   font-size:0.85vw;color:var(--text-dim);margin-top:0.5vh;line-height:1.4;
-}
-.slide__logo{
-  height:4.5vh;margin-bottom:2.5vh;
 }
 .slide__url{
   font-family:'JetBrains Mono',monospace;
@@ -174,7 +185,8 @@ html,body{
 #fade.hidden{opacity:0}
 /* Narrow / portrait screens: brain fills the screen, text overlays it */
 @media (max-width:900px),(max-aspect-ratio:1/1){
-  #brain-canvas{width:100vw;opacity:0.5}
+  #brain-canvas{opacity:0.5}
+  #logo{height:34px;top:24px}
   #slides{
     width:100vw;padding:0 8vw;
     background:linear-gradient(to right,rgba(10,12,20,0.92),rgba(10,12,20,0.6));
@@ -191,7 +203,6 @@ html,body{
   .slide__stat-label{font-size:11px}
   .slide__url{font-size:14px}
   .slide__proof{font-size:12px}
-  .slide__logo{height:32px}
   #nav{left:8vw;gap:14px}
   #hint{font-size:10px}
 }
@@ -202,6 +213,8 @@ html,body{
 <div id="fade"></div>
 
 <canvas id="brain-canvas"></canvas>
+
+<img id="logo" src="./assets/White_500px.png" alt="FIND Neuro">
 
 <div id="slides">
   <!-- Slide 0: The Problem -->
@@ -222,13 +235,14 @@ html,body{
         <div class="slide__stat-label">Annual U.S.<br>expenditure</div>
       </div>
       <div>
-        <div class="slide__stat-num">~50%</div>
+        <div class="slide__stat-num slide__stat-num--danger">~50%</div>
         <div class="slide__stat-label">Success<br>rate</div>
       </div>
     </div>
     <div class="slide__outcome">
       <span class="slide__outcome-label">The question</span>
-      How do we get more of these patients to surgery, with higher confidence, and better outcomes?
+      How do we help more patients get the treatment they need?
+      <span class="slide__outcome-next">How do we help clinicians serve more patients, with higher confidence and better outcomes?</span>
     </div>
   </div>
 
@@ -245,13 +259,12 @@ html,body{
 
   <!-- Slide 2: Where We Are -->
   <div class="slide" id="s2">
-    <img class="slide__logo" src="./assets/White_500px.png" alt="FIND Neuro">
     <div class="slide__eyebrow">Where We Are</div>
     <div class="slide__heading">Cleared, connected,<br>and going live.</div>
     <div class="slide__stats">
       <div>
-        <div class="slide__stat-num">2 weeks</div>
-        <div class="slide__stat-label">To expected<br>FDA clearance</div>
+        <div class="slide__stat-num">This month</div>
+        <div class="slide__stat-label">FDA<br>clearance</div>
       </div>
       <div>
         <div class="slide__stat-num">7</div>
@@ -297,10 +310,9 @@ html,body{
   const canvas = document.getElementById('brain-canvas');
   const scene = new THREE.Scene();
   const clock = new THREE.Clock();
-  const camera = new THREE.PerspectiveCamera(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100);
-  camera.position.set(0, 0, 3.8);
+  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
   const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.1;
@@ -318,6 +330,38 @@ html,body{
   const brainGroup = new THREE.Group();
   brainGroup.rotation.x = -Math.PI / 2;
   scene.add(brainGroup);
+
+  /* ── Camera fit ──
+     The canvas fills the viewport; the text column owns the left BRAIN_LEFT of
+     it, so the brain is centred in whatever is left over and pulled back far
+     enough that nothing clips as it spins. The brain turns about its local z
+     (screen vertical), so its swept radius is the max radius in the local xy
+     plane and its height is the max |z|. */
+  const BRAIN_LEFT = 0.45;
+  const FIT_MARGIN = 1.03;
+  let boundRadius = 0, boundHeight = 0;
+  function expandBounds(x, y, z) {
+    const r = Math.sqrt(x * x + y * y);
+    if (r > boundRadius) boundRadius = r;
+    const h = Math.abs(z);
+    if (h > boundHeight) boundHeight = h;
+  }
+  function fitCamera() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const narrow = w <= 900 || w <= h;
+    const frac = narrow ? 1 : 1 - BRAIN_LEFT;
+    const centerFrac = narrow ? 0.5 : 1 - frac / 2;
+    const aspect = w / h;
+    const halfH = Math.max(boundHeight * FIT_MARGIN, boundRadius * FIT_MARGIN / (aspect * frac));
+    camera.aspect = aspect;
+    camera.position.set(0, 0, halfH / Math.tan((camera.fov * Math.PI / 180) / 2));
+    camera.updateProjectionMatrix();
+    const offset = (centerFrac - 0.5) * 2 * halfH * aspect;
+    brainGroup.position.x = offset;
+    rL.position.set(-3 + offset, 1, -4);
+    tL.position.set(offset, 5, 0);
+    renderer.setSize(w, h);
+  }
 
   /* ── Glow Texture ── */
   function makeTexture(size, falloff) {
@@ -368,6 +412,7 @@ html,body{
       const c = B.c[i] || 0;
       const y = verts[i * 3 + 2];
       const t = (y + 1.5) / 3.0;
+      expandBounds(verts[i*3], verts[i*3+1], verts[i*3+2]);
       if (c > 0) {
         baseColors[i*3]=0.06+t*0.05; baseColors[i*3+1]=0.22+t*0.12; baseColors[i*3+2]=0.42+t*0.15;
       } else {
@@ -450,9 +495,11 @@ html,body{
     for (let e = 0; e < 12; e++) {
       const angle = (e / 12) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
       const zPos = -0.6 + Math.random() * 1.2;
-      const outerR = 2.0, innerR = 0.2 + Math.random() * 0.35;
+      const outerR = 1.65, innerR = 0.2 + Math.random() * 0.35;
       const start = new THREE.Vector3(Math.cos(angle)*outerR, Math.sin(angle)*outerR, zPos);
       const end = new THREE.Vector3(Math.cos(angle)*innerR, Math.sin(angle)*innerR, zPos + (Math.random()-0.5)*0.3);
+      expandBounds(start.x, start.y, start.z);
+      expandBounds(end.x, end.y, end.z);
 
       /* Electrode shaft as cylinder */
       const dir = new THREE.Vector3().subVectors(end, start);
@@ -906,11 +953,8 @@ html,body{
     }
 
     /* ── Start ── */
-    window.addEventListener('resize', () => {
-      camera.aspect = canvas.clientWidth / canvas.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(canvas.clientWidth, canvas.clientHeight);
-    });
+    fitCamera();
+    window.addEventListener('resize', fitCamera);
 
     setTimeout(() => document.getElementById('fade').classList.add('hidden'), 300);
     setTimeout(() => goTo(0), 400);
