@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIND Neuro - For Clinical Teams</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c14;
+  --text:#e8eaf0;
+  --text-dim:rgba(232,234,240,0.55);
+  --accent:#00d4ff;
+  --danger:#ff4d4d;
+}
+html,body{
+  width:100vw;height:100vh;overflow:hidden;
+  background:var(--bg);color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  cursor:pointer;
+  -webkit-user-select:none;user-select:none;
+}
+#brain-canvas{
+  position:fixed;top:0;left:0;
+  width:100vw;height:100vh;
+  z-index:1;
+  transition:opacity 0.5s ease;
+}
+#logo{
+  position:fixed;top:5vh;left:6vw;z-index:20;
+  height:7vh;
+  transition:opacity 0.4s ease;
+}
+#prepared{
+  position:fixed;top:5vh;right:4vw;z-index:20;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.75vw;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  text-align:right;
+  transition:opacity 0.4s ease;
+}
+#prepared:empty{display:none}
+/* The video slide hands the whole screen to the player */
+body.is-video #brain-canvas{opacity:0}
+body.is-video #logo{opacity:0}
+body.is-video #prepared{opacity:0}
+body.is-video #slides{width:100vw;padding:0}
+/* The evidence slide swaps the brain for the published figure */
+body.is-figure #brain-canvas{opacity:0}
+#slides{
+  position:fixed;top:0;left:0;
+  width:50vw;height:100vh;
+  z-index:10;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 6vw;
+}
+.slide{
+  position:absolute;
+  opacity:0;
+  transform:translateY(30px);
+  transition:opacity 0.7s ease,transform 0.7s ease;
+  width:calc(100% - 12vw);
+  pointer-events:none;
+}
+.slide.active{opacity:1;transform:translateY(0)}
+.slide.exit{opacity:0;transform:translateY(-30px)}
+.slide__eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.85vw;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:0.15em;
+  margin-bottom:1.5vh;
+}
+.slide__heading{
+  font-weight:800;
+  font-size:2.6vw;
+  line-height:1.2;
+  letter-spacing:-0.03em;
+  margin-bottom:2vh;
+}
+.slide__heading-line{display:block}
+.slide__heading-line + .slide__heading-line{margin-top:1.4vh}
+.slide__find{
+  font-weight:800;
+  font-size:4vw;
+  line-height:1.15;
+  letter-spacing:-0.03em;
+}
+.slide__find-rest{color:var(--text-dim)}
+.slide__sub{
+  font-size:1.2vw;
+  color:var(--text-dim);
+  line-height:1.6;
+  max-width:36vw;
+  margin-top:2vh;
+}
+.slide__outcome{
+  margin-top:3vh;
+  padding:1.5vh 1.5vw;
+  background:rgba(0,212,255,0.04);
+  border-left:2px solid var(--accent);
+  border-radius:0 8px 8px 0;
+  font-weight:600;
+  font-size:1.3vw;
+  line-height:1.45;
+}
+.slide__outcome-label{
+  display:block;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:400;
+  font-size:0.65vw;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  margin-bottom:0.4vh;
+}
+.slide__stats{display:flex;flex-wrap:wrap;gap:2vh 2.6vw;margin-top:2.6vh}
+.slide__stat-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.9vw;font-weight:700;color:var(--accent);
+  line-height:1.1;
+}
+.slide__stat-num--danger{color:var(--danger)}
+.slide__stat-label{font-size:0.8vw;color:var(--text-dim);margin-top:0.5vh;line-height:1.4}
+/* Findings and caveats read as lists here - this audience reads */
+.slide__list{list-style:none;margin-top:2.6vh;max-width:37vw}
+.slide__list li{
+  position:relative;
+  padding-left:1.3vw;
+  font-size:1vw;
+  line-height:1.5;
+  color:var(--text-dim);
+  margin-bottom:1.3vh;
+}
+.slide__list li::before{
+  content:'';
+  position:absolute;left:0;top:0.62em;
+  width:0.35vw;height:0.35vw;
+  border-radius:50%;
+  background:var(--accent);
+  opacity:0.7;
+}
+.slide__list--caveat li::before{background:var(--text-dim)}
+.slide__list strong{color:var(--text);font-weight:600}
+.slide__cite{
+  font-size:0.75vw;
+  line-height:1.5;
+  color:var(--text-dim);
+  margin-top:2.4vh;
+  max-width:36vw;
+  font-style:italic;
+}
+.slide__cite b{color:var(--text);font-style:normal;font-weight:600}
+.slide__facts{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2.4vh 2.6vw;margin-top:2.6vh;max-width:38vw;
+}
+.slide__fact-title{
+  font-size:1.35vw;font-weight:700;color:var(--accent);
+  line-height:1.15;letter-spacing:-0.01em;
+}
+.slide__fact-detail{
+  font-size:0.9vw;color:var(--text-dim);
+  margin-top:0.6vh;line-height:1.45;
+}
+.slide__fact-detail strong{color:var(--text);font-weight:600}
+.slide__proof{
+  font-size:0.85vw;
+  color:var(--text-dim);
+  margin-top:2.6vh;
+  max-width:36vw;
+  line-height:1.5;
+  font-style:italic;
+}
+.slide__proof strong{color:var(--text);font-weight:600}
+.slide__url{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.05vw;
+  color:var(--accent);
+  letter-spacing:0.05em;
+  margin-top:1.6vh;
+}
+.slide__seeg{display:block;width:100%;height:15vh;margin-top:2.6vh}
+/* Published figure, shown in the space the brain usually occupies */
+#figure{
+  position:fixed;top:0;right:0;
+  width:52vw;height:100vh;
+  z-index:5;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:8vh 4vw;
+  opacity:0;
+  transition:opacity 0.6s ease;
+  pointer-events:none;
+}
+body.is-figure #figure{opacity:1}
+#figure img{
+  width:100%;max-height:62vh;
+  background:#fff;
+  border-radius:8px;
+  padding:1.2vh 1vw;
+  box-shadow:0 20px 70px rgba(0,0,0,0.55);
+}
+#figure figcaption{
+  margin-top:2.2vh;
+  font-size:0.75vw;
+  line-height:1.55;
+  color:var(--text-dim);
+  max-width:40vw;
+}
+#figure figcaption b{color:var(--text);font-weight:600}
+/* Video slide */
+.slide--video{width:100%;display:flex;align-items:center;justify-content:center}
+.slide__video-frame{
+  display:inline-block;line-height:0;
+  border:1px solid rgba(0,212,255,0.16);
+  border-radius:10px;overflow:hidden;background:#000;
+  box-shadow:0 24px 90px rgba(0,0,0,0.6);
+}
+.slide__video{
+  display:block;height:84vh;width:auto;max-width:94vw;
+  pointer-events:auto;
+}
+/* Progress dots + hint */
+#nav{
+  position:fixed;left:6vw;bottom:5vh;z-index:20;
+  display:flex;align-items:center;gap:1.2vw;
+}
+#dots{display:flex;gap:0.7vw}
+.dot{
+  cursor:pointer;
+  width:0.55vw;height:0.55vw;min-width:6px;min-height:6px;
+  border-radius:50%;
+  background:rgba(232,234,240,0.2);
+  transition:background 0.4s ease,transform 0.4s ease;
+}
+.dot.on{background:var(--accent);transform:scale(1.3)}
+#hint{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7vw;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  opacity:0.7;
+  animation:hintPulse 2.6s ease-in-out infinite;
+  transition:opacity 0.5s ease;
+}
+#hint.gone{opacity:0;animation:none}
+@keyframes hintPulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
+#fade{
+  position:fixed;inset:0;z-index:100;
+  background:var(--bg);
+  opacity:1;
+  transition:opacity 0.35s ease;
+  pointer-events:none;
+}
+#fade.hidden{opacity:0}
+@media (max-width:900px),(max-aspect-ratio:1/1){
+  #brain-canvas{opacity:0.45}
+  #logo{height:34px;top:24px}
+  #prepared{font-size:10px;top:26px}
+  #slides{
+    width:100vw;padding:0 8vw;
+    background:linear-gradient(to right,rgba(10,12,20,0.93),rgba(10,12,20,0.66));
+  }
+  .slide{width:calc(100% - 16vw)}
+  .slide__eyebrow{font-size:11px}
+  .slide__heading{font-size:24px}
+  .slide__find{font-size:32px}
+  .slide__sub{font-size:14px;max-width:none}
+  .slide__outcome{font-size:14px;padding:12px 14px}
+  .slide__outcome-label{font-size:9px}
+  .slide__stats{gap:14px 22px}
+  .slide__stat-num{font-size:20px}
+  .slide__stat-label{font-size:10.5px}
+  .slide__list{max-width:none}
+  .slide__list li{font-size:12px;padding-left:14px;margin-bottom:8px}
+  .slide__list li::before{width:4px;height:4px}
+  .slide__cite{font-size:10px;max-width:none}
+  .slide__facts{gap:14px 18px;max-width:none}
+  .slide__fact-title{font-size:15px}
+  .slide__fact-detail{font-size:11px}
+  .slide__proof{font-size:10.5px;max-width:none}
+  .slide__url{font-size:13px}
+  .slide__seeg{height:80px}
+  #figure{width:100vw;padding:12vh 8vw}
+  #figure img{max-height:40vh}
+  #figure figcaption{font-size:10px;max-width:none}
+  #nav{left:8vw;gap:14px}
+  #hint{font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<div id="fade"></div>
+
+<canvas id="brain-canvas"></canvas>
+
+<img id="logo" src="./assets/White_500px.png" alt="FIND Neuro">
+<div id="prepared"></div>
+
+<figure id="figure">
+  <img src="./assets/figures/fig2-sensitivity-by-surgery-size.svg"
+       alt="Mean per-patient sensitivity falling as the number of treated contacts increases">
+  <figcaption><b>Figure 2.</b> Mean per-patient sensitivity by surgery size (10-contact bins, threshold 0.15, Engel I/II cohort, n=42). Error bars are standard error; the integer above each point is the number of patients in that bucket. Ailion et al., medRxiv 2026.</figcaption>
+</figure>
+
+<div id="slides">
+  <!-- 0: The clinical challenge -->
+  <div class="slide" id="s0">
+    <div class="slide__eyebrow">The Clinical Challenge</div>
+    <div class="slide__heading">
+      <span class="slide__heading-line">Epilepsy surgery works.</span>
+      <span class="slide__heading-line">Until the MRI is normal.</span>
+    </div>
+    <div class="slide__stats">
+      <div>
+        <div class="slide__stat-num">60-70%</div>
+        <div class="slide__stat-label">Seizure freedom in<br>lesional temporal cases</div>
+      </div>
+      <div>
+        <div class="slide__stat-num slide__stat-num--danger">30-40%</div>
+        <div class="slide__stat-label">Non-lesional or<br>extratemporal</div>
+      </div>
+    </div>
+    <div class="slide__sub">Seven seizures, each with slightly different onset across channels. Visual review shows where activity appears first. It does not separate the contacts driving the network from the ones responding to it.</div>
+    <div class="slide__outcome">
+      <span class="slide__outcome-label">The question</span>
+      Which tissue has to come out - and where can you safely stop?
+    </div>
+  </div>
+
+  <!-- 1: The method -->
+  <div class="slide" id="s1">
+    <div class="slide__eyebrow">The Method</div>
+    <div class="slide__find">FIND<span class="slide__find-rest"> the driver network</span></div>
+    <div class="slide__sub"><strong>Criticality</strong> is a per-contact score of how strongly each recording site drives the seizure network.</div>
+    <ul class="slide__list">
+      <li>Delay-adjusted wavelet transfer entropy with phase slope index and phase-amplitude coupling, at 4 to 120 Hz, across pre-ictal, peri-ictal and post-ictal windows</li>
+      <li><strong>Directional and delay-aware</strong>, so driving separates from propagating - which broadband, single-timescale methods cannot do</li>
+      <li>Ground truth is the treatment zone <strong>segmented from post-operative T1</strong>, not the annotated seizure onset zone</li>
+    </ul>
+    <canvas id="seeg-canvas" class="slide__seeg" aria-hidden="true"></canvas>
+  </div>
+
+  <!-- 2: The platform -->
+  <div class="slide slide--video" id="s2">
+    <div class="slide__video-frame">
+      <video class="slide__video" id="demo-video" controls playsinline preload="none"
+             poster="./assets/video/cn-suite-demo-crop-poster.jpg"
+             aria-label="FIND Neuro CN-Suite walkthrough">
+        <source src="./assets/video/cn-suite-demo-crop.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+
+  <!-- 3: The evidence -->
+  <div class="slide" id="s3">
+    <div class="slide__eyebrow">Multicenter Validation</div>
+    <div class="slide__heading">
+      <span class="slide__heading-line">Locked on 37 patients.</span>
+      <span class="slide__heading-line">Tested once on 60.</span>
+    </div>
+    <div class="slide__stats">
+      <div>
+        <div class="slide__stat-num">d = 1.12</div>
+        <div class="slide__stat-label">Effect size<br>95% CI 0.42-1.83</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">0.77</div>
+        <div class="slide__stat-label">AUC<br>p = 0.001</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">4</div>
+        <div class="slide__stat-label">U.S. Level-4<br>epilepsy centers</div>
+      </div>
+    </div>
+    <ul class="slide__list">
+      <li>P(success) <strong>0.78</strong> in Engel I-II versus <strong>0.54</strong> in Engel III-IV</li>
+      <li><strong>50.0% sensitivity, 94.4% specificity</strong> at the patient level - this is a rule-out instrument, strongest when it tells you where drivers are not</li>
+      <li>5,611 contacts: criticality <strong>0.28 inside</strong> the treatment zone versus <strong>0.10 outside</strong> (d = 0.97)</li>
+      <li>Drivers are compact - <strong>8.96 mm</strong> nearest-neighbour versus 17.21 mm expected by chance, inside LITT targeting precision</li>
+      <li>Sensitivity is highest in focal procedures: <strong>80% at 10 or fewer treated contacts</strong>, under 40% above 30</li>
+    </ul>
+    <div class="slide__cite">Ailion A, Rockhill AP, Farzaneh H, et al. <b>Causal Network Mapping of sEEG Identifies Compact Epileptogenic Targets Concordant with Seizure Freedom: Multicenter Validation in 60 Patients.</b> medRxiv 2026. doi:10.64898/2026.05.21.26353792 - preprint, not yet peer reviewed.</div>
+  </div>
+
+  <!-- 4: Limitations -->
+  <div class="slide" id="s4">
+    <div class="slide__eyebrow">What We Do Not Claim</div>
+    <div class="slide__heading">
+      <span class="slide__heading-line">Limitations, from us</span>
+      <span class="slide__heading-line">rather than from you.</span>
+    </div>
+    <ul class="slide__list slide__list--caveat">
+      <li><strong>Retrospective.</strong> Whether it changes decisions in a live surgical conference is exactly the open question.</li>
+      <li>HUP contributed <strong>78%</strong> of the validation cohort. Excluding it: d = 0.68 (CI 0.12-1.24), underpowered.</li>
+      <li>Mixed sEEG and ECoG. Criticality is <strong>not yet validated separately</strong> by recording type.</li>
+      <li>About half the training cohort was labelled with the annotated SOZ rather than a segmented treatment zone.</li>
+      <li>The 0.15 threshold was pre-locked. <strong>Adaptive thresholding is unstudied.</strong></li>
+      <li>U.S. Level-4 centers only. Neuromodulation targets were not evaluated.</li>
+    </ul>
+    <div class="slide__cite">Every one of these is stated in the preprint. We would rather you heard them from us first.</div>
+  </div>
+
+  <!-- 5: The ask -->
+  <div class="slide" id="s5">
+    <div class="slide__eyebrow">What We Are Asking</div>
+    <div class="slide__heading">
+      <span class="slide__heading-line">Use it on your next case.</span>
+      <span class="slide__heading-line">Tell us where it is wrong.</span>
+    </div>
+    <div class="slide__facts">
+      <div>
+        <div class="slide__fact-title">No IRB for clinical use</div>
+        <!-- One-line edit when the 510(k) decision lands -->
+        <div class="slide__fact-detail" id="clearance-line">510(k) clearance expected this month. IRB is only needed to join a research study.</div>
+      </div>
+      <div>
+        <div class="slide__fact-title">Data sharing</div>
+        <div class="slide__fact-detail">De-identified iEEG and outcomes, under a <strong>DUA</strong> we help your office through.</div>
+      </div>
+      <div>
+        <div class="slide__fact-title">Join the studies</div>
+        <div class="slide__fact-detail">Prospective work running with <strong>Boston Children's</strong>, <strong>Texas Children's</strong> and others.</div>
+      </div>
+      <div>
+        <div class="slide__fact-title">Your read matters most</div>
+        <div class="slide__fact-detail">We want the cases where the map disagrees with you.</div>
+      </div>
+    </div>
+    <div class="slide__proof">Validated with colleagues at <strong>Boston Children's Hospital</strong>, <strong>Texas Children's Hospital</strong>, <strong>Penn</strong>, <strong>Johns Hopkins</strong>, <strong>University of Miami</strong>, <strong>NIH</strong> and <strong>University of Maryland</strong>. Spun out of <strong>Massachusetts General Hospital</strong> &amp; <strong>Harvard Medical School</strong>; research funded by <strong>DARPA</strong>.</div>
+    <div class="slide__url">findneuro.com</div>
+  </div>
+</div>
+
+<div id="nav">
+  <div id="dots">
+    <div class="dot" data-dot="0"></div>
+    <div class="dot" data-dot="1"></div>
+    <div class="dot" data-dot="2"></div>
+    <div class="dot" data-dot="3"></div>
+    <div class="dot" data-dot="4"></div>
+    <div class="dot" data-dot="5"></div>
+  </div>
+  <div id="hint">Click to continue</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" integrity="sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9" crossorigin="anonymous"></script>
+<script src="./brain_data.js"></script>
+<script src="./assets/js/brain-viz.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  /* Brain state per slide. 'seeg' shows the trace panel, 'video' hands the
+     screen to the player, 'figure' swaps the brain for the published figure. */
+  const SLIDES = [
+    { mode: 'chaos',   cortex: false },
+    { mode: 'targets', cortex: true, seeg: true },
+    { mode: 'treat',   cortex: true, video: true },
+    { mode: 'treat',   cortex: true, figure: true },
+    { mode: 'targets', cortex: true },
+    { mode: 'treat',   cortex: true },
+  ];
+  const NUM_SLIDES = SLIDES.length;
+  const SLUGS = ['problem', 'method', 'demo', 'evidence', 'limits', 'next'];
+  const HINTS = [
+    'Click to continue',
+    'Click to see the platform',
+    'Click to continue',
+    'Click to continue',
+    'Click to continue',
+    '',
+  ];
+
+  /* ?site=bch puts the reader's institution in the corner */
+  const SITES = {
+    bch: "Boston Children's Hospital",
+    tch: "Texas Children's Hospital",
+    mgh: 'Massachusetts General Hospital',
+    hup: 'Hospital of the University of Pennsylvania',
+    jhh: 'Johns Hopkins Hospital',
+    umf: 'University of Miami',
+    ummc: 'University of Maryland Medical Center',
+    nih: 'National Institutes of Health',
+    montefiore: 'Montefiore Medical Center',
+  };
+
+  function queryParam(name) {
+    const m = location.search.match(new RegExp('[?&]' + name + '=([^&]+)'));
+    return m ? decodeURIComponent(m[1]).trim().toLowerCase() : '';
+  }
+
+  function slideFromUrl() {
+    let raw = location.hash.replace(/^#/, '');
+    if (!raw) raw = queryParam('slide');
+    raw = decodeURIComponent(raw).trim().toLowerCase();
+    if (!raw) return 0;
+    const bySlug = SLUGS.indexOf(raw);
+    if (bySlug >= 0) return bySlug;
+    const n = parseInt(raw, 10);
+    if (n >= 1 && n <= NUM_SLIDES) return n - 1;
+    return 0;
+  }
+
+  const prepared = document.getElementById('prepared');
+  const site = SITES[queryParam('site')];
+  if (site && prepared) prepared.textContent = 'Prepared for ' + site;
+
+  const viz = window.FINDBrain && window.FINDBrain.create({
+    canvas: document.getElementById('brain-canvas'),
+    leftFraction: 0.45,
+  });
+  const seeg = window.FINDBrain && window.FINDBrain.createSeeg({
+    canvas: document.getElementById('seeg-canvas'),
+  });
+
+  const dots = Array.from(document.querySelectorAll('.dot'));
+  const hint = document.getElementById('hint');
+  const video = document.getElementById('demo-video');
+  let slideIdx = -1;
+  let videoSlide = false;
+  let seegAlpha = 0;
+  let seegDrawn = false;
+
+  function goTo(next) {
+    if (next < 0 || next >= NUM_SLIDES || next === slideIdx) return;
+    const prev = slideIdx;
+    if (prev >= 0) {
+      const prevEl = document.getElementById('s' + prev);
+      prevEl.classList.remove('active');
+      prevEl.classList.add('exit');
+    }
+    slideIdx = next;
+    setTimeout(() => {
+      const el = document.getElementById('s' + slideIdx);
+      el.classList.remove('exit');
+      el.classList.add('active');
+    }, prev >= 0 ? 220 : 0);
+
+    const cfg = SLIDES[slideIdx];
+    dots.forEach((d, i) => d.classList.toggle('on', i === slideIdx));
+    if (HINTS[slideIdx]) hint.textContent = HINTS[slideIdx];
+    hint.classList.toggle('gone', !HINTS[slideIdx]);
+
+    if (viz) {
+      viz.setMode(cfg.mode);
+      viz.setCortexFaded(!!cfg.cortex);
+      viz.resetCriticalRing();
+      viz.setPaused(!!cfg.video);
+      if (cfg.mode === 'chaos') {
+        for (let i = 0; i < 6; i++) setTimeout(() => viz.triggerFocusSpike(), i * 400);
+      }
+    }
+
+    videoSlide = !!cfg.video;
+    document.body.classList.toggle('is-video', videoSlide);
+    document.body.classList.toggle('is-figure', !!cfg.figure);
+
+    /* Warm the video one slide early, then stop it when we leave */
+    if (video && slideIdx === SLIDES.findIndex(s => s.video) - 1 && video.preload !== 'auto') {
+      video.preload = 'auto';
+      video.load();
+    }
+    if (video && !videoSlide) video.pause();
+
+    try {
+      /* search before the fragment - the other order buries ?site= inside the hash */
+      history.replaceState(null, '', location.search + '#' + SLUGS[slideIdx]);
+    } catch (e) {
+      /* file:// in some browsers */
+    }
+  }
+
+  function next() { goTo(slideIdx + 1); }
+  function back() { goTo(slideIdx - 1); }
+
+  document.addEventListener('click', next);
+  dots.forEach((d, i) => d.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goTo(i);
+  }));
+  const videoFrame = document.querySelector('.slide__video-frame');
+  if (videoFrame) videoFrame.addEventListener('click', (e) => e.stopPropagation());
+
+  document.addEventListener('keydown', (e) => {
+    if (videoSlide && video && (e.key === ' ' || e.key === 'k')) {
+      e.preventDefault();
+      if (video.paused) video.play().catch(() => {}); else video.pause();
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') {
+      e.preventDefault(); next();
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
+      e.preventDefault(); back();
+    } else if (e.key === 'Home') {
+      e.preventDefault(); goTo(0);
+    }
+  });
+
+  window.addEventListener('hashchange', () => goTo(slideFromUrl()));
+  window.addEventListener('resize', () => { if (viz) viz.fit(); });
+
+  let lastFrame = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min((now - lastFrame) / 1000, 0.1);
+    lastFrame = now;
+
+    if (seeg) {
+      const want = (slideIdx >= 0 && SLIDES[slideIdx].seeg) ? 1 : 0;
+      seegAlpha += (want - seegAlpha) * Math.min(1, dt * 4);
+      if (seegAlpha > 0.01) {
+        seeg.advance(dt);
+        seeg.draw(seegAlpha);
+        seegDrawn = true;
+      } else if (seegDrawn) {
+        seeg.draw(0);
+        seegDrawn = false;
+      }
+    }
+
+    if (viz) viz.render();
+  }
+
+  if (viz) viz.fit();
+  setTimeout(() => document.getElementById('fade').classList.add('hidden'), 300);
+  setTimeout(() => goTo(slideFromUrl()), 400);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
