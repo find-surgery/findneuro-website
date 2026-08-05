@@ -19,6 +19,9 @@
 }
 html,body{
   width:100vw;height:100vh;overflow:hidden;
+  /* dvh tracks the visible viewport as mobile browser chrome shows and hides;
+     100vh is the taller "URL bar retracted" height and clips the bottom. */
+  height:100dvh;
   background:var(--bg);color:var(--text);
   font-family:'Inter',system-ui,sans-serif;
   cursor:pointer;
@@ -26,7 +29,7 @@ html,body{
 }
 #brain-canvas{
   position:fixed;top:0;left:0;
-  width:100vw;height:100vh;
+  width:100vw;height:100vh;height:100dvh;
   z-index:1;
   transition:opacity 0.5s ease;
 }
@@ -55,7 +58,7 @@ body.is-video #slides{width:100vw;padding:0}
 body.is-figure #brain-canvas{opacity:0}
 #slides{
   position:fixed;top:0;left:0;
-  width:50vw;height:100vh;
+  width:50vw;height:100vh;height:100dvh;
   z-index:10;
   display:flex;align-items:center;justify-content:center;
   padding:0 6vw;
@@ -274,7 +277,7 @@ body.is-figure #figure{opacity:1}
   box-shadow:0 24px 90px rgba(0,0,0,0.6);
 }
 .slide__video{
-  display:block;height:84vh;width:auto;max-width:94vw;
+  display:block;height:84vh;height:84dvh;width:auto;max-width:94vw;
   pointer-events:auto;
 }
 /* Progress dots + hint */
@@ -317,7 +320,7 @@ body.is-figure #figure{opacity:1}
   #logo{height:34px;top:24px}
   #prepared{font-size:10px;top:26px}
   #slides{
-    width:100vw;padding:0 8vw;
+    width:100vw;padding:78px 8vw 76px;   /* logo band above, dots below */
     background:linear-gradient(to right,rgba(10,12,20,0.93),rgba(10,12,20,0.66));
   }
   .slide{width:calc(100% - 16vw)}
@@ -334,18 +337,74 @@ body.is-figure #figure{opacity:1}
   .slide__list li{font-size:12px;padding-left:14px;margin-bottom:8px}
   .slide__list li::before{width:4px;height:4px}
   .slide__cite{font-size:10px;max-width:none}
-  .slide__facts{gap:14px 18px;max-width:none}
+  .slide__facts{grid-template-columns:1fr;gap:13px;max-width:none}
   .slide__fact-title{font-size:15px}
   .slide__fact-detail{font-size:11px}
   .slide__proof{font-size:10.5px;max-width:none}
   .slide__url{font-size:13px}
   .slide__seeg{height:80px}
-  #figure{width:100vw;padding:12vh 8vw}
+  /* Portrait is one column, so the figure cannot sit behind the text:
+     give it the lower half and push the text up above it. */
+  #figure{
+    top:auto;bottom:0;
+    width:100vw;height:48dvh;
+    padding:0 6vw 18px;
+    justify-content:flex-end;
+  }
+  body.is-figure #slides{padding-bottom:50dvh}
   #chart-surgery-bucket{max-width:none}
   #figure figcaption{font-size:10px;max-width:none}
   #figure .figure__note{font-size:10px;max-width:none;padding-left:10px}
-  #nav{left:8vw;gap:14px}
+  #nav{left:8vw;gap:14px;bottom:26px}
   #hint{font-size:10px}
+  /* 6px dots are far below a usable tap target */
+  #dots{gap:14px}
+  .dot{width:11px;height:11px;min-width:11px;min-height:11px}
+}
+
+/* Landscape phone: ~390px of height total, so the logo and dot bands and the
+   type all have to give or slide 3 simply does not fit. */
+@media (max-height:520px){
+  #logo{height:24px;top:12px}
+  #slides{padding:42px 6vw 38px}
+  #nav{bottom:12px;left:6vw}
+  .slide__heading{font-size:20px}
+  .slide__heading-line + .slide__heading-line{margin-top:5px}
+  .slide__find{font-size:26px}
+  .slide__sub{font-size:12.5px}
+  .slide__outcome{font-size:12.5px;padding:8px 10px;margin-top:12px}
+  .slide__stats{gap:8px 16px;margin-top:12px}
+  .slide__stat-num{font-size:17px}
+  .slide__stat-label{font-size:9px}
+  .slide__facts{gap:9px;margin-top:12px}
+  .slide__fact-title{font-size:13px}
+  .slide__fact-detail{font-size:10px}
+  .slide__seeg{height:54px;margin-top:10px}
+  .slide__proof{font-size:9.5px;margin-top:12px}
+  #prepared{font-size:9px;top:14px}
+  .slide__eyebrow{font-size:9.5px;margin-bottom:6px}
+  .slide__list{margin-top:12px}
+  .slide__list li{font-size:10.5px;margin-bottom:5px}
+  .slide__cite{font-size:9px;margin-top:10px}
+  .slide__url{font-size:11px}
+  #figure{height:52dvh;padding:0 5vw 12px}
+  body.is-figure #slides{padding-bottom:54dvh}
+  #figure figcaption{font-size:9px;margin-top:8px}
+  #figure .figure__note{font-size:9px;margin-top:8px}
+}
+/* Landscape phone: stacking text over figure leaves ~139px for each, so
+   restore the desktop side-by-side split at small type. */
+@media (max-width:900px) and (min-aspect-ratio:1/1){
+  #slides{width:54vw;padding:42px 4vw 38px}
+  .slide{width:calc(100% - 8vw)}
+  .slide__facts{grid-template-columns:1fr 1fr;gap:9px 14px}
+  #figure{
+    top:0;bottom:auto;
+    width:46vw;height:100dvh;
+    padding:5dvh 3vw;
+    justify-content:center;
+  }
+  body.is-figure #slides{padding-bottom:38px}
 }
 </style>
 </head>
@@ -535,6 +594,10 @@ body.is-figure #figure{opacity:1}
     'Click to continue',
     '',
   ];
+  /* Nobody clicks on a phone */
+  if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+    for (let i = 0; i < HINTS.length; i++) HINTS[i] = HINTS[i].replace('Click', 'Tap');
+  }
 
   /* ?site=bch puts the reader's institution in the corner */
   const SITES = {
