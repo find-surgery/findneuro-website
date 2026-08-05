@@ -35,6 +35,21 @@ const SUB_COLORS = {
   'Brain-Stem':[.45,.42,.55],
 };
 
+/* Neutral alternative (opts.subcorticalGray). Hue in these decks encodes
+   meaning - cyan network, orange electrodes, red critical node - so on the
+   high-level deck the anatomical palette competes with the thing the viewer is
+   supposed to look at. Lightness still varies per structure, otherwise the
+   whole subcortical mass fuses into one blob. */
+const SUB_GRAY = {
+  'Left-Hippocampus':[.50,.52,.58],'Right-Hippocampus':[.50,.52,.58],
+  'Left-Amygdala':[.44,.46,.53],'Right-Amygdala':[.44,.46,.53],
+  'Left-Thalamus-Proper':[.56,.58,.64],'Right-Thalamus-Proper':[.56,.58,.64],
+  'Left-Caudate':[.40,.43,.50],'Right-Caudate':[.40,.43,.50],
+  'Left-Putamen':[.47,.49,.56],'Right-Putamen':[.47,.49,.56],
+  'Left-Pallidum':[.53,.55,.61],'Right-Pallidum':[.53,.55,.61],
+  'Brain-Stem':[.42,.44,.51],
+};
+
 
   /* ── sEEG traces ──
      One channel leads, the rest follow it with a lag and an attenuation, which
@@ -285,7 +300,8 @@ const SUB_COLORS = {
         geo.setAttribute('position', new THREE.BufferAttribute(sv, 3));
         geo.setIndex(new THREE.BufferAttribute(sf, 1));
         geo.computeVertexNormals();
-        const col = SUB_COLORS[st.n] || [0.5, 0.5, 0.5];
+        const palette = opts.subcorticalGray ? SUB_GRAY : SUB_COLORS;
+        const col = palette[st.n] || [0.5, 0.5, 0.5];
         brainGroup.add(new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
           color:new THREE.Color(col[0]*0.6, col[1]*0.6, col[2]*0.6),
           emissive:new THREE.Color(col[0]*0.15, col[1]*0.15, col[2]*0.15),

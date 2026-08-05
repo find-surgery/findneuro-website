@@ -463,6 +463,10 @@ body.is-video #slides{width:100vw;padding:0}
   const viz = window.FINDBrain && window.FINDBrain.create({
     canvas: document.getElementById('brain-canvas'),
     leftFraction: 0.45,
+    /* Neutral subcortex here: this deck's hues carry the story, and the
+       anatomical palette pulled attention off the critical node. The clinician
+       deck keeps the anatomical colours on purpose. */
+    subcorticalGray: true,
   });
   const seeg = window.FINDBrain && window.FINDBrain.createSeeg({
     canvas: document.getElementById('seeg-canvas'),
