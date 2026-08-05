@@ -427,16 +427,18 @@ body.is-video #slides{width:100vw;padding:0}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" integrity="sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9" crossorigin="anonymous"></script>
 <script src="./brain_data.js"></script>
+<script src="./assets/js/brain-viz.js"></script>
 <script>
 (function() {
   'use strict';
 
-  /* ── Slides: brain state per slide ── */
+  /* Brain state per slide. 'seeg' shows the trace panel under the text,
+     'video' hands the whole screen to the player. */
   const SLIDES = [
-    { brain: 'chaos',   cortex: 0 },  /* The problem  - cortex visible, network firing */
-    { brain: 'targets', cortex: 1 },  /* What we do   - cortex fades, electrodes + critical node */
-    { brain: 'treat',   cortex: 1 },  /* Where we are - treatment pulses from the critical node */
-    { brain: 'treat',   cortex: 1, video: true },  /* The platform - player owns the screen */
+    { mode: 'chaos',   cortex: false },               /* The problem  */
+    { mode: 'targets', cortex: true, seeg: true },    /* What we do   */
+    { mode: 'treat',   cortex: true },                /* Where we are */
+    { mode: 'treat',   cortex: true, video: true },   /* The platform */
   ];
   const NUM_SLIDES = SLIDES.length;
 
@@ -459,970 +461,135 @@ body.is-video #slides{width:100vw;padding:0}
     return 0;
   }
 
-  /* ── Scene Setup ── */
-  const canvas = document.getElementById('brain-canvas');
-  const scene = new THREE.Scene();
-  const clock = new THREE.Clock();
-  const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.1;
+  const viz = window.FINDBrain && window.FINDBrain.create({
+    canvas: document.getElementById('brain-canvas'),
+    leftFraction: 0.45,
+  });
+  const seeg = window.FINDBrain && window.FINDBrain.createSeeg({
+    canvas: document.getElementById('seeg-canvas'),
+  });
 
-  scene.add(new THREE.AmbientLight(0x112233, 0.6));
-  const dL = new THREE.DirectionalLight(0x88ccff, 0.7);
-  dL.position.set(3, 4, 5); scene.add(dL);
-  const fL = new THREE.DirectionalLight(0x4466aa, 0.3);
-  fL.position.set(-3, -1, 2); scene.add(fL);
-  const rL = new THREE.PointLight(0x7c3aed, 0.5, 12);
-  rL.position.set(-3, 1, -4); scene.add(rL);
-  const tL = new THREE.PointLight(0x00d4ff, 0.3, 10);
-  tL.position.set(0, 5, 0); scene.add(tL);
+  const dots = Array.from(document.querySelectorAll('.dot'));
+  const hint = document.getElementById('hint');
+  const video = document.getElementById('demo-video');
+  const VIDEO_SLIDE = SLIDES.findIndex(s => s.video);
+  let slideIdx = -1;
+  let videoSlide = false;
+  let seegAlpha = 0;
+  let seegDrawn = false;
 
-  const brainGroup = new THREE.Group();
-  brainGroup.rotation.x = -Math.PI / 2;
-  scene.add(brainGroup);
+  function goTo(next) {
+    if (next < 0 || next >= NUM_SLIDES || next === slideIdx) return;
+    const prev = slideIdx;
+    if (prev >= 0) {
+      const prevEl = document.getElementById('s' + prev);
+      prevEl.classList.remove('active');
+      prevEl.classList.add('exit');
+    }
+    slideIdx = next;
+    setTimeout(() => {
+      const el = document.getElementById('s' + slideIdx);
+      el.classList.remove('exit');
+      el.classList.add('active');
+    }, prev >= 0 ? 220 : 0);
 
-  /* ── Camera fit ──
-     The canvas fills the viewport; the text column owns the left BRAIN_LEFT of
-     it, so the brain is centred in whatever is left over and pulled back far
-     enough that nothing clips as it spins. The brain turns about its local z
-     (screen vertical), so its swept radius is the max radius in the local xy
-     plane and its height is the max |z|. */
-  const BRAIN_LEFT = 0.45;
-  const FIT_MARGIN = 1.03;
-  let boundRadius = 0, boundHeight = 0;
-  function expandBounds(x, y, z) {
-    const r = Math.sqrt(x * x + y * y);
-    if (r > boundRadius) boundRadius = r;
-    const h = Math.abs(z);
-    if (h > boundHeight) boundHeight = h;
-  }
-  function fitCamera() {
-    const w = window.innerWidth, h = window.innerHeight;
-    const narrow = w <= 900 || w <= h;
-    const frac = narrow ? 1 : 1 - BRAIN_LEFT;
-    const centerFrac = narrow ? 0.5 : 1 - frac / 2;
-    const aspect = w / h;
-    const halfH = Math.max(boundHeight * FIT_MARGIN, boundRadius * FIT_MARGIN / (aspect * frac));
-    camera.aspect = aspect;
-    camera.position.set(0, 0, halfH / Math.tan((camera.fov * Math.PI / 180) / 2));
-    camera.updateProjectionMatrix();
-    const offset = (centerFrac - 0.5) * 2 * halfH * aspect;
-    brainGroup.position.x = offset;
-    rL.position.set(-3 + offset, 1, -4);
-    tL.position.set(offset, 5, 0);
-    renderer.setSize(w, h);
-  }
+    const cfg = SLIDES[slideIdx];
+    dots.forEach((d, i) => d.classList.toggle('on', i === slideIdx));
+    if (HINTS[slideIdx]) hint.textContent = HINTS[slideIdx];
+    hint.classList.toggle('gone', !HINTS[slideIdx]);
 
-  /* ── sEEG traces under the slide 2 text ──
-     Same idea as the #cn-how panel on the site: one channel leads, the rest
-     follow it with a lag and an attenuation, which is the signal the
-     criticality ranking is reading. */
-  const seeg = (function() {
-    const el = document.getElementById('seeg-canvas');
-    if (!el) return null;
-    const ctx = el.getContext('2d');
-    if (!ctx) return null;
-
-    const LABELS = ['LA1', 'LA2', 'LH1', 'RH1', 'RA1', 'RA2'];
-    const LEN = 300;
-    const LEAD = 2;                          // index of the leading channel
-    const LAGS = [11, 17, 24, 32, 41];       // samples behind the lead
-    const ATTEN = [0.8, 0.66, 0.54, 0.42, 0.32];
-    const SAMPLE_HZ = 85;
-    const FIRE_EVERY = 1.8;                  // seconds between bursts
-
-    const chans = LABELS.map((label, i) => {
-      const follower = i !== LEAD;
-      const rank = follower ? ((i - LEAD + LABELS.length) % LABELS.length) - 1 : -1;
-      return {
-        label, follower,
-        lag: follower ? LAGS[rank] : 0,
-        atten: follower ? ATTEN[rank] : 1,
-        buf: new Float32Array(LEN), w: 0,
-        freq: 3 + Math.random() * 8,
-        freq2: 12 + Math.random() * 20,
-        amp: 0.28 + Math.random() * 0.22,
-        noise: 0.09 + Math.random() * 0.09,
-        spikeProb: 0.002 + Math.random() * 0.003,
-        phase: Math.random() * Math.PI * 2,
-        decay: 0, countdown: -1,
-      };
-    });
-
-    let k = 0, acc = 0, fireT = FIRE_EVERY;
-
-    function pushSample() {
-      k++;
-      const t = k / SAMPLE_HZ;
-      for (const c of chans) {
-        if (c.countdown > 0) {
-          c.countdown--;
-          if (c.countdown === 0) { c.decay = 0.95 * c.atten; c.countdown = -1; }
-        }
-        const base = Math.sin(t * c.freq + c.phase) * c.amp * (c.follower ? 0.8 : 1);
-        const fast = Math.sin(t * c.freq2 + c.phase * 2.3) * c.amp * 0.3;
-        const noise = (Math.random() - 0.5) * c.noise * 2;
-        let spike = 0;
-        if (c.decay > 0) {
-          spike = c.decay * (c.follower ? 1 : 0.9);
-          c.decay *= 0.84;
-          if (c.decay < 0.02) c.decay = 0;
-        } else if (Math.random() < c.spikeProb) {
-          /* Spontaneous interictal activity, so the channels stay alive
-             between the propagating bursts */
-          c.decay = 0.45 + Math.random() * 0.35;
-          spike = c.decay;
-        }
-        c.buf[c.w] = base + fast + noise + spike;
-        c.w = (c.w + 1) % LEN;
+    if (viz) {
+      viz.setMode(cfg.mode);
+      viz.setCortexFaded(!!cfg.cortex);
+      /* Starts red on every slide, only turns cyan once treatment has run */
+      viz.resetCriticalRing();
+      viz.setPaused(!!cfg.video);
+      if (cfg.mode === 'chaos') {
+        for (let i = 0; i < 6; i++) setTimeout(() => viz.triggerFocusSpike(), i * 400);
       }
     }
 
-    function advance(dt) {
-      fireT += dt;
-      if (fireT >= FIRE_EVERY) {
-        fireT = 0;
-        chans[LEAD].decay = 0.95;
-        for (const c of chans) if (c.follower) c.countdown = c.lag;
-      }
-      acc += dt;
-      const step = 1 / SAMPLE_HZ;
-      let guard = 0;
-      while (acc >= step && guard++ < 10) { acc -= step; pushSample(); }
+    /* Video slide: hand the screen over. Playback waits for a deliberate
+       press - no autoplay - but leaving the slide stops it. */
+    videoSlide = !!cfg.video;
+    document.body.classList.toggle('is-video', videoSlide);
+
+    /* Warm the file one slide early so the player does not stall on open */
+    if (video && slideIdx === VIDEO_SLIDE - 1 && video.preload !== 'auto') {
+      video.preload = 'auto';
+      video.load();
     }
+    if (video && !videoSlide) video.pause();
 
-    function draw(alpha) {
-      const w = el.clientWidth, h = el.clientHeight;
-      if (!w || !h) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const pw = Math.round(w * dpr), ph = Math.round(h * dpr);
-      if (el.width !== pw || el.height !== ph) {
-        el.width = pw; el.height = ph;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      }
-      ctx.clearRect(0, 0, w, h);
-      if (alpha <= 0.01) return;
-
-      const rowH = h / chans.length;
-      const labelW = Math.max(24, w * 0.055);
-      const traceW = w - labelW - 2;
-      const samples = Math.max(40, Math.min(LEN, Math.floor(traceW / 1.1)));
-      ctx.font = Math.max(7, Math.min(11, w * 0.013)) + 'px "JetBrains Mono", monospace';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
-      ctx.lineWidth = 1;
-
-      for (let ci = 0; ci < chans.length; ci++) {
-        const c = chans[ci];
-        const yc = rowH * ci + rowH * 0.5;
-        const rgb = c.follower ? '255,160,60' : '239,68,68';
-
-        ctx.fillStyle = 'rgba(' + (c.follower ? '0,180,220' : '239,68,68') + ',' + (0.45 * alpha) + ')';
-        ctx.fillText(c.label, 0, yc);
-
-        if (ci > 0) {
-          ctx.strokeStyle = 'rgba(0,180,220,' + (0.05 * alpha) + ')';
-          ctx.beginPath();
-          ctx.moveTo(labelW, rowH * ci);
-          ctx.lineTo(w, rowH * ci);
-          ctx.stroke();
-        }
-
-        /* Trace, then a wider low-alpha pass over it for the glow */
-        for (const pass of [0, 1]) {
-          const glow = pass === 1;
-          ctx.lineWidth = glow ? (c.follower ? 3 : 4) : (c.follower ? 1 : 1.5);
-          const a = glow
-            ? (c.follower ? 0.12 : 0.2)
-            : (c.follower ? 0.5 : 0.8);
-          ctx.strokeStyle = 'rgba(' + rgb + ',' + (a * alpha) + ')';
-          ctx.beginPath();
-          for (let s = 0; s < samples; s++) {
-            const idx = (c.w - samples + s + LEN * 2) % LEN;
-            const x = labelW + (s / samples) * traceW;
-            const y = yc - c.buf[idx] * rowH * 0.62;
-            if (s === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-          }
-          ctx.stroke();
-        }
-      }
+    /* Keep the URL on the current slide so it can be copied and shared.
+       replaceState, so this never fires hashchange back at us. Search before
+       the fragment - the other order buries the query inside the hash. */
+    try {
+      history.replaceState(null, '', location.search + '#' + SLUGS[slideIdx]);
+    } catch (e) {
+      /* file:// in some browsers - not worth breaking navigation over */
     }
-
-    return { advance, draw };
-  })();
-
-  /* ── Glow Texture ── */
-  function makeTexture(size, falloff) {
-    const c = document.createElement('canvas');
-    c.width = c.height = size;
-    const ctx = c.getContext('2d');
-    const g = ctx.createRadialGradient(size/2, size/2, 0, size/2, size/2, size/2);
-    g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(falloff, 'rgba(255,255,255,0.6)');
-    g.addColorStop(0.5, 'rgba(255,255,255,0.12)');
-    g.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, size, size);
-    return new THREE.CanvasTexture(c);
   }
 
-  /* ── Subcortical Colors ── */
-  const SUB_COLORS = {
-    'Left-Hippocampus':[1,.45,.1],'Right-Hippocampus':[1,.45,.1],
-    'Left-Amygdala':[.95,.25,.2],'Right-Amygdala':[.95,.25,.2],
-    'Left-Thalamus-Proper':[.55,.25,.9],'Right-Thalamus-Proper':[.55,.25,.9],
-    'Left-Caudate':[.15,.75,.45],'Right-Caudate':[.15,.75,.45],
-    'Left-Putamen':[.1,.65,.75],'Right-Putamen':[.1,.65,.75],
-    'Left-Pallidum':[.4,.7,.95],'Right-Pallidum':[.4,.7,.95],
-    'Brain-Stem':[.45,.42,.55],
-  };
+  function next() { goTo(slideIdx + 1); }
+  function back() { goTo(slideIdx - 1); }
 
-  /* ── Cortex materials (for fade animation) ── */
-  const cortexMaterials = [];
-  const surfaceParticleMaterials = [];
+  document.addEventListener('click', next);
+  dots.forEach((d, i) => d.addEventListener('click', (e) => {
+    e.stopPropagation();   /* otherwise the document handler advances too */
+    goTo(i);
+  }));
+  /* Clicks on the player drive the player, not the deck */
+  const videoFrame = document.querySelector('.slide__video-frame');
+  if (videoFrame) videoFrame.addEventListener('click', (e) => e.stopPropagation());
 
-  /* ── Build Brain ── */
-  let meshColors, baseColors, numVerts;
-  const B = window.BRAIN;
-  if (B) {
-    const verts = new Float32Array(B.v);
-    const faces = new Uint32Array(B.f);
-    numVerts = verts.length / 3;
-
-    const meshGeo = new THREE.BufferGeometry();
-    meshGeo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
-    meshGeo.setIndex(new THREE.BufferAttribute(faces, 1));
-    meshGeo.computeVertexNormals();
-
-    meshColors = new Float32Array(numVerts * 3);
-    baseColors = new Float32Array(numVerts * 3);
-    for (let i = 0; i < numVerts; i++) {
-      const c = B.c[i] || 0;
-      const y = verts[i * 3 + 2];
-      const t = (y + 1.5) / 3.0;
-      expandBounds(verts[i*3], verts[i*3+1], verts[i*3+2]);
-      if (c > 0) {
-        baseColors[i*3]=0.06+t*0.05; baseColors[i*3+1]=0.22+t*0.12; baseColors[i*3+2]=0.42+t*0.15;
-      } else {
-        baseColors[i*3]=0.02+t*0.02; baseColors[i*3+1]=0.08+t*0.06; baseColors[i*3+2]=0.22+t*0.08;
-      }
-      meshColors[i*3]=baseColors[i*3]; meshColors[i*3+1]=baseColors[i*3+1]; meshColors[i*3+2]=baseColors[i*3+2];
+  document.addEventListener('keydown', (e) => {
+    /* On the video slide, space belongs to the player */
+    if (videoSlide && video && (e.key === ' ' || e.key === 'k')) {
+      e.preventDefault();
+      if (video.paused) video.play().catch(() => {}); else video.pause();
+      return;
     }
-    meshGeo.setAttribute('color', new THREE.BufferAttribute(meshColors, 3));
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') {
+      e.preventDefault(); next();
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
+      e.preventDefault(); back();
+    } else if (e.key === 'Home') {
+      e.preventDefault(); goTo(0);
+    }
+  });
 
-    const solidMat = new THREE.MeshPhongMaterial({
-      vertexColors:true, transparent:true, opacity:0.18, side:THREE.DoubleSide,
-      specular:new THREE.Color(0x00aadd), shininess:18,
-      emissive:new THREE.Color(0x000a14), depthWrite:false,
-    });
-    cortexMaterials.push({ mat: solidMat, baseOpacity: 0.18 });
-    brainGroup.add(new THREE.Mesh(meshGeo, solidMat));
+  /* Someone editing the hash by hand, or using back/forward */
+  window.addEventListener('hashchange', () => goTo(slideFromUrl()));
+  window.addEventListener('resize', () => { if (viz) viz.fit(); });
 
-    /* Subcortical */
-    if (B.sub) {
-      for (const st of B.sub) {
-        const sv = new Float32Array(st.v), sf = new Uint32Array(st.f);
-        const geo = new THREE.BufferGeometry();
-        geo.setAttribute('position', new THREE.BufferAttribute(sv, 3));
-        geo.setIndex(new THREE.BufferAttribute(sf, 1));
-        geo.computeVertexNormals();
-        const col = SUB_COLORS[st.n] || [0.5, 0.5, 0.5];
-        brainGroup.add(new THREE.Mesh(geo, new THREE.MeshPhongMaterial({
-          color:new THREE.Color(col[0]*0.6, col[1]*0.6, col[2]*0.6),
-          emissive:new THREE.Color(col[0]*0.15, col[1]*0.15, col[2]*0.15),
-          transparent:true, opacity:0.75, side:THREE.DoubleSide,
-          specular:new THREE.Color(0.3,0.3,0.3), shininess:25, depthWrite:true,
-        })));
-        brainGroup.add(new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
-          color:new THREE.Color(col[0],col[1],col[2]),
-          wireframe:true, transparent:true, opacity:0.06,
-          blending:THREE.AdditiveBlending, depthWrite:false,
-        })));
+  let lastFrame = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min((now - lastFrame) / 1000, 0.1);
+    lastFrame = now;
+
+    /* sEEG panel only runs while its slide is up */
+    if (seeg) {
+      const want = (slideIdx >= 0 && SLIDES[slideIdx].seeg) ? 1 : 0;
+      seegAlpha += (want - seegAlpha) * Math.min(1, dt * 4);
+      if (seegAlpha > 0.01) {
+        seeg.advance(dt);
+        seeg.draw(seegAlpha);
+        seegDrawn = true;
+      } else if (seegDrawn) {
+        seeg.draw(0);
+        seegDrawn = false;
       }
     }
 
-    /* Wireframe */
-    const wireMat = new THREE.MeshBasicMaterial({
-      color:0x00bbdd, wireframe:true, transparent:true, opacity:0.025,
-      blending:THREE.AdditiveBlending, depthWrite:false,
-    });
-    cortexMaterials.push({ mat: wireMat, baseOpacity: 0.025 });
-    brainGroup.add(new THREE.Mesh(meshGeo, wireMat));
-
-    /* Surface particles */
-    const NUM_P = 1200;
-    const pPos = new Float32Array(NUM_P * 3);
-    const pCol = new Float32Array(NUM_P * 3);
-    for (let i = 0; i < NUM_P; i++) {
-      const idx = Math.floor(Math.random() * numVerts);
-      pPos[i*3]=verts[idx*3]; pPos[i*3+1]=verts[idx*3+1]; pPos[i*3+2]=verts[idx*3+2];
-      pCol[i*3]=0; pCol[i*3+1]=0.6; pCol[i*3+2]=0.9;
-    }
-    const pGeo = new THREE.BufferGeometry();
-    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
-    pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
-    const tex = makeTexture(64, 0.2);
-    const pMat1 = new THREE.PointsMaterial({
-      size:0.04, map:tex, vertexColors:true, transparent:true, opacity:0.6,
-      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
-    });
-    const pMat2 = new THREE.PointsMaterial({
-      size:0.15, map:tex, vertexColors:true, transparent:true, opacity:0.04,
-      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
-    });
-    surfaceParticleMaterials.push({ mat: pMat1, baseOpacity: 0.6 });
-    surfaceParticleMaterials.push({ mat: pMat2, baseOpacity: 0.04 });
-    brainGroup.add(new THREE.Points(pGeo, pMat1));
-    brainGroup.add(new THREE.Points(pGeo, pMat2));
-
-    /* ── Electrodes (wider shafts, bigger contacts) ── */
-    const elGroup = new THREE.Group();
-    const elTex = makeTexture(64, 0.2);
-    let criticalContactPos = null; // will hold the critical node position
-
-    for (let e = 0; e < 12; e++) {
-      const angle = (e / 12) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
-      /* Floor on the trajectory height: nothing is implanted down by the skull
-         base, so no shaft is allowed into the inferior band. */
-      const zPos = -0.15 + Math.random() * 0.95;
-      const outerR = 1.65, innerR = 0.2 + Math.random() * 0.35;
-      const start = new THREE.Vector3(Math.cos(angle)*outerR, Math.sin(angle)*outerR, zPos);
-      const end = new THREE.Vector3(Math.cos(angle)*innerR, Math.sin(angle)*innerR, zPos + (Math.random()-0.5)*0.3);
-      expandBounds(start.x, start.y, start.z);
-      expandBounds(end.x, end.y, end.z);
-
-      /* Electrode shaft as cylinder */
-      const dir = new THREE.Vector3().subVectors(end, start);
-      const shaftLen = dir.length();
-      const cylGeo = new THREE.CylinderGeometry(0.012, 0.012, shaftLen, 6);
-      const cylMat = new THREE.MeshBasicMaterial({
-        color:0x00d4ff, transparent:true, opacity:0.15,
-        blending:THREE.AdditiveBlending, depthWrite:false,
-      });
-      const shaft = new THREE.Mesh(cylGeo, cylMat);
-      const mid = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
-      shaft.position.copy(mid);
-      shaft.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir.clone().normalize());
-      elGroup.add(shaft);
-
-      /* Contacts */
-      const contacts = 5 + Math.floor(Math.random() * 4);
-      for (let c = 0; c < contacts; c++) {
-        const t = 0.1 + (c / contacts) * 0.7;
-        const pos = new THREE.Vector3().lerpVectors(start, end, t);
-
-        /* Pick critical node: electrode 3, contact 3 (deep in brain) */
-        const isCritical = (e === 3 && c === 3);
-        if (isCritical) criticalContactPos = pos.clone();
-
-        const dGeo = new THREE.BufferGeometry();
-        dGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([pos.x,pos.y,pos.z]), 3));
-        elGroup.add(new THREE.Points(dGeo, new THREE.PointsMaterial({
-          size: isCritical ? 0.14 : 0.09,
-          color: isCritical ? 0xff2222 : 0xff6b35,
-          transparent:true, opacity:0.7,
-          blending:THREE.AdditiveBlending, depthWrite:false, map:elTex,
-        })));
-        /* Outer glow on contacts */
-        elGroup.add(new THREE.Points(dGeo, new THREE.PointsMaterial({
-          size: isCritical ? 0.35 : 0.2,
-          color: isCritical ? 0xff2222 : 0xff6b35,
-          transparent:true, opacity: isCritical ? 0.15 : 0.06,
-          blending:THREE.AdditiveBlending, depthWrite:false, map:elTex,
-        })));
-      }
-    }
-    elGroup.visible = false;
-    brainGroup.add(elGroup);
-
-    /* ── Critical Node Highlight (pulsing ring) ── */
-    const critGroup = new THREE.Group();
-    const critRingMat = new THREE.MeshBasicMaterial({
-      color:0xff2222, transparent:true, opacity:0.4, side:THREE.DoubleSide,
-      blending:THREE.AdditiveBlending, depthWrite:false,
-    });
-    const critRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.06, 0.008, 8, 32),
-      critRingMat
-    );
-    if (criticalContactPos) critGroup.position.copy(criticalContactPos);
-    critGroup.add(critRing);
-    critGroup.visible = false;
-    brainGroup.add(critGroup);
-
-    /* ── Treatment Rings (expanding energy pulses) ── */
-    const treatGroup = new THREE.Group();
-    const NUM_TREAT_RINGS = 4;
-    const treatRings = [];
-    for (let i = 0; i < NUM_TREAT_RINGS; i++) {
-      const ringMat = new THREE.MeshBasicMaterial({
-        color:0x00d4ff, transparent:true, opacity:0, side:THREE.DoubleSide,
-        blending:THREE.AdditiveBlending, depthWrite:false,
-      });
-      const ring = new THREE.Mesh(
-        new THREE.TorusGeometry(0.06, 0.012, 8, 64),
-        ringMat
-      );
-      treatRings.push({ mesh: ring, mat: ringMat, phase: i / NUM_TREAT_RINGS });
-      treatGroup.add(ring);
-    }
-    /* Central glow sphere for treatment */
-    const treatGlowMat = new THREE.MeshBasicMaterial({
-      color:0x00d4ff, transparent:true, opacity:0,
-      blending:THREE.AdditiveBlending, depthWrite:false,
-    });
-    const treatGlow = new THREE.Mesh(
-      new THREE.SphereGeometry(0.03, 16, 16),
-      treatGlowMat
-    );
-    treatGroup.add(treatGlow);
-    if (criticalContactPos) treatGroup.position.copy(criticalContactPos);
-    treatGroup.visible = false;
-    brainGroup.add(treatGroup);
-
-    /* ── The critical node's local network: it sits at the hub ── */
-    const hubGroup = new THREE.Group();
-    const HUB_SATS = 9;
-    const hubSats = [];
-    for (let i = 0; i < HUB_SATS; i++) {
-      const phi = Math.acos(1 - 2 * (i + 0.5) / HUB_SATS);
-      const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
-      const rad = 0.3 + Math.random() * 0.18;
-      hubSats.push(new THREE.Vector3(
-        Math.sin(phi) * Math.cos(theta) * rad,
-        Math.sin(phi) * Math.sin(theta) * rad,
-        Math.cos(phi) * rad * 0.85
-      ));
-    }
-
-    /* Spokes: first vertex of each pair is the hub itself, at the origin */
-    const spokePos = new Float32Array(HUB_SATS * 6);
-    const spokeCol = new Float32Array(HUB_SATS * 6);
-    for (let i = 0; i < HUB_SATS; i++) {
-      spokePos[i*6+3] = hubSats[i].x;
-      spokePos[i*6+4] = hubSats[i].y;
-      spokePos[i*6+5] = hubSats[i].z;
-    }
-    const spokeGeo = new THREE.BufferGeometry();
-    spokeGeo.setAttribute('position', new THREE.BufferAttribute(spokePos, 3));
-    spokeGeo.setAttribute('color', new THREE.BufferAttribute(spokeCol, 3));
-    hubGroup.add(new THREE.LineSegments(spokeGeo, new THREE.LineBasicMaterial({
-      vertexColors:true, transparent:true, opacity:0.9,
-      blending:THREE.AdditiveBlending, depthWrite:false,
-    })));
-
-    /* A few satellite-to-satellite links, so it reads as a network not a star */
-    const hubLinks = [];
-    for (let i = 0; i < HUB_SATS; i++) {
-      const j = (i + 2 + Math.floor(Math.random() * 2)) % HUB_SATS;
-      if (i !== j) hubLinks.push([i, j]);
-    }
-    const linkPos = new Float32Array(hubLinks.length * 6);
-    for (let i = 0; i < hubLinks.length; i++) {
-      const a = hubSats[hubLinks[i][0]], b = hubSats[hubLinks[i][1]];
-      linkPos[i*6]=a.x; linkPos[i*6+1]=a.y; linkPos[i*6+2]=a.z;
-      linkPos[i*6+3]=b.x; linkPos[i*6+4]=b.y; linkPos[i*6+5]=b.z;
-    }
-    const linkGeo = new THREE.BufferGeometry();
-    linkGeo.setAttribute('position', new THREE.BufferAttribute(linkPos, 3));
-    const linkMat = new THREE.LineBasicMaterial({
-      color:0xff6b35, transparent:true, opacity:0,
-      blending:THREE.AdditiveBlending, depthWrite:false,
-    });
-    hubGroup.add(new THREE.LineSegments(linkGeo, linkMat));
-
-    /* Satellite nodes */
-    const satPos = new Float32Array(HUB_SATS * 3);
-    for (let i = 0; i < HUB_SATS; i++) {
-      satPos[i*3]=hubSats[i].x; satPos[i*3+1]=hubSats[i].y; satPos[i*3+2]=hubSats[i].z;
-    }
-    const satGeo = new THREE.BufferGeometry();
-    satGeo.setAttribute('position', new THREE.BufferAttribute(satPos, 3));
-    const satMat = new THREE.PointsMaterial({
-      size:0.065, color:0x7fe9ff, map:elTex, transparent:true, opacity:0,
-      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
-    });
-    hubGroup.add(new THREE.Points(satGeo, satMat));
-
-    /* Traffic running inward along the spokes, converging on the hub */
-    const pulsePos = new Float32Array(HUB_SATS * 3);
-    const pulseGeo = new THREE.BufferGeometry();
-    pulseGeo.setAttribute('position', new THREE.BufferAttribute(pulsePos, 3));
-    const pulseMat = new THREE.PointsMaterial({
-      size:0.075, color:0x00d4ff, map:elTex, transparent:true, opacity:0,
-      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
-    });
-    hubGroup.add(new THREE.Points(pulseGeo, pulseMat));
-
-    if (criticalContactPos) hubGroup.position.copy(criticalContactPos);
-    hubGroup.visible = false;
-    brainGroup.add(hubGroup);
-
-    /* ── Epileptogenic Network ── */
-    const NET_NODES = 200;
-    const nv = B.v.length / 3;
-    const nodes = [];
-    const stride = Math.floor(nv / NET_NODES);
-    for (let i = 0; i < NET_NODES; i++) {
-      const idx = (i * stride + Math.floor(Math.random() * stride * 0.4)) % nv;
-      nodes.push({ x: B.v[idx*3], y: B.v[idx*3+1], z: B.v[idx*3+2] });
-    }
-
-    const adj = Array.from({ length: NET_NODES }, () => []);
-    const edgeSet = new Set();
-    const edgeData = [];
-
-    for (let i = 0; i < NET_NODES; i++) {
-      const dists = [];
-      for (let j = 0; j < NET_NODES; j++) {
-        if (i === j) continue;
-        const dx = nodes[i].x-nodes[j].x, dy = nodes[i].y-nodes[j].y, dz = nodes[i].z-nodes[j].z;
-        dists.push({ j, d: Math.sqrt(dx*dx+dy*dy+dz*dz) });
-      }
-      dists.sort((a, b) => a.d - b.d);
-      for (let k = 0; k < 6; k++) {
-        const j = dists[k].j;
-        const eKey = Math.min(i,j) * NET_NODES + Math.max(i,j);
-        if (!edgeSet.has(eKey)) {
-          edgeSet.add(eKey);
-          adj[i].push({ n: j, d: dists[k].d });
-          adj[j].push({ n: i, d: dists[k].d });
-          edgeData.push({ from: i, to: j });
-        }
-      }
-    }
-    for (let i = 0; i < 20; i++) {
-      const a = Math.floor(Math.random()*NET_NODES), b = Math.floor(Math.random()*NET_NODES);
-      if (a === b) continue;
-      const eKey = Math.min(a,b)*NET_NODES+Math.max(a,b);
-      if (edgeSet.has(eKey)) continue;
-      edgeSet.add(eKey);
-      const dx=nodes[a].x-nodes[b].x, dy=nodes[a].y-nodes[b].y, dz=nodes[a].z-nodes[b].z;
-      adj[a].push({ n:b, d:Math.sqrt(dx*dx+dy*dy+dz*dz) });
-      adj[b].push({ n:a, d:Math.sqrt(dx*dx+dy*dy+dz*dz) });
-      edgeData.push({ from: a, to: b });
-    }
-
-    /* Precompute nearby mesh verts */
-    const R = 0.12, R2 = R * R;
-    const nodeMeshVerts = [];
-    for (let ni = 0; ni < NET_NODES; ni++) {
-      const nearby = [];
-      for (let vi = 0; vi < numVerts; vi++) {
-        const dx = B.v[vi*3]-nodes[ni].x, dy = B.v[vi*3+1]-nodes[ni].y, dz = B.v[vi*3+2]-nodes[ni].z;
-        const d2 = dx*dx+dy*dy+dz*dz;
-        if (d2 < R2) nearby.push({ vi, f: 1 - Math.sqrt(d2) / R });
-      }
-      nodeMeshVerts.push(nearby);
-    }
-
-    /* Node particles */
-    const nodePos = new Float32Array(NET_NODES * 3);
-    const nodeColors = new Float32Array(NET_NODES * 3);
-    for (let i = 0; i < NET_NODES; i++) {
-      nodePos[i*3]=nodes[i].x; nodePos[i*3+1]=nodes[i].y; nodePos[i*3+2]=nodes[i].z;
-      nodeColors[i*3]=0; nodeColors[i*3+1]=0.06; nodeColors[i*3+2]=0.12;
-    }
-    const nodeGeo = new THREE.BufferGeometry();
-    nodeGeo.setAttribute('position', new THREE.BufferAttribute(nodePos, 3));
-    nodeGeo.setAttribute('color', new THREE.BufferAttribute(nodeColors, 3));
-    const nTex = makeTexture(64, 0.15);
-    const nodePoints = new THREE.Points(nodeGeo, new THREE.PointsMaterial({
-      size:0.055, map:nTex, vertexColors:true, transparent:true, opacity:0.85,
-      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
-    }));
-    brainGroup.add(nodePoints);
-    brainGroup.add(new THREE.Points(nodeGeo, new THREE.PointsMaterial({
-      size:0.2, map:nTex, vertexColors:true, transparent:true, opacity:0.1,
-      blending:THREE.AdditiveBlending, depthWrite:false, sizeAttenuation:true,
-    })));
-
-    /* Edge lines */
-    const nEdges = edgeData.length;
-    const edgePos = new Float32Array(nEdges * 6);
-    const edgeColors = new Float32Array(nEdges * 6);
-    for (let i = 0; i < nEdges; i++) {
-      const e = edgeData[i];
-      edgePos[i*6]=nodes[e.from].x; edgePos[i*6+1]=nodes[e.from].y; edgePos[i*6+2]=nodes[e.from].z;
-      edgePos[i*6+3]=nodes[e.to].x; edgePos[i*6+4]=nodes[e.to].y; edgePos[i*6+5]=nodes[e.to].z;
-      for (let c = 0; c < 6; c++) edgeColors[i*6+c] = 0.012;
-    }
-    const edgeGeo = new THREE.BufferGeometry();
-    edgeGeo.setAttribute('position', new THREE.BufferAttribute(edgePos, 3));
-    edgeGeo.setAttribute('color', new THREE.BufferAttribute(edgeColors, 3));
-    const edgeLines = new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({
-      vertexColors:true, transparent:true, opacity:0.7,
-      blending:THREE.AdditiveBlending, depthWrite:false,
-    }));
-    brainGroup.add(edgeLines);
-
-    /* ── Focus & target nodes ── */
-    const focusNodes = [];
-    const seedNode = Math.floor(Math.random() * NET_NODES);
-    focusNodes.push(seedNode);
-    const visited = new Set([seedNode]);
-    const queue = [seedNode];
-    while (focusNodes.length < 15 && queue.length > 0) {
-      const cur = queue.shift();
-      for (const { n } of adj[cur]) {
-        if (!visited.has(n) && focusNodes.length < 15) {
-          visited.add(n);
-          focusNodes.push(n);
-          queue.push(n);
-        }
-      }
-    }
-    const targetNodes = focusNodes.slice(0, 5);
-    const focusSet = new Set(focusNodes);
-    const targetSet = new Set(targetNodes);
-
-    /* ── Spike BFS ── */
-    const spikes = [];
-    function propagate(seed, maxSpikes) {
-      const arrivals = new Float32Array(NET_NODES).fill(-1);
-      arrivals[seed] = 0;
-      const q = [seed];
-      let head = 0;
-      while (head < q.length) {
-        const cur = q[head++];
-        for (const { n, d } of adj[cur]) {
-          if (arrivals[n] < 0) {
-            arrivals[n] = arrivals[cur] + 0.04 + d * 0.12 + Math.random() * 0.02;
-            q.push(n);
-          }
-        }
-      }
-      spikes.push({ start: clock.getElapsedTime(), arrivals, decay: 2.8 });
-      if (spikes.length > maxSpikes) spikes.shift();
-    }
-
-    function triggerSpike() {
-      propagate(Math.floor(Math.random() * NET_NODES), 4);
-    }
-
-    function triggerFocusSpike() {
-      propagate(focusNodes[Math.floor(Math.random() * focusNodes.length)], 6);
-    }
-
-    /* ── Slide Controller (click driven) ── */
-    let slideIdx = -1;
-    let brainMode = 'calm';
-    let cortexFade = 0;          // 0 = cortex opaque, 1 = fully faded
-    let treatT = 0;              // 0 = untreated, 1 = treatment fully on
-    let seegAlpha = 0;
-    let seegDrawn = false;
-    const CORTEX_FADE_SPEED = 0.7;
-    const dots = Array.from(document.querySelectorAll('.dot'));
-    const hint = document.getElementById('hint');
-    const video = document.getElementById('demo-video');
-    let videoSlide = false;
-
-    function goTo(next) {
-      if (next < 0 || next >= NUM_SLIDES || next === slideIdx) return;
-      const prev = slideIdx;
-      if (prev >= 0) {
-        const prevEl = document.getElementById('s' + prev);
-        prevEl.classList.remove('active');
-        prevEl.classList.add('exit');
-      }
-      slideIdx = next;
-      setTimeout(() => {
-        const el = document.getElementById('s' + slideIdx);
-        el.classList.remove('exit');
-        el.classList.add('active');
-      }, prev >= 0 ? 220 : 0);
-
-      brainMode = SLIDES[slideIdx].brain;
-      dots.forEach((d, i) => d.classList.toggle('on', i === slideIdx));
-      if (HINTS[slideIdx]) hint.textContent = HINTS[slideIdx];
-      hint.classList.toggle('gone', !HINTS[slideIdx]);
-
-      /* Keep the URL on the current slide so it can be copied and shared.
-         replaceState, so this never fires hashchange back at us. */
-      try {
-        history.replaceState(null, '', '#' + SLUGS[slideIdx]);
-      } catch (e) {
-        /* file:// in some browsers - not worth breaking navigation over */
-      }
-
-      /* Warm the file one slide early so the player does not stall on open */
-      if (video && slideIdx === NUM_SLIDES - 2 && video.preload !== 'auto') {
-        video.preload = 'auto';
-        video.load();
-      }
-
-      /* Video slide: hand the screen over. Playback waits for a deliberate
-         press - no autoplay - but leaving the slide stops it. */
-      videoSlide = !!SLIDES[slideIdx].video;
-      document.body.classList.toggle('is-video', videoSlide);
-      if (video && !videoSlide) video.pause();
-
-      if (brainMode === 'chaos') {
-        for (let i = 0; i < 6; i++) setTimeout(() => triggerFocusSpike(), i * 400);
-      }
-      /* The ring starts red on every slide and only turns cyan once the
-         treatment on slide 3 has run for a beat */
-      critRingMat.color.set(0xff2222);
-    }
-
-    function next() { goTo(slideIdx + 1); }
-    function back() { goTo(slideIdx - 1); }
-
-    document.addEventListener('click', next);
-    dots.forEach((d, i) => d.addEventListener('click', (e) => {
-      e.stopPropagation();   /* otherwise the document handler advances too */
-      goTo(i);
-    }));
-    /* Clicks on the player drive the player, not the deck */
-    const videoFrame = document.querySelector('.slide__video-frame');
-    if (videoFrame) videoFrame.addEventListener('click', (e) => e.stopPropagation());
-    document.addEventListener('keydown', (e) => {
-      /* On the video slide, space belongs to the player */
-      if (videoSlide && video && (e.key === ' ' || e.key === 'k')) {
-        e.preventDefault();
-        if (video.paused) video.play().catch(() => {}); else video.pause();
-        return;
-      }
-      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') {
-        e.preventDefault(); next();
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
-        e.preventDefault(); back();
-      } else if (e.key === 'Home') {
-        e.preventDefault(); goTo(0);
-      }
-    });
-
-    /* ── Animation Loop ── */
-    let lastTime = 0;
-    function animate() {
-      requestAnimationFrame(animate);
-      const elapsed = clock.getElapsedTime();
-      const dt = Math.min(elapsed - lastTime, 0.1);
-      lastTime = elapsed;
-
-      /* Ramp for the treatment: 0 on slide 2, 1 once slide 3 has settled */
-      treatT += ((brainMode === 'treat' ? 1 : 0) - treatT) * Math.min(1, dt * 0.9);
-
-      /* sEEG panel only runs while slide 2 is up */
-      if (seeg) {
-        seegAlpha += ((slideIdx === 1 ? 1 : 0) - seegAlpha) * Math.min(1, dt * 4);
-        if (seegAlpha > 0.01) {
-          seeg.advance(dt);
-          seeg.draw(seegAlpha);
-        } else if (seegDrawn) {
-          seeg.draw(0);
-        }
-        seegDrawn = seegAlpha > 0.01;
-      }
-
-      /* Nothing 3D is on screen during the video, so skip all of it and leave
-         the frames to the player */
-      if (videoSlide) return;
-
-      /* Auto-rotate brain - never stops */
-      brainGroup.rotation.z += 0.35 * dt;
-
-      /* Keep the network alive between clicks. On 'treat' nothing new fires -
-         the seizure activity stops, which is the point of the slide. */
-      if (brainMode === 'chaos' && Math.random() < 0.02) triggerFocusSpike();
-      else if (brainMode === 'targets' && Math.random() < 0.006) triggerSpike();
-
-      /* Cortex fade: gradually reveal subcortical + electrodes */
-      const fadeTarget = slideIdx >= 0 ? SLIDES[slideIdx].cortex : 0;
-      cortexFade += (fadeTarget - cortexFade) * Math.min(1, dt * CORTEX_FADE_SPEED * 3);
-      const fadeT = cortexFade;
-      for (const { mat, baseOpacity } of cortexMaterials) {
-        mat.opacity = baseOpacity * (1 - fadeT);
-      }
-      for (const { mat, baseOpacity } of surfaceParticleMaterials) {
-        mat.opacity = baseOpacity * (1 - fadeT);
-      }
-      elGroup.visible = fadeT > 0.05;
-
-      /* Critical node highlight: visible once electrodes show */
-      critGroup.visible = fadeT > 0.3;
-      if (critGroup.visible) {
-        const critPulse = Math.sin(elapsed * 4) * 0.15 + 0.4;
-        critRingMat.opacity = critPulse;
-        critRing.rotation.x = elapsed * 2;
-        critRing.rotation.y = elapsed * 1.3;
-      }
-
-      /* Treatment animation: expanding energy rings */
-      if (brainMode === 'treat') {
-        treatGroup.visible = true;
-        /* Pulsing center glow */
-        const glowPulse = Math.sin(elapsed * 6) * 0.2 + 0.5;
-        treatGlowMat.opacity = glowPulse * treatT;
-        treatGlowMat.color.setHSL(0.53, 1, 0.5 + Math.sin(elapsed * 3) * 0.15);
-        treatGlow.scale.setScalar((0.8 + Math.sin(elapsed * 5) * 0.3) * treatT);
-
-        /* Expanding rings, small enough to stay at the hub and not compete
-           with the network around it */
-        for (const tr of treatRings) {
-          const cycle = ((elapsed * 0.5 + tr.phase) % 1);
-          tr.mesh.scale.setScalar(1 + cycle * 1.6);
-          tr.mat.opacity = (1 - cycle) * 0.18 * treatT;
-          tr.mat.color.setHSL(0.53 + cycle * 0.05, 1, 0.55);
-          tr.mesh.rotation.x = elapsed + tr.phase * Math.PI;
-          tr.mesh.rotation.z = elapsed * 0.7 + tr.phase * 2;
-        }
-
-        /* Local network: traffic converges on the critical node */
-        hubGroup.visible = true;
-        satMat.opacity = 0.8 * treatT;
-        linkMat.opacity = 0.18 * treatT;
-        pulseMat.opacity = 0.9 * treatT;
-        for (let i = 0; i < HUB_SATS; i++) {
-          const p = (elapsed * 0.5 + i / HUB_SATS) % 1;
-          const t = 1 - p;
-          pulsePos[i*3] = hubSats[i].x * t;
-          pulsePos[i*3+1] = hubSats[i].y * t;
-          pulsePos[i*3+2] = hubSats[i].z * t;
-          /* Spoke lights up ahead of the pulse, brightest at the hub end */
-          const bi = (0.15 + 0.9 * p) * treatT * 0.85;
-          const bo = (0.45 - 0.3 * p) * treatT * 0.55;
-          spokeCol[i*6] = bi; spokeCol[i*6+1] = bi * 0.42; spokeCol[i*6+2] = bi * 0.16;
-          spokeCol[i*6+3] = bo; spokeCol[i*6+4] = bo * 0.42; spokeCol[i*6+5] = bo * 0.16;
-        }
-        pulseGeo.attributes.position.needsUpdate = true;
-        spokeGeo.attributes.color.needsUpdate = true;
-
-        /* Fade critical node from red to cyan (treated) */
-        critRingMat.color.lerp(new THREE.Color(0x00d4ff), 0.02);
-      } else {
-        treatGroup.visible = false;
-        hubGroup.visible = false;
-      }
-
-      const nodesLit = (brainMode === 'targets' || brainMode === 'treat');
-
-      /* Update network colors */
-      for (let i = 0; i < NET_NODES; i++) {
-        let r = 0, g = 0.05, b = 0.1;
-        const pulse = Math.sin(elapsed * 1.5 + i * 0.31) * 0.015 + 0.015;
-        g += pulse; b += pulse * 1.5;
-
-        if (nodesLit && targetSet.has(i)) {
-          /* Targets read green while they are being identified, then shift to
-             cyan as the treatment takes hold */
-          const tp = Math.sin(elapsed * 3 + i * 0.5) * 0.15 + 0.85;
-          r = 0.05 * (1 - treatT);
-          g = tp * (1.2 - 0.48 * treatT);
-          b = tp * (0.4 + 0.95 * treatT);
-        } else if (brainMode === 'chaos' && focusSet.has(i)) {
-          const chaos = Math.sin(elapsed * 8 + i * 1.7) * 0.3 + 0.7;
-          r += chaos * 0.9; g += chaos * 0.08; b += 0.02;
-        } else if (brainMode === 'treat') {
-          const calm = Math.sin(elapsed * 1.2 + i * 0.4) * 0.04 + 0.06;
-          g += calm; b += calm * 2;
-        }
-
-        for (const s of spikes) {
-          const arr = s.arrivals[i];
-          if (arr < 0) continue;
-          const age = (elapsed - s.start) - arr;
-          if (age < 0 || age > 2.2) continue;
-          const intensity = Math.exp(-age * s.decay);
-          r += intensity * 1.4; g += intensity * 0.45; b += intensity * 0.1;
-        }
-
-        nodeColors[i*3] = Math.min(r, 2);
-        nodeColors[i*3+1] = Math.min(g, 1.5);
-        nodeColors[i*3+2] = Math.min(b, 1);
-      }
-      nodePoints.geometry.attributes.color.needsUpdate = true;
-
-      /* Update edge colors */
-      for (let i = 0; i < edgeData.length; i++) {
-        const { from, to } = edgeData[i];
-        let r = 0.006, g = 0.01, b = 0.018;
-
-        if (brainMode === 'chaos' && focusSet.has(from) && focusSet.has(to)) {
-          const p = Math.sin(elapsed * 6 + i * 0.5) * 0.3 + 0.7;
-          r += p * 1.2; g += p * 0.05; b += p * 0.02;
-        } else if (treatT > 0.01) {
-          /* Network settles into a slow cyan breath once treated */
-          const calm = (Math.sin(elapsed * 1.1 + i * 0.18) * 0.5 + 0.5) * 0.07 * treatT;
-          g += calm * 0.55; b += calm;
-        }
-
-        for (const s of spikes) {
-          const aF = s.arrivals[from], aT = s.arrivals[to];
-          if (aF < 0 || aT < 0) continue;
-          const ageF = (elapsed - s.start) - aF;
-          const ageT = (elapsed - s.start) - aT;
-          if (ageF < -0.1 && ageT < -0.1) continue;
-          const edgeAge = Math.max(0, Math.min(ageF >= 0 ? ageF : 99, ageT >= 0 ? ageT : 99));
-          if (edgeAge > 2.2) continue;
-          const intensity = Math.exp(-edgeAge * s.decay * 0.6) * 0.75;
-          r += intensity * 0.85; g += intensity * 0.2; b += intensity * 0.04;
-        }
-
-        edgeColors[i*6] = edgeColors[i*6+3] = Math.min(r, 1.5);
-        edgeColors[i*6+1] = edgeColors[i*6+4] = Math.min(g, 1);
-        edgeColors[i*6+2] = edgeColors[i*6+5] = Math.min(b, 0.8);
-      }
-      edgeLines.geometry.attributes.color.needsUpdate = true;
-
-      /* Reset mesh colors to base then apply node glow */
-      for (let i = 0; i < meshColors.length; i++) meshColors[i] = baseColors[i];
-
-      for (let i = 0; i < NET_NODES; i++) {
-        if (nodesLit && targetSet.has(i)) {
-          const tp = Math.sin(elapsed * 3 + i * 0.5) * 0.15 + 0.85;
-          const nearby = nodeMeshVerts[i];
-          if (nearby) {
-            for (const { vi, f } of nearby) {
-              const glow = f * tp * 0.4;
-              meshColors[vi*3] += glow * 0.05 * (1 - treatT);
-              meshColors[vi*3+1] += glow * (0.7 - 0.3 * treatT);
-              meshColors[vi*3+2] += glow * (0.25 + 0.5 * treatT);
-            }
-          }
-        }
-        for (const s of spikes) {
-          const arr = s.arrivals[i];
-          if (arr < 0) continue;
-          const age = (elapsed - s.start) - arr;
-          if (age < 0 || age > 2.2) continue;
-          const intensity = Math.exp(-age * s.decay);
-          if (intensity > 0.04) {
-            const nearby = nodeMeshVerts[i];
-            if (nearby) {
-              for (const { vi, f } of nearby) {
-                const glow = f * intensity * 0.5;
-                meshColors[vi*3] += glow * 0.9;
-                meshColors[vi*3+1] += glow * 0.28;
-                meshColors[vi*3+2] += glow * 0.04;
-              }
-            }
-          }
-        }
-      }
-      meshGeo.attributes.color.needsUpdate = true;
-
-      /* Cleanup old spikes */
-      while (spikes.length > 0 && (elapsed - spikes[0].start) > 5) spikes.shift();
-
-      renderer.render(scene, camera);
-    }
-
-    /* ── Start ── */
-    fitCamera();
-    window.addEventListener('resize', fitCamera);
-
-    /* Someone editing the hash by hand, or using back/forward */
-    window.addEventListener('hashchange', () => goTo(slideFromUrl()));
-
-    setTimeout(() => document.getElementById('fade').classList.add('hidden'), 300);
-    setTimeout(() => goTo(slideFromUrl()), 400);
-
-    animate();
+    if (viz) viz.render();
   }
+
+  if (viz) viz.fit();
+  setTimeout(() => document.getElementById('fade').classList.add('hidden'), 300);
+  setTimeout(() => goTo(slideFromUrl()), 400);
+  requestAnimationFrame(frame);
 })();
 </script>
 </body>
