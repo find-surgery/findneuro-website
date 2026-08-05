@@ -134,17 +134,16 @@ body.is-video #slides{width:100vw;padding:0}
   letter-spacing:0.1em;
   margin-bottom:0.4vh;
 }
-.slide__outcome-next{
-  display:block;
-  margin-top:1.2vh;
-}
+/* All four figures stay on one line - nowrap, with the sizes and labels
+   trimmed to fit the 38vw column rather than letting the last one drop. */
 .slide__stats{
-  display:flex;flex-wrap:wrap;gap:2.2vw 2.6vw;margin-top:3vh;
+  display:flex;flex-wrap:nowrap;gap:0 1.9vw;margin-top:3vh;
 }
 .slide__stat-num{
   font-family:'JetBrains Mono',monospace;
-  font-size:2.2vw;font-weight:700;color:var(--accent);
+  font-size:1.95vw;font-weight:700;color:var(--accent);
   line-height:1.1;
+  white-space:nowrap;
 }
 .slide__stat-num--danger{
   color:var(--danger);
@@ -201,7 +200,7 @@ body.is-video #slides{width:100vw;padding:0}
   line-height:1.4;
 }
 .slide__stat-label{
-  font-size:0.85vw;color:var(--text-dim);margin-top:0.5vh;line-height:1.4;
+  font-size:0.75vw;color:var(--text-dim);margin-top:0.5vh;line-height:1.4;
 }
 .slide__seeg{
   display:block;
@@ -302,7 +301,7 @@ body.is-video #slides{width:100vw;padding:0}
   .slide__find{font-size:38px}
   .slide__outcome{font-size:15px;padding:12px 14px}
   .slide__outcome-label{font-size:9px}
-  .slide__stats{gap:18px 26px}
+  .slide__stats{flex-wrap:wrap;gap:16px 22px}   /* narrow screens may wrap */
   .slide__stat-num{font-size:24px}
   .slide__stat-label{font-size:11px}
   .slide__award{font-size:12px;padding:6px 12px;margin-top:2px}
@@ -340,11 +339,11 @@ body.is-video #slides{width:100vw;padding:0}
     <div class="slide__stats">
       <div>
         <div class="slide__stat-num">~1M</div>
-        <div class="slide__stat-label">Americans living with<br>drug-resistant epilepsy</div>
+        <div class="slide__stat-label">Drug-resistant<br>patients in the U.S.</div>
       </div>
       <div>
         <div class="slide__stat-num">~50k</div>
-        <div class="slide__stat-label">New drug-resistant<br>cases a year</div>
+        <div class="slide__stat-label">New cases<br>a year</div>
       </div>
       <div>
         <div class="slide__stat-num">~8,000</div>
@@ -357,15 +356,14 @@ body.is-video #slides{width:100vw;padding:0}
     </div>
     <div class="slide__outcome">
       <span class="slide__outcome-label">The question</span>
-      How do we help more patients get the treatment they need?
-      <span class="slide__outcome-next">How do we help clinicians serve more patients, with higher confidence and better outcomes?</span>
+      How do we help clinicians serve more patients, with higher confidence and better outcomes?
     </div>
   </div>
 
   <!-- Slide 1: What We Do -->
   <div class="slide" id="s1">
     <div class="slide__eyebrow">What We Do</div>
-    <div class="slide__find">FIND<span class="slide__find-rest"> the critical nodes</span></div>
+    <div class="slide__find">FIND<span class="slide__find-rest"> the drivers of the seizures</span></div>
     <div class="slide__sub" style="margin-top:2vh">We map the seizure network and tell the surgical team where to target - validated with a ~100-patient retrospective study from 7 hospitals.</div>
     <div class="slide__outcome">
       <span class="slide__outcome-label">The outcome</span>
@@ -383,7 +381,7 @@ body.is-video #slides{width:100vw;padding:0}
       <div>
         <div class="slide__fact-title slide__fact-title--lead">FDA</div>
         <!-- fda_status: never "cleared" as a done fact. Update on decision. -->
-        <div class="slide__fact-detail">510(k) clearance anticipated in mid-August</div>
+        <div class="slide__fact-detail">510(k) clearance anticipated in <strong>mid-August</strong></div>
       </div>
       <div>
         <div class="slide__fact-title">Data Access Secured</div>
