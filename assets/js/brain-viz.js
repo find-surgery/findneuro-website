@@ -226,7 +226,12 @@ const SUB_GRAY = {
      (screen vertical), so its swept radius is the max radius in the local xy
      plane and its height is the max |z|. */
   const BRAIN_LEFT = opts.leftFraction != null ? opts.leftFraction : 0.45;
-  const FIT_MARGIN = 1.03;
+  const FIT_MARGIN = 1.08;
+  /* expandBounds only sees mesh vertices and electrode endpoints, but the point
+     sprites are billboards up to 0.35 world units wide and the hub satellites
+     sit off the critical contact, so the drawn extent runs past the measured
+     bound. Without this pad the right edge landed at 0.992 of the viewport. */
+  const SPRITE_PAD = 0.12;
   let boundRadius = 0, boundHeight = 0;
   function expandBounds(x, y, z) {
     const r = Math.sqrt(x * x + y * y);
@@ -240,7 +245,9 @@ const SUB_GRAY = {
     const frac = narrow ? 1 : 1 - BRAIN_LEFT;
     const centerFrac = narrow ? 0.5 : 1 - frac / 2;
     const aspect = w / h;
-    const halfH = Math.max(boundHeight * FIT_MARGIN, boundRadius * FIT_MARGIN / (aspect * frac));
+    const halfH = Math.max(
+      (boundHeight + SPRITE_PAD) * FIT_MARGIN,
+      (boundRadius + SPRITE_PAD) * FIT_MARGIN / (aspect * frac));
     camera.aspect = aspect;
     camera.position.set(0, 0, halfH / Math.tan((camera.fov * Math.PI / 180) / 2));
     camera.updateProjectionMatrix();
@@ -463,11 +470,19 @@ const SUB_GRAY = {
       const phi = Math.acos(1 - 2 * (i + 0.5) / HUB_SATS);
       const theta = Math.PI * (1 + Math.sqrt(5)) * (i + 0.5);
       const rad = 0.3 + Math.random() * 0.18;
-      hubSats.push(new THREE.Vector3(
+      const sat = new THREE.Vector3(
         Math.sin(phi) * Math.cos(theta) * rad,
         Math.sin(phi) * Math.sin(theta) * rad,
         Math.cos(phi) * rad * 0.85
-      ));
+      );
+      hubSats.push(sat);
+      /* These hang off the critical contact, so they can reach past the mesh */
+      if (criticalContactPos) {
+        expandBounds(
+          criticalContactPos.x + sat.x,
+          criticalContactPos.y + sat.y,
+          criticalContactPos.z + sat.z);
+      }
     }
 
     /* Spokes: first vertex of each pair is the hub itself, at the origin */
