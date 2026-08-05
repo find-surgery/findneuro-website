@@ -201,13 +201,52 @@ body.is-figure #brain-canvas{opacity:0}
   pointer-events:none;
 }
 body.is-figure #figure{opacity:1}
-#figure img{
-  width:100%;max-height:62vh;
-  background:#fff;
-  border-radius:8px;
-  padding:1.2vh 1vw;
-  box-shadow:0 20px 70px rgba(0,0,0,0.55);
+#chart-surgery-bucket{
+  width:100%;
+  max-width:44vw;
 }
+#chart-surgery-bucket svg{
+  display:block;width:100%;height:auto;
+  overflow:visible;
+  pointer-events:auto;
+}
+#chart-surgery-bucket .grid line{stroke:rgba(232,234,240,0.09)}
+#chart-surgery-bucket .axis line,
+#chart-surgery-bucket .axis path{stroke:rgba(232,234,240,0.3)}
+#chart-surgery-bucket text{
+  fill:var(--text-dim);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+}
+#chart-surgery-bucket .axis-label{
+  fill:var(--text-dim);
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:12px;
+}
+#chart-surgery-bucket .n-label{fill:var(--text);font-size:10px}
+#chart-surgery-bucket .dot{
+  cursor:pointer;
+  transition:r 0.15s ease,fill-opacity 0.15s ease;
+}
+#chart-surgery-bucket .dot:hover{fill-opacity:1}
+#chart-tip{
+  position:fixed;z-index:60;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.15s ease;
+  background:rgba(10,12,20,0.96);
+  border:1px solid rgba(0,212,255,0.3);
+  border-radius:6px;
+  padding:8px 10px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  line-height:1.6;
+  color:var(--text-dim);
+  white-space:nowrap;
+  box-shadow:0 8px 30px rgba(0,0,0,0.6);
+}
+#chart-tip.on{opacity:1}
+#chart-tip b{color:var(--accent);font-weight:500}
 #figure figcaption{
   margin-top:2.2vh;
   font-size:0.75vw;
@@ -301,8 +340,9 @@ body.is-figure #figure{opacity:1}
   .slide__url{font-size:13px}
   .slide__seeg{height:80px}
   #figure{width:100vw;padding:12vh 8vw}
-  #figure img{max-height:40vh}
+  #chart-surgery-bucket{max-width:none}
   #figure figcaption{font-size:10px;max-width:none}
+  #figure .figure__note{font-size:10px;max-width:none;padding-left:10px}
   #nav{left:8vw;gap:14px}
   #hint{font-size:10px}
 }
@@ -318,8 +358,8 @@ body.is-figure #figure{opacity:1}
 <div id="prepared"></div>
 
 <figure id="figure">
-  <img src="./assets/figures/fig2-sensitivity-by-surgery-size.svg"
-       alt="Mean per-patient sensitivity falling as the number of treated contacts increases">
+  <div id="chart-surgery-bucket" role="img"
+       aria-label="Mean per-patient sensitivity by surgery size: 79.8% at 1-10 treated contacts (21 patients), 63.7% at 11-20 (12), 42.3% at 21-30 (2), 40.5% at 31-40 (4), 29.6% at 51-60 (2), 60.2% at 81-90 (1). Sensitivity falls as resection size grows."></div>
   <figcaption><b>Figure 2.</b> Mean per-patient sensitivity by surgery size (10-contact bins, threshold 0.15, Engel I/II cohort, n=42). Error bars are standard error; the integer above each point is the number of patients in that bucket. Ailion et al., medRxiv 2026.</figcaption>
   <p class="figure__note"><b>Why sensitivity falls with resection size:</b> in a large resection the surgeon deliberately removes tissue known to be healthy. The model correctly scores that tissue low-criticality, but because it sits inside the treated zone it is counted a false negative. The metric penalises the model for being right whenever the resection is generous - which is why <b>80% is the focal-procedure subgroup, not the overall figure</b>.</p>
 </figure>
@@ -382,12 +422,12 @@ body.is-figure #figure{opacity:1}
     </div>
     <div class="slide__stats">
       <div>
-        <div class="slide__stat-num">d = 0.74</div>
-        <div class="slide__stat-label">Per-patient effect size<br>95% CI 0.39-1.06</div>
+        <div class="slide__stat-num">d = 1.12</div>
+        <div class="slide__stat-label">Primary endpoint<br>95% CI 0.42-1.83</div>
       </div>
       <div>
-        <div class="slide__stat-num">0.82</div>
-        <div class="slide__stat-label">AUROC<br>model discrimination</div>
+        <div class="slide__stat-num">0.77</div>
+        <div class="slide__stat-label">AUC<br>p = 0.001</div>
       </div>
       <div>
         <div class="slide__stat-num">60 / 4</div>
@@ -395,11 +435,11 @@ body.is-figure #figure{opacity:1}
       </div>
     </div>
     <ul class="slide__list">
-      <li>Overall <strong>64.3% sensitivity, 84.3% specificity</strong> - a rule-out instrument, strongest when it tells you where the drivers are not</li>
+      <li>P(success) <strong>0.78</strong> in Engel I-II versus <strong>0.54</strong> in Engel III-IV, on the held-out cohort</li>
       <li>Model and threshold <strong>locked on an independent 37-patient cohort</strong> from separate centers, then evaluated once on the 60</li>
-      <li>In focal procedures sensitivity is <strong>80% at 10 or fewer treated contacts</strong>, falling under 40% above 30 - see right</li>
+      <li>Per patient <strong>50.0% sensitivity, 94.4% specificity</strong>; per contact <strong>49.2% / 82.5%</strong> - a rule-out instrument, strongest when it tells you where the drivers are not</li>
+      <li>In focal procedures sensitivity reaches <strong>80% at 10 or fewer treated contacts</strong> - see the figure</li>
       <li>Drivers are compact: <strong>8.96 mm</strong> nearest-neighbour versus 17.21 mm expected by chance, inside LITT targeting precision</li>
-      <li>Where seizures persisted, high-criticality tissue had been left outside the resection boundary (within-patient AUC 0.88 versus 0.70)</li>
     </ul>
     <div class="slide__cite">Ailion A, Rockhill AP, Farzaneh H, et al. <b>Causal Network Mapping of sEEG Identifies Compact Epileptogenic Targets Concordant with Seizure Freedom: Multicenter Validation in 60 Patients.</b> medRxiv 2026. doi:10.64898/2026.05.21.26353792 - preprint, not yet peer reviewed.</div>
   </div>
@@ -413,7 +453,7 @@ body.is-figure #figure{opacity:1}
     </div>
     <ul class="slide__list slide__list--caveat">
       <li><strong>Retrospective.</strong> Whether it changes decisions in a live surgical conference is exactly the open question.</li>
-      <li>Penn contributed <strong>78%</strong> of the validation cohort, so the effect is <strong>not established independently</strong> of a single site - the without-Penn analysis is underpowered.</li>
+      <li>Penn contributed <strong>78%</strong> of the validation cohort. Excluding it, d = 0.68 (CI 0.12-1.24) - suggestive, but underpowered.</li>
       <li>Mixed sEEG and ECoG. Criticality is <strong>not yet validated separately</strong> by recording type.</li>
       <li>About half the training cohort was labelled with the annotated SOZ rather than a segmented treatment zone.</li>
       <li>The 0.15 threshold was pre-locked. <strong>Adaptive thresholding is unstudied.</strong></li>
@@ -523,6 +563,153 @@ body.is-figure #figure{opacity:1}
     return 0;
   }
 
+  /* ── Figure 2, interactive ──
+     Same data and hover behaviour as the surgery-size chart on
+     /cn-suite-paper/#surgery-size, hand-rolled in SVG so this standalone page
+     does not need d3 or a CSP exception. */
+  const surgeryChart = (function() {
+    const host = document.getElementById('chart-surgery-bucket');
+    if (!host) return null;
+
+    /* Preprint v2 s.3.4 / Figure 2: threshold 0.15, Engel I/II cohort, n=42 */
+    const BUCKETS = [
+      { r: '1-10',  m: 0.7984, se: 0.0487, n: 21 },
+      { r: '11-20', m: 0.6367, se: 0.0767, n: 12 },
+      { r: '21-30', m: 0.4233, se: 0.2567, n: 2 },
+      { r: '31-40', m: 0.4047, se: 0.0888, n: 4 },
+      { r: '51-60', m: 0.2959, se: 0.1848, n: 2 },
+      { r: '81-90', m: 0.6024, se: 0,      n: 1 },
+    ];
+    const SENS = '#00d4ff', TREND = '#ff7f0e';
+    const W = 640, H = 400, M = { top: 18, right: 22, bottom: 52, left: 58 };
+    const iw = W - M.left - M.right, ih = H - M.top - M.bottom;
+    const mid = (r) => { const p = r.split('-'); return (+p[0] + +p[1]) / 2; };
+    const x = (v) => (v / 90) * iw;
+    const y = (v) => ih - v * ih;
+    const NS = 'http://www.w3.org/2000/svg';
+    const el = (n, a) => {
+      const e = document.createElementNS(NS, n);
+      for (const k in a) e.setAttribute(k, a[k]);
+      return e;
+    };
+
+    const svg = el('svg', { viewBox: '0 0 ' + W + ' ' + H });
+    const g = el('g', { transform: 'translate(' + M.left + ',' + M.top + ')' });
+    svg.appendChild(g);
+
+    const xt = [10, 20, 30, 40, 50, 60, 70, 80];
+    const yt = [0, 0.2, 0.4, 0.6, 0.8, 1];
+    const grid = el('g', { class: 'grid' });
+    xt.forEach(t => grid.appendChild(el('line', { x1: x(t), x2: x(t), y1: 0, y2: ih })));
+    yt.forEach(t => grid.appendChild(el('line', { x1: 0, x2: iw, y1: y(t), y2: y(t) })));
+    g.appendChild(grid);
+
+    const axes = el('g', { class: 'axis' });
+    axes.appendChild(el('line', { x1: 0, x2: iw, y1: ih, y2: ih }));
+    axes.appendChild(el('line', { x1: 0, x2: 0, y1: 0, y2: ih }));
+    g.appendChild(axes);
+
+    xt.forEach(t => {
+      const lb = el('text', { x: x(t), y: ih + 20, 'text-anchor': 'middle' });
+      lb.textContent = t;
+      g.appendChild(lb);
+    });
+    yt.forEach(t => {
+      const lb = el('text', { x: -10, y: y(t) + 4, 'text-anchor': 'end' });
+      lb.textContent = t.toFixed(1);
+      g.appendChild(lb);
+    });
+
+    const xl = el('text', { class: 'axis-label', x: iw / 2, y: ih + 44, 'text-anchor': 'middle' });
+    xl.textContent = 'Surgery size bucket (# targeted contacts)';
+    g.appendChild(xl);
+    const yl = el('text', { class: 'axis-label', transform: 'rotate(-90)', x: -ih / 2, y: -42, 'text-anchor': 'middle' });
+    yl.textContent = 'Mean sensitivity (error bars = SE)';
+    g.appendChild(yl);
+
+    /* Trend over the multi-patient buckets only, as the caption states */
+    const fit = BUCKETS.filter(b => b.n > 1).map(b => ({ x: mid(b.r), y: b.m }));
+    if (fit.length >= 2) {
+      const mx = fit.reduce((s, p) => s + p.x, 0) / fit.length;
+      const my = fit.reduce((s, p) => s + p.y, 0) / fit.length;
+      let sxy = 0, sxx = 0;
+      fit.forEach(p => { sxy += (p.x - mx) * (p.y - my); sxx += (p.x - mx) * (p.x - mx); });
+      const b1 = sxy / sxx, b0 = my - b1 * mx;
+      const x0 = fit[0].x, x1 = fit[fit.length - 1].x;
+      const line = el('line', {
+        x1: x(x0), x2: x(x1), y1: y(b0 + b1 * x0), y2: y(b0 + b1 * x1),
+        stroke: TREND, 'stroke-width': 2, 'stroke-dasharray': '7.4,3.2', opacity: 0,
+      });
+      line.style.transition = 'opacity 0.6s ease 0.6s';
+      g.appendChild(line);
+      var trendLine = line;
+    }
+
+    const marks = [];
+    BUCKETS.forEach((b, i) => {
+      const cx = x(mid(b.r));
+      const grp = el('g', { opacity: 0 });
+      grp.style.transition = 'opacity 0.35s ease ' + (0.6 + i * 0.08) + 's';
+
+      if (b.se > 0) {
+        const top = y(Math.min(1, b.m + b.se)), bot = y(Math.max(0, b.m - b.se));
+        grp.appendChild(el('line', { x1: cx, x2: cx, y1: top, y2: bot, stroke: SENS, 'stroke-width': 1.5, opacity: 0.75 }));
+        grp.appendChild(el('line', { x1: cx - 5, x2: cx + 5, y1: top, y2: top, stroke: SENS, 'stroke-width': 1.5, opacity: 0.75 }));
+        grp.appendChild(el('line', { x1: cx - 5, x2: cx + 5, y1: bot, y2: bot, stroke: SENS, 'stroke-width': 1.5, opacity: 0.75 }));
+      }
+      const nl = el('text', {
+        class: 'n-label', x: cx,
+        y: (b.se > 0 ? y(Math.min(1, b.m + b.se)) : y(b.m)) - 9, 'text-anchor': 'middle',
+      });
+      nl.textContent = b.n;
+      grp.appendChild(nl);
+
+      const dot = el('circle', { class: 'dot', cx: cx, cy: y(b.m), r: 4.5, fill: SENS, 'fill-opacity': 0.85, stroke: SENS });
+      const hit = el('circle', { cx: cx, cy: y(b.m), r: 16, fill: 'transparent', style: 'cursor:pointer' });
+      const show = (evt) => {
+        dot.setAttribute('r', 7);
+        tip.innerHTML =
+          'Bucket: <b>' + b.r + ' contacts</b><br>' +
+          'Mean sensitivity: <b>' + (b.m * 100).toFixed(1) + '%</b><br>' +
+          'SE: <b>' + (b.se > 0 ? (b.se * 100).toFixed(1) + '%' : 'n/a') + '</b><br>' +
+          'Patients: <b>' + b.n + '</b>';
+        tip.classList.add('on');
+        const pad = 14;
+        const px = Math.min(evt.clientX + pad, window.innerWidth - tip.offsetWidth - 8);
+        const py = Math.min(evt.clientY + pad, window.innerHeight - tip.offsetHeight - 8);
+        tip.style.left = px + 'px';
+        tip.style.top = py + 'px';
+      };
+      const hide = () => { dot.setAttribute('r', 4.5); tip.classList.remove('on'); };
+      hit.addEventListener('mousemove', show);
+      hit.addEventListener('mouseleave', hide);
+      hit.addEventListener('touchstart', (e) => { e.stopPropagation(); show(e.touches[0]); }, { passive: true });
+      hit.addEventListener('click', (e) => e.stopPropagation());
+      grp.appendChild(dot);
+      grp.appendChild(hit);
+      g.appendChild(grp);
+      marks.push(grp);
+    });
+
+    host.appendChild(svg);
+    const tip = document.createElement('div');
+    tip.id = 'chart-tip';
+    document.body.appendChild(tip);
+
+    let played = false;
+    return {
+      play() {
+        if (played) return;
+        played = true;
+        requestAnimationFrame(() => {
+          marks.forEach(m => m.setAttribute('opacity', 1));
+          if (trendLine) trendLine.setAttribute('opacity', 0.9);
+        });
+      },
+      hideTip() { tip.classList.remove('on'); },
+    };
+  })();
+
   const prepared = document.getElementById('prepared');
   const site = SITES[queryParam('site')];
   if (site && prepared) prepared.textContent = 'Prepared for ' + site;
@@ -576,6 +763,9 @@ body.is-figure #figure{opacity:1}
     videoSlide = !!cfg.video;
     document.body.classList.toggle('is-video', videoSlide);
     document.body.classList.toggle('is-figure', !!cfg.figure);
+    if (surgeryChart) {
+      if (cfg.figure) surgeryChart.play(); else surgeryChart.hideTip();
+    }
 
     /* Warm the video one slide early, then stop it when we leave */
     if (video && slideIdx === SLIDES.findIndex(s => s.video) - 1 && video.preload !== 'auto') {
