@@ -313,6 +313,7 @@ body.is-figure #figure{opacity:1}
 #fade.hidden{opacity:0}
 @media (max-width:900px),(max-aspect-ratio:1/1){
   #brain-canvas{opacity:0.45}
+  body.is-particles #brain-canvas{opacity:1}   /* 2D field is already subtle */
   #logo{height:34px;top:24px}
   #prepared{font-size:10px;top:26px}
   #slides{
@@ -506,9 +507,10 @@ body.is-figure #figure{opacity:1}
   <div id="hint">Click to continue</div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js" integrity="sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9" crossorigin="anonymous"></script>
-<script src="./brain_data.js"></script>
+<!-- three.js (0.59 MB) and brain_data.js (2.78 MB) are injected at runtime,
+     and only on large screens - see the loader below. These two are small. -->
 <script src="./assets/js/brain-viz.js"></script>
+<script src="./assets/js/particles.js"></script>
 <script>
 (function() {
   'use strict';
@@ -715,10 +717,40 @@ body.is-figure #figure{opacity:1}
   const site = SITES[queryParam('site')];
   if (site && prepared) prepared.textContent = 'Prepared for ' + site;
 
-  const viz = window.FINDBrain && window.FINDBrain.create({
+  /* The 3D brain costs 3.4 MB of script plus a 7.3M-iteration precompute and
+     ~109k colour floats per frame. A phone should not pay that for a backdrop
+     at half opacity behind a text scrim, so small screens get a 2D neural
+     field instead and never fetch three.js or the mesh at all. Decided once
+     at load: re-deciding on resize would mean tearing down a live scene. */
+  const BIG_SCREEN = !window.matchMedia('(max-width:900px), (max-aspect-ratio:1/1)').matches;
+  let viz = null;
+
+  function inject(src, integrity) {
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = src;
+      if (integrity) { s.integrity = integrity; s.crossOrigin = 'anonymous'; }
+      s.onload = resolve;
+      s.onerror = () => reject(new Error(src));
+      document.head.appendChild(s);
+    });
+  }
+
+  function startBrain() {
+    return inject('https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js',
+                  'sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9')
+      .then(() => inject('./brain_data.js'))
+      .then(() => {
+        viz = window.FINDBrain && window.FINDBrain.create({
     canvas: document.getElementById('brain-canvas'),
     leftFraction: 0.45,
   });
+        if (!viz) return;
+        viz.fit();
+        applyBrain();          /* the deck may already be past slide 1 */
+      })
+      .catch(() => { /* offline or blocked: the deck still reads fine */ });
+  }
   const seeg = window.FINDBrain && window.FINDBrain.createSeeg({
     canvas: document.getElementById('seeg-canvas'),
   });
@@ -730,6 +762,17 @@ body.is-figure #figure{opacity:1}
   let videoSlide = false;
   let seegAlpha = 0;
   let seegDrawn = false;
+
+  /* Brain state for the current slide. Called from goTo, and again when the
+     brain finishes loading, since by then the deck may have moved on. */
+  function applyBrain() {
+    if (!viz || slideIdx < 0) return;
+    const cfg = SLIDES[slideIdx];
+    viz.setMode(cfg.mode);
+    viz.setCortexFaded(!!cfg.cortex);
+    viz.resetCriticalRing();
+    viz.setPaused(!!cfg.video);
+  }
 
   function goTo(next) {
     if (next < 0 || next >= NUM_SLIDES || next === slideIdx) return;
@@ -751,11 +794,8 @@ body.is-figure #figure{opacity:1}
     if (HINTS[slideIdx]) hint.textContent = HINTS[slideIdx];
     hint.classList.toggle('gone', !HINTS[slideIdx]);
 
+    applyBrain();
     if (viz) {
-      viz.setMode(cfg.mode);
-      viz.setCortexFaded(!!cfg.cortex);
-      viz.resetCriticalRing();
-      viz.setPaused(!!cfg.video);
       if (cfg.mode === 'chaos') {
         for (let i = 0; i < 6; i++) setTimeout(() => viz.triggerFocusSpike(), i * 400);
       }
@@ -834,7 +874,13 @@ body.is-figure #figure{opacity:1}
     if (viz) viz.render();
   }
 
-  if (viz) viz.fit();
+  if (BIG_SCREEN) {
+    startBrain();
+  } else if (window.FINDParticles) {
+    document.body.classList.add('is-particles');
+    window.FINDParticles.create({ canvas: document.getElementById('brain-canvas') });
+  }
+
   setTimeout(() => document.getElementById('fade').classList.add('hidden'), 300);
   setTimeout(() => goTo(slideFromUrl()), 400);
   requestAnimationFrame(frame);

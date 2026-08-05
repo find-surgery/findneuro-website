@@ -8,7 +8,10 @@
 (function (global) {
   'use strict';
 
-  const THREE = global.THREE;
+  /* Bound inside create(), not at parse time: the decks inject three.js
+     lazily and only on large screens, so this file is parsed before THREE
+     exists. Capturing it here would leave it permanently undefined. */
+  let THREE;
 
 function makeTexture(size, falloff) {
   const c = document.createElement('canvas');
@@ -186,13 +189,13 @@ const SUB_GRAY = {
     }
 
     return { advance, draw };
-    return { advance, draw };
   }
 
   /* ── The brain ── */
   function create(opts) {
     const canvas = opts.canvas;
     const B = opts.brain || global.BRAIN;
+    THREE = global.THREE;
     if (!canvas || !B || !THREE) return null;
 
   const scene = new THREE.Scene();
