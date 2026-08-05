@@ -216,6 +216,16 @@ body.is-figure #figure{opacity:1}
   max-width:40vw;
 }
 #figure figcaption b{color:var(--text);font-weight:600}
+#figure .figure__note{
+  margin-top:1.6vh;
+  font-size:0.75vw;
+  line-height:1.55;
+  color:var(--text-dim);
+  max-width:40vw;
+  border-left:2px solid rgba(0,212,255,0.35);
+  padding-left:1vw;
+}
+#figure .figure__note b{color:var(--text);font-weight:600}
 /* Video slide */
 .slide--video{width:100%;display:flex;align-items:center;justify-content:center}
 .slide__video-frame{
@@ -311,6 +321,7 @@ body.is-figure #figure{opacity:1}
   <img src="./assets/figures/fig2-sensitivity-by-surgery-size.svg"
        alt="Mean per-patient sensitivity falling as the number of treated contacts increases">
   <figcaption><b>Figure 2.</b> Mean per-patient sensitivity by surgery size (10-contact bins, threshold 0.15, Engel I/II cohort, n=42). Error bars are standard error; the integer above each point is the number of patients in that bucket. Ailion et al., medRxiv 2026.</figcaption>
+  <p class="figure__note"><b>Why sensitivity falls with resection size:</b> in a large resection the surgeon deliberately removes tissue known to be healthy. The model correctly scores that tissue low-criticality, but because it sits inside the treated zone it is counted a false negative. The metric penalises the model for being right whenever the resection is generous - which is why <b>80% is the focal-procedure subgroup, not the overall figure</b>.</p>
 </figure>
 
 <div id="slides">
@@ -371,24 +382,24 @@ body.is-figure #figure{opacity:1}
     </div>
     <div class="slide__stats">
       <div>
-        <div class="slide__stat-num">d = 1.12</div>
-        <div class="slide__stat-label">Effect size<br>95% CI 0.42-1.83</div>
+        <div class="slide__stat-num">d = 0.74</div>
+        <div class="slide__stat-label">Per-patient effect size<br>95% CI 0.39-1.06</div>
       </div>
       <div>
-        <div class="slide__stat-num">0.77</div>
-        <div class="slide__stat-label">AUC<br>p = 0.001</div>
+        <div class="slide__stat-num">0.82</div>
+        <div class="slide__stat-label">AUROC<br>model discrimination</div>
       </div>
       <div>
-        <div class="slide__stat-num">4</div>
-        <div class="slide__stat-label">U.S. Level-4<br>epilepsy centers</div>
+        <div class="slide__stat-num">60 / 4</div>
+        <div class="slide__stat-label">Patients across U.S.<br>Level-4 centers</div>
       </div>
     </div>
     <ul class="slide__list">
-      <li>P(success) <strong>0.78</strong> in Engel I-II versus <strong>0.54</strong> in Engel III-IV</li>
-      <li><strong>50.0% sensitivity, 94.4% specificity</strong> at the patient level - this is a rule-out instrument, strongest when it tells you where drivers are not</li>
-      <li>5,611 contacts: criticality <strong>0.28 inside</strong> the treatment zone versus <strong>0.10 outside</strong> (d = 0.97)</li>
-      <li>Drivers are compact - <strong>8.96 mm</strong> nearest-neighbour versus 17.21 mm expected by chance, inside LITT targeting precision</li>
-      <li>Sensitivity is highest in focal procedures: <strong>80% at 10 or fewer treated contacts</strong>, under 40% above 30</li>
+      <li>Overall <strong>64.3% sensitivity, 84.3% specificity</strong> - a rule-out instrument, strongest when it tells you where the drivers are not</li>
+      <li>Model and threshold <strong>locked on an independent 37-patient cohort</strong> from separate centers, then evaluated once on the 60</li>
+      <li>In focal procedures sensitivity is <strong>80% at 10 or fewer treated contacts</strong>, falling under 40% above 30 - see right</li>
+      <li>Drivers are compact: <strong>8.96 mm</strong> nearest-neighbour versus 17.21 mm expected by chance, inside LITT targeting precision</li>
+      <li>Where seizures persisted, high-criticality tissue had been left outside the resection boundary (within-patient AUC 0.88 versus 0.70)</li>
     </ul>
     <div class="slide__cite">Ailion A, Rockhill AP, Farzaneh H, et al. <b>Causal Network Mapping of sEEG Identifies Compact Epileptogenic Targets Concordant with Seizure Freedom: Multicenter Validation in 60 Patients.</b> medRxiv 2026. doi:10.64898/2026.05.21.26353792 - preprint, not yet peer reviewed.</div>
   </div>
@@ -402,7 +413,7 @@ body.is-figure #figure{opacity:1}
     </div>
     <ul class="slide__list slide__list--caveat">
       <li><strong>Retrospective.</strong> Whether it changes decisions in a live surgical conference is exactly the open question.</li>
-      <li>HUP contributed <strong>78%</strong> of the validation cohort. Excluding it: d = 0.68 (CI 0.12-1.24), underpowered.</li>
+      <li>Penn contributed <strong>78%</strong> of the validation cohort, so the effect is <strong>not established independently</strong> of a single site - the without-Penn analysis is underpowered.</li>
       <li>Mixed sEEG and ECoG. Criticality is <strong>not yet validated separately</strong> by recording type.</li>
       <li>About half the training cohort was labelled with the annotated SOZ rather than a segmented treatment zone.</li>
       <li>The 0.15 threshold was pre-locked. <strong>Adaptive thresholding is unstudied.</strong></li>
@@ -420,9 +431,9 @@ body.is-figure #figure{opacity:1}
     </div>
     <div class="slide__facts">
       <div>
-        <div class="slide__fact-title">No IRB for clinical use</div>
-        <!-- One-line edit when the 510(k) decision lands -->
-        <div class="slide__fact-detail" id="clearance-line">510(k) clearance expected this month. IRB is only needed to join a research study.</div>
+        <div class="slide__fact-title">No IRB once cleared</div>
+        <!-- fda_status: never "cleared", never Q3 2026 uncaveated. Update on decision. -->
+        <div class="slide__fact-detail" id="clearance-line">510(k) <strong>K260563</strong> is under FDA review, decision expected Q3 2026. After clearance, IRB is only needed to join a research study.</div>
       </div>
       <div>
         <div class="slide__fact-title">Data sharing</div>
@@ -430,14 +441,14 @@ body.is-figure #figure{opacity:1}
       </div>
       <div>
         <div class="slide__fact-title">Join the studies</div>
-        <div class="slide__fact-detail">Prospective work running with <strong>Boston Children's</strong>, <strong>Texas Children's</strong> and others.</div>
+        <div class="slide__fact-detail">Prospective use running at <strong>Boston Children's</strong> and <strong>Ichilov</strong> since July 2026.</div>
       </div>
       <div>
         <div class="slide__fact-title">Your read matters most</div>
         <div class="slide__fact-detail">We want the cases where the map disagrees with you.</div>
       </div>
     </div>
-    <div class="slide__proof">Validated with colleagues at <strong>Boston Children's Hospital</strong>, <strong>Texas Children's Hospital</strong>, <strong>Penn</strong>, <strong>Johns Hopkins</strong>, <strong>University of Miami</strong>, <strong>NIH</strong> and <strong>University of Maryland</strong>. Spun out of <strong>Massachusetts General Hospital</strong> &amp; <strong>Harvard Medical School</strong>; research funded by <strong>DARPA</strong>.</div>
+    <div class="slide__proof">Study data from <strong>Boston Children's Hospital</strong>, <strong>Texas Children's Hospital</strong>, <strong>Penn</strong>, <strong>Johns Hopkins</strong>, <strong>University of Miami</strong>, <strong>NIH</strong> and <strong>University of Maryland</strong>. IRB and data sharing executed at six Level-4 centers. Spun out of <strong>Massachusetts General Hospital</strong> &amp; <strong>Harvard Medical School</strong>, where the founding research was funded by <strong>DARPA</strong>.</div>
     <div class="slide__url">findneuro.com</div>
   </div>
 </div>
