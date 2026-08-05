@@ -45,7 +45,9 @@ body.is-video #slides{width:100vw;padding:0}
   width:50vw;height:100vh;
   z-index:10;
   display:flex;align-items:center;justify-content:center;
-  padding:0 6vw;
+  /* Top band is reserved for the logo, bottom for the dots: content centres
+     between them, so a tall slide can never ride up under the wordmark. */
+  padding:15vh 6vw 11vh;
 }
 .slide{
   position:absolute;
@@ -62,14 +64,6 @@ body.is-video #slides{width:100vw;padding:0}
 .slide.exit{
   opacity:0;
   transform:translateY(-30px);
-}
-.slide__eyebrow{
-  font-family:'JetBrains Mono',monospace;
-  font-size:0.85vw;
-  color:var(--accent);
-  text-transform:uppercase;
-  letter-spacing:0.15em;
-  margin-bottom:1.5vh;
 }
 .slide__heading{
   font-weight:800;
@@ -230,13 +224,6 @@ body.is-video #slides{width:100vw;padding:0}
   max-width:94vw;   /* 1904x918 after the crop, so width binds on 16:9 */
   pointer-events:auto;
 }
-.slide__url{
-  font-family:'JetBrains Mono',monospace;
-  font-size:1.2vw;
-  color:var(--accent);
-  letter-spacing:0.05em;
-  margin-top:1.6vh;
-}
 .slide__proof{
   font-size:0.95vw;
   color:var(--text-dim);
@@ -290,11 +277,10 @@ body.is-video #slides{width:100vw;padding:0}
   #brain-canvas{opacity:0.5}
   #logo{height:34px;top:24px}
   #slides{
-    width:100vw;padding:0 8vw;
+    width:100vw;padding:88px 8vw 84px;   /* logo band above, dots below */
     background:linear-gradient(to right,rgba(10,12,20,0.92),rgba(10,12,20,0.6));
   }
   .slide{width:calc(100% - 16vw)}
-  .slide__eyebrow{font-size:11px}
   .slide__heading{font-size:30px}
   .slide__heading--tight{font-size:23px}
   .slide__sub{font-size:15px;max-width:none}
@@ -312,7 +298,6 @@ body.is-video #slides{width:100vw;padding:0}
   .slide__fact-detail{font-size:11.5px}
   .slide__fact-names{font-size:11px}
   .slide__seeg{height:90px;margin-top:18px}
-  .slide__url{font-size:14px}
   .slide__proof{font-size:12px}
   #nav{left:8vw;gap:14px}
   #hint{font-size:10px}
@@ -330,7 +315,6 @@ body.is-video #slides{width:100vw;padding:0}
 <div id="slides">
   <!-- Slide 0: The Problem -->
   <div class="slide" id="s0">
-    <div class="slide__eyebrow">The Problem</div>
     <div class="slide__heading slide__heading--tight">
       <span class="slide__heading-line">Epilepsy surgery saves lives.</span>
       <span class="slide__heading-line">Too often, it never happens.</span>
@@ -362,7 +346,6 @@ body.is-video #slides{width:100vw;padding:0}
 
   <!-- Slide 1: What We Do -->
   <div class="slide" id="s1">
-    <div class="slide__eyebrow">What We Do</div>
     <div class="slide__find">FIND<span class="slide__find-rest"> the drivers of the seizures</span></div>
     <div class="slide__sub" style="margin-top:2vh">We map the seizure network and tell the surgical team where to target - validated with a ~100-patient retrospective study from 7 hospitals.</div>
     <div class="slide__outcome">
@@ -374,7 +357,6 @@ body.is-video #slides{width:100vw;padding:0}
 
   <!-- Slide 2: Where We Are -->
   <div class="slide" id="s2">
-    <div class="slide__eyebrow">Where We Are</div>
     <div class="slide__heading">This month:<br>FDA clearance<br>Going live</div>
     <div class="slide__award"><span class="slide__award-mark">Winner</span>2026 Harvard President's Innovation Challenge</div>
     <div class="slide__facts">
@@ -399,7 +381,6 @@ body.is-video #slides{width:100vw;padding:0}
       </div>
     </div>
     <div class="slide__proof">Spun out of <strong>Massachusetts General Hospital</strong> &amp; <strong>Harvard Medical School</strong>, where the research was funded by <strong>DARPA</strong>.</div>
-    <div class="slide__url">findneuro.com</div>
   </div>
 
   <!-- Slide 3: The platform -->
