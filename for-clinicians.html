@@ -422,12 +422,12 @@ body.is-figure #figure{opacity:1}
     </div>
     <div class="slide__stats">
       <div>
-        <div class="slide__stat-num">d = 1.12</div>
-        <div class="slide__stat-label">Primary endpoint<br>95% CI 0.42-1.83</div>
+        <div class="slide__stat-num">d = 0.74</div>
+        <div class="slide__stat-label">Effect size, 95% CI<br>0.39-1.06, p = 0.003</div>
       </div>
       <div>
-        <div class="slide__stat-num">0.77</div>
-        <div class="slide__stat-label">AUC<br>p = 0.001</div>
+        <div class="slide__stat-num">0.82</div>
+        <div class="slide__stat-label">AUROC<br>model discrimination</div>
       </div>
       <div>
         <div class="slide__stat-num">60 / 4</div>
@@ -435,13 +435,14 @@ body.is-figure #figure{opacity:1}
       </div>
     </div>
     <ul class="slide__list">
-      <li>P(success) <strong>0.78</strong> in Engel I-II versus <strong>0.54</strong> in Engel III-IV, on the held-out cohort</li>
       <li>Model and threshold <strong>locked on an independent 37-patient cohort</strong> from separate centers, then evaluated once on the 60</li>
-      <li>Per patient <strong>50.0% sensitivity, 94.4% specificity</strong>; per contact <strong>49.2% / 82.5%</strong> - a rule-out instrument, strongest when it tells you where the drivers are not</li>
+      <li>The <strong>prespecified success criterion was met</strong>: the lower confidence bound exceeded the performance goal (one-sided p = 0.003)</li>
+      <li>Contact level, GEE: <strong>64.3% sensitivity, 84.3% specificity</strong> - a rule-out instrument, strongest when it tells you where the drivers are not</li>
+      <li>Criticality enrichment inside the treatment zone <strong>4.64 in Engel I-II</strong> versus 1.83 in Engel III-IV</li>
       <li>In focal procedures sensitivity reaches <strong>80% at 10 or fewer treated contacts</strong> - see the figure</li>
       <li>Drivers are compact: <strong>8.96 mm</strong> nearest-neighbour versus 17.21 mm expected by chance, inside LITT targeting precision</li>
     </ul>
-    <div class="slide__cite">Ailion A, Rockhill AP, Farzaneh H, et al. <b>Causal Network Mapping of sEEG Identifies Compact Epileptogenic Targets Concordant with Seizure Freedom: Multicenter Validation in 60 Patients.</b> medRxiv 2026. doi:10.64898/2026.05.21.26353792 - preprint, not yet peer reviewed.</div>
+    <div class="slide__cite">Ailion A, Rockhill AP, Farzaneh H, et al. <b>Causal Network Mapping of sEEG Identifies Compact Epileptogenic Targets Concordant with Seizure Freedom: Multicenter Validation in 60 Patients.</b> medRxiv 2026, <b>v1</b> (doi:10.64898/2026.05.21.26353792v1) - preprint, not yet peer reviewed. Figures on this page are v1; a later version restates several of them.</div>
   </div>
 
   <!-- 4: Limitations -->
@@ -453,7 +454,7 @@ body.is-figure #figure{opacity:1}
     </div>
     <ul class="slide__list slide__list--caveat">
       <li><strong>Retrospective.</strong> Whether it changes decisions in a live surgical conference is exactly the open question.</li>
-      <li>Penn contributed <strong>78%</strong> of the validation cohort. Excluding it, d = 0.68 (CI 0.12-1.24) - suggestive, but underpowered.</li>
+      <li>Penn contributed <strong>78%</strong> of the validation cohort. Excluding it, d = 0.68 (CI 0.12-1.24) - suggestive that the effect is not driven by one site, but underpowered.</li>
       <li>Mixed sEEG and ECoG. Criticality is <strong>not yet validated separately</strong> by recording type.</li>
       <li>About half the training cohort was labelled with the annotated SOZ rather than a segmented treatment zone.</li>
       <li>The 0.15 threshold was pre-locked. <strong>Adaptive thresholding is unstudied.</strong></li>
