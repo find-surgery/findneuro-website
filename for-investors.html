@@ -295,6 +295,34 @@ body.is-wall #brain-canvas{opacity:0.1}
   font-size:0.6vw;color:var(--danger);
   text-transform:uppercase;letter-spacing:0.12em;
 }
+/* Team */
+.slide__team{display:flex;gap:1.5vw;margin-top:2.6vh;max-width:38vw}
+.slide__person{flex:1;min-width:0}
+.slide__person img{
+  display:block;width:4.6vw;height:4.6vw;
+  border-radius:50%;object-fit:cover;
+  border:1px solid rgba(0,212,255,0.25);
+  margin-bottom:0.8vh;
+}
+.slide__person-n{font-size:0.92vw;font-weight:700;line-height:1.2}
+.slide__person-r{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.6vw;color:var(--accent);
+  text-transform:uppercase;letter-spacing:0.1em;margin-top:0.3vh;
+}
+.slide__person-b{font-size:0.72vw;color:var(--text-dim);margin-top:0.5vh;line-height:1.35}
+/* Use of proceeds */
+.slide__uses{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:1.6vh 2.4vw;margin-top:2.6vh;max-width:38vw;
+}
+.slide__use{font-size:0.95vw;color:var(--text-dim);line-height:1.4;padding-left:1.1vw;position:relative}
+.slide__use::before{
+  content:'';position:absolute;left:0;top:0.55em;
+  width:0.35vw;height:0.35vw;border-radius:50%;
+  background:var(--accent);opacity:0.75;
+}
+.slide__use strong{color:var(--text);font-weight:600}
 /* Price ladder (the business model slide) */
 .slide__tiers{display:flex;gap:1.5vw;margin-top:2.6vh;max-width:38vw}
 .slide__tier{
@@ -389,6 +417,15 @@ body.is-wall #brain-canvas{opacity:0.1}
   .slide__tier-name{font-size:11.5px}
   .slide__tier-when{font-size:8.5px}
   .slide__tier-note{font-size:10px}
+  .slide__team{flex-wrap:wrap;gap:12px 14px;max-width:none}
+  .slide__person{flex:0 0 30%}
+  .slide__person img{width:44px;height:44px}
+  .slide__person-n{font-size:11.5px}
+  .slide__person-r{font-size:8.5px}
+  .slide__person-b{font-size:10px}
+  .slide__uses{grid-template-columns:1fr;gap:9px;max-width:none}
+  .slide__use{font-size:11.5px;padding-left:13px}
+  .slide__use::before{width:4px;height:4px}
   .slide__fact-title{font-size:16px}
   .slide__fact-title--lead{font-size:19px}
   .slide__fact-detail{font-size:11.5px}
@@ -435,6 +472,13 @@ body.is-wall #brain-canvas{opacity:0.1}
   .slide__tier-price{font-size:16px}
   .slide__tier-name{font-size:10.5px}
   .slide__tier-note{font-size:9.5px}
+  .slide__team{gap:9px}
+  .slide__person img{width:34px;height:34px;margin-bottom:5px}
+  .slide__person-n{font-size:10px}
+  .slide__person-r{font-size:7.5px}
+  .slide__person-b{font-size:8.5px}
+  .slide__uses{gap:7px 14px;margin-top:12px}
+  .slide__use{font-size:9.5px}
 }
 /* Landscape phone has the width even though it lacks the height, so the
    single-column facts of portrait would overflow: put them back side by side. */
@@ -633,8 +677,81 @@ body.is-wall #brain-canvas{opacity:0.1}
     <div class="slide__proof">Spun out of <strong>Massachusetts General Hospital</strong> &amp; <strong>Harvard Medical School</strong>, where the research was funded by <strong>DARPA</strong>.</div>
   </div>
 
-  <!-- Slide 3: The platform -->
-  <div class="slide slide--video" id="s5">
+  <!-- The team -->
+  <div class="slide" id="s5">
+    <div class="slide__heading slide__heading--tight">
+      <span class="slide__heading-line">Built by the people who</span>
+      <span class="slide__heading-line">published the method.</span>
+    </div>
+    <div class="slide__team">
+      <div class="slide__person">
+        <img src="./assets/team/noam_peled.jpg" alt="">
+        <div class="slide__person-n">Noam Peled, PhD</div>
+        <div class="slide__person-r">CEO</div>
+        <div class="slide__person-b">Computational neuroscientist. Martinos Center, MGH &amp; Harvard Medical School.</div>
+      </div>
+      <div class="slide__person">
+        <img src="./assets/team/avi_yaron.jpg" alt="">
+        <div class="slide__person-n">Avi Yaron</div>
+        <div class="slide__person-r">Exec Chairman</div>
+        <div class="slide__person-b">Neurotech pioneer and serial entrepreneur. Co-founder, Serendipity Impact VC.</div>
+      </div>
+      <div class="slide__person">
+        <img src="./assets/team/adam_lerner.jpg" alt="">
+        <div class="slide__person-n">Adam Lerner, JD</div>
+        <div class="slide__person-r">COO &amp; Legal</div>
+        <div class="slide__person-b">Registered USPTO patent attorney. Former VP Legal &amp; IP, life sciences.</div>
+      </div>
+      <div class="slide__person">
+        <img src="./assets/team/dekel_shapira.png" alt="">
+        <div class="slide__person-n">Dekel Shapira, PhD</div>
+        <div class="slide__person-r">VP R&amp;D</div>
+        <div class="slide__person-b">Platform engineering and healthcare AI.</div>
+      </div>
+      <div class="slide__person">
+        <img src="./assets/team/alex-rockhill.jpeg" alt="">
+        <div class="slide__person-n">Alex Rockhill, PhD</div>
+        <div class="slide__person-r">Research Scientist</div>
+        <div class="slide__person-b">Invasive EEG and network-guided neuromodulation.</div>
+      </div>
+    </div>
+    <div class="slide__proof">Advised by <strong>Steven Stufflebeam, MD</strong>, co-founder and Medical Director of the Martinos Center at MGH, and <strong>Howard Weiner, MD</strong>, Chief of Neurosurgery at Texas Children's Hospital.</div>
+  </div>
+
+  <!-- The ask -->
+  <div class="slide" id="s6">
+    <div class="slide__heading slide__heading--tight">
+      <span class="slide__heading-line">Raising an $8M seed,</span>
+      <span class="slide__heading-line">on a lean post-clearance plan.</span>
+    </div>
+    <div class="slide__uses">
+      <div class="slide__use"><strong>Commercial launch</strong> and the first sales engine</div>
+      <div class="slide__use"><strong>V2 revenue</strong> begins</div>
+      <div class="slide__use"><strong>Two further 510(k) clearances</strong></div>
+      <div class="slide__use">Hiring a <strong>VP Sales</strong>, and R&amp;D expansion</div>
+    </div>
+    <div class="slide__stats">
+      <div>
+        <div class="slide__stat-num">$2.425M</div>
+        <div class="slide__stat-label">Raised to date<br>across 14 SAFEs</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">$17.5M</div>
+        <div class="slide__stat-label">Series A modelled<br>for Q1 2029</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">FY2030</div>
+        <div class="slide__stat-label">EBITDA<br>break-even</div>
+      </div>
+    </div>
+    <!-- Deliberately NOT here: MEGIN's $364K (megin is internal-only MNPI), the
+         DARPA $1M as a capital line (darpa_research_heritage retires exactly that),
+         and the open bridge SAFE (capital_raised marks it internal). -->
+    <div class="slide__proof">End of seed: V2 launched, ~<strong>20 paying sites</strong>.<span class="slide__proof-line">Spun out of MGH &amp; Harvard Medical School, where the founding research was DARPA-funded.</span></div>
+  </div>
+
+  <!-- The platform -->
+  <div class="slide slide--video" id="s7">
     <div class="slide__video-frame">
       <video class="slide__video" id="demo-video" controls playsinline preload="none"
              poster="./assets/video/cn-suite-demo-crop-poster.jpg"
@@ -653,6 +770,8 @@ body.is-wall #brain-canvas{opacity:0.1}
     <div class="dot" data-dot="3"></div>
     <div class="dot" data-dot="4"></div>
     <div class="dot" data-dot="5"></div>
+    <div class="dot" data-dot="6"></div>
+    <div class="dot" data-dot="7"></div>
   </div>
   <div id="hint">Click to continue</div>
 </div>
@@ -673,13 +792,17 @@ body.is-wall #brain-canvas{opacity:0.1}
     { mode: 'targets', cortex: true, seeg: true },    /* What we do       */
     { mode: 'targets', cortex: true },                /* Business model   */
     { mode: 'treat',   cortex: true },                /* Where we are     */
+    { mode: 'targets', cortex: true },                /* The team         */
+    { mode: 'treat',   cortex: true },                /* The ask          */
     { mode: 'treat',   cortex: true, video: true },   /* The platform     */
   ];
   const NUM_SLIDES = SLIDES.length;
 
   /* Shareable deep links: /for-investors.html#demo, or #1 .. #4 */
-  const SLUGS = ['problem', 'today', 'solution', 'model', 'traction', 'demo'];
+  const SLUGS = ['problem', 'today', 'solution', 'model', 'traction', 'team', 'ask', 'demo'];
   const HINTS = [
+    'Click to continue',
+    'Click to continue',
     'Click to continue',
     'Click to continue',
     'Click to continue',
