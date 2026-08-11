@@ -71,6 +71,10 @@ const SUB_GRAY = {
     const CASCADE = 8;                       // how many channels follow the lead
     const SAMPLE_HZ = 85;
     const FIRE_EVERY = 1.8;                  // seconds between bursts
+    /* opts.drivers draws the causality: an arrow from the driver to each
+       follower as its spike lands, with the propagation delay. Off by default,
+       and deliberately off on the raw wall, where being unreadable is the point. */
+    const SHOW_DRIVERS = !!opts.drivers;
 
     const chans = LABELS.map((label, i) => {
       const follower = i !== LEAD;
@@ -83,6 +87,7 @@ const SUB_GRAY = {
         lag: cascade ? Math.round(11 + 6 * rank) : 0,
         atten: cascade ? 0.8 * Math.pow(0.82, rank) : 0,
         buf: new Float32Array(LEN), w: 0,
+        firedK: -1e9,
         freq: 3 + Math.random() * 8,
         freq2: 12 + Math.random() * 20,
         amp: 0.28 + Math.random() * 0.22,
@@ -101,7 +106,7 @@ const SUB_GRAY = {
       for (const c of chans) {
         if (c.countdown > 0) {
           c.countdown--;
-          if (c.countdown === 0) { c.decay = 0.95 * c.atten; c.countdown = -1; }
+          if (c.countdown === 0) { c.decay = 0.95 * c.atten; c.countdown = -1; c.firedK = k; }
         }
         const base = Math.sin(t * c.freq + c.phase) * c.amp * (c.follower ? 0.8 : 1);
         const fast = Math.sin(t * c.freq2 + c.phase * 2.3) * c.amp * 0.3;
@@ -127,6 +132,7 @@ const SUB_GRAY = {
       if (fireT >= FIRE_EVERY) {
         fireT = 0;
         chans[LEAD].decay = 0.95;
+        chans[LEAD].firedK = k;
         for (const c of chans) if (c.cascade) c.countdown = c.lag;
       }
       acc += dt;
@@ -172,6 +178,13 @@ const SUB_GRAY = {
           ctx.stroke();
         }
 
+        if (SHOW_DRIVERS && !c.follower) {
+          /* Band the driver's row rather than tagging it in the gutter, which is
+             only ~40px wide and would put the text under the traces. */
+          ctx.fillStyle = 'rgba(239,68,68,' + (0.07 * alpha).toFixed(3) + ')';
+          ctx.fillRect(labelW, rowH * ci, w - labelW, rowH);
+        }
+
         /* Trace, then a wider low-alpha pass over it for the glow */
         for (const pass of [0, 1]) {
           const glow = pass === 1;
@@ -190,6 +203,61 @@ const SUB_GRAY = {
           ctx.stroke();
         }
       }
+
+      if (!SHOW_DRIVERS) return;
+      /* Chip at the right edge of the driver's row, on a dark backing so it
+         stays legible where the trace runs under it */
+      {
+        const yc = rowH * LEAD + rowH * 0.5;
+        const label = 'DRIVER';
+        const tw = ctx.measureText(label).width;
+        ctx.fillStyle = 'rgba(10,12,20,' + (0.8 * alpha).toFixed(3) + ')';
+        ctx.fillRect(w - tw - 12, yc - 8, tw + 10, 16);
+        ctx.textAlign = 'right';
+        ctx.fillStyle = 'rgba(239,68,68,' + (0.95 * alpha).toFixed(3) + ')';
+        ctx.fillText(label, w - 5, yc);
+        ctx.textAlign = 'left';
+      }
+
+      /* Causality overlay: while a follower's spike is still on screen, connect
+         it back to the driver's spike and label the delay. The arrow tracks the
+         spike as the trace scrolls, so it reads as propagation rather than
+         decoration. */
+      const leadY = rowH * LEAD + rowH * 0.5;
+      ctx.setLineDash([3, 3]);
+      for (let ci = 0; ci < chans.length; ci++) {
+        const c = chans[ci];
+        if (!c.cascade) continue;
+        const age = k - c.firedK;
+        if (age < 0 || age > samples) continue;
+        const x = labelW + ((samples - age) / samples) * traceW;
+        const y = rowH * ci + rowH * 0.5;
+        const fade = (1 - age / samples) * alpha;
+        const dir = y > leadY ? 1 : -1;
+
+        ctx.strokeStyle = 'rgba(255,160,60,' + (0.55 * fade).toFixed(3) + ')';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(x, leadY + dir * rowH * 0.3);
+        ctx.lineTo(x, y - dir * rowH * 0.3);
+        ctx.stroke();
+
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(255,160,60,' + (0.8 * fade).toFixed(3) + ')';
+        ctx.beginPath();
+        ctx.moveTo(x, y - dir * rowH * 0.18);
+        ctx.lineTo(x - 3.5, y - dir * rowH * 0.34);
+        ctx.lineTo(x + 3.5, y - dir * rowH * 0.34);
+        ctx.closePath();
+        ctx.fill();
+        ctx.setLineDash([3, 3]);
+
+        if (rowH > 22) {
+          ctx.fillStyle = 'rgba(255,160,60,' + (0.75 * fade).toFixed(3) + ')';
+          ctx.fillText('+' + Math.round((c.lag / SAMPLE_HZ) * 1000) + 'ms', x + 5, y - dir * rowH * 0.3);
+        }
+      }
+      ctx.setLineDash([]);
     }
 
     return { advance, draw };
