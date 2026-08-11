@@ -747,6 +747,7 @@ body.is-wall #brain-canvas{opacity:0.1}
   }
   const seeg = window.FINDBrain && window.FINDBrain.createSeeg({
     canvas: document.getElementById('seeg-canvas'),
+    drivers: true,   /* show the red channel driving the others */
   });
   /* 20 channels rather than 6: the density IS the argument on #today */
   const seegWall = window.FINDBrain && window.FINDBrain.createSeeg({
