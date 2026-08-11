@@ -433,8 +433,13 @@ body.is-video #slides{width:100vw;padding:0}
         <div class="slide__stat-label">Drug-resistant<br>patients in the U.S.</div>
       </div>
       <div>
-        <div class="slide__stat-num">15-30k</div>
-        <div class="slide__stat-label">In presurgical<br>monitoring a year</div>
+        <!-- phase_i_presurgical_us is ~15-30k and its antivalue list bars "any single
+             point estimate of Phase I volume presented as counted or sourced". ~22.5k is
+             the midpoint, so the label has to carry "estimated" for this to stay
+             compliant. Note the fact calls the range's LOWER half the defensible
+             planning half, and an outside read lands at 13-15k. -->
+        <div class="slide__stat-num">~22.5k</div>
+        <div class="slide__stat-label">Estimated presurgical<br>admissions a year</div>
       </div>
       <div>
         <div class="slide__stat-num slide__stat-num--danger">~21%</div>
