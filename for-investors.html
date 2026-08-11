@@ -249,6 +249,23 @@ body.is-video #slides{width:100vw;padding:0}
   font-weight:600;
   white-space:nowrap;
 }
+/* Raw sEEG wall (#today): the brain drops away and the unread traces take
+   its place, which is the point of that slide - this is what a neurologist
+   scrolls through by hand. */
+#seeg-wall{
+  position:fixed;top:0;right:0;
+  width:50vw;height:100vh;height:100dvh;
+  z-index:5;
+  padding:13vh 4vw 11vh;
+  opacity:0;
+  transition:opacity 0.6s ease;
+  pointer-events:none;
+}
+body.is-wall #seeg-wall{opacity:1}
+/* Wrapper carries the padding: on a canvas, clientWidth includes padding and
+   the bitmap would be scaled against the wrong box. */
+#seeg-wall canvas{display:block;width:100%;height:100%}
+body.is-wall #brain-canvas{opacity:0.1}
 /* Pipeline steps (the problem slide) */
 .slide__steps{
   display:grid;grid-template-columns:1fr 1fr;
@@ -338,6 +355,9 @@ body.is-video #slides{width:100vw;padding:0}
 @media (max-width:900px),(max-aspect-ratio:1/1){
   #brain-canvas{opacity:0.5}
   body.is-particles #brain-canvas{opacity:1}   /* 2D field is already subtle */
+  /* No side column on a phone: the wall sits behind the text scrim */
+  #seeg-wall{width:100vw;padding:12vh 6vw 12vh}
+  body.is-wall #seeg-wall{opacity:0.55}
   #logo{height:34px;top:24px}
   #slides{
     width:100vw;padding:88px 8vw 84px;   /* logo band above, dots below */
@@ -430,6 +450,9 @@ body.is-video #slides{width:100vw;padding:0}
 <canvas id="brain-canvas"></canvas>
 
 <img id="logo" src="./assets/White_500px.png" alt="FIND Neuro">
+
+<!-- The wall of raw traces shown on #today, over an almost-transparent brain -->
+<div id="seeg-wall"><canvas id="seeg-wall-canvas" aria-hidden="true"></canvas></div>
 
 <div id="slides">
   <!-- Slide 0: The Problem -->
@@ -646,7 +669,7 @@ body.is-video #slides{width:100vw;padding:0}
      'video' hands the whole screen to the player. */
   const SLIDES = [
     { mode: 'chaos',   cortex: false },               /* The problem      */
-    { mode: 'chaos',   cortex: false },               /* Today's pipeline */
+    { mode: 'chaos',   cortex: false, wall: true },   /* Today's pipeline */
     { mode: 'targets', cortex: true, seeg: true },    /* What we do       */
     { mode: 'targets', cortex: true },                /* Business model   */
     { mode: 'treat',   cortex: true },                /* Where we are     */
@@ -725,6 +748,14 @@ body.is-video #slides{width:100vw;padding:0}
   const seeg = window.FINDBrain && window.FINDBrain.createSeeg({
     canvas: document.getElementById('seeg-canvas'),
   });
+  /* 20 channels rather than 6: the density IS the argument on #today */
+  const seegWall = window.FINDBrain && window.FINDBrain.createSeeg({
+    canvas: document.getElementById('seeg-wall-canvas'),
+    labels: ['LA1','LA2','LA3','LA4','LA5','LA6','LH1','LH2','LH3','LH4',
+             'LTP1','LTP2','LTP3','RA1','RA2','RA3','RH1','RH2','RTP1','RTP2'],
+    lead: 7,
+  });
+  let wallAlpha = 0, wallDrawn = false;
 
   const dots = Array.from(document.querySelectorAll('.dot'));
   const hint = document.getElementById('hint');
@@ -777,6 +808,7 @@ body.is-video #slides{width:100vw;padding:0}
        press - no autoplay - but leaving the slide stops it. */
     videoSlide = !!cfg.video;
     document.body.classList.toggle('is-video', videoSlide);
+    document.body.classList.toggle('is-wall', !!cfg.wall);
 
     /* Warm the file one slide early so the player does not stall on open */
     if (video && slideIdx === VIDEO_SLIDE - 1 && video.preload !== 'auto') {
@@ -832,6 +864,20 @@ body.is-video #slides{width:100vw;padding:0}
     requestAnimationFrame(frame);
     const dt = Math.min((now - lastFrame) / 1000, 0.1);
     lastFrame = now;
+
+    /* Trace wall only runs on #today */
+    if (seegWall) {
+      const want = (slideIdx >= 0 && SLIDES[slideIdx].wall) ? 1 : 0;
+      wallAlpha += (want - wallAlpha) * Math.min(1, dt * 4);
+      if (wallAlpha > 0.01) {
+        seegWall.advance(dt);
+        seegWall.draw(wallAlpha);
+        wallDrawn = true;
+      } else if (wallDrawn) {
+        seegWall.draw(0);
+        wallDrawn = false;
+      }
+    }
 
     /* sEEG panel only runs while its slide is up */
     if (seeg) {

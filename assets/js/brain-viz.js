@@ -63,21 +63,25 @@ const SUB_GRAY = {
     const ctx = el.getContext('2d');
     if (!ctx) return null;
 
-    const LABELS = ['LA1', 'LA2', 'LH1', 'RH1', 'RA1', 'RA2'];
+    /* Default is the six-channel panel. Pass opts.labels for a dense wall - the
+       lag and attenuation curves are generated, so any channel count works. */
+    const LABELS = opts.labels || ['LA1', 'LA2', 'LH1', 'RH1', 'RA1', 'RA2'];
     const LEN = 300;
-    const LEAD = 2;                          // index of the leading channel
-    const LAGS = [11, 17, 24, 32, 41];       // samples behind the lead
-    const ATTEN = [0.8, 0.66, 0.54, 0.42, 0.32];
+    const LEAD = opts.lead != null ? opts.lead : 2;   // index of the leading channel
+    const CASCADE = 8;                       // how many channels follow the lead
     const SAMPLE_HZ = 85;
     const FIRE_EVERY = 1.8;                  // seconds between bursts
 
     const chans = LABELS.map((label, i) => {
       const follower = i !== LEAD;
       const rank = follower ? ((i - LEAD + LABELS.length) % LABELS.length) - 1 : -1;
+      /* Beyond the cascade the rest are bystanders: quiet background and their
+         own spontaneous spikes, which is what makes a real wall hard to read. */
+      const cascade = follower && rank < CASCADE;
       return {
-        label, follower,
-        lag: follower ? LAGS[rank] : 0,
-        atten: follower ? ATTEN[rank] : 1,
+        label, follower, cascade,
+        lag: cascade ? Math.round(11 + 6 * rank) : 0,
+        atten: cascade ? 0.8 * Math.pow(0.82, rank) : 0,
         buf: new Float32Array(LEN), w: 0,
         freq: 3 + Math.random() * 8,
         freq2: 12 + Math.random() * 20,
@@ -123,7 +127,7 @@ const SUB_GRAY = {
       if (fireT >= FIRE_EVERY) {
         fireT = 0;
         chans[LEAD].decay = 0.95;
-        for (const c of chans) if (c.follower) c.countdown = c.lag;
+        for (const c of chans) if (c.cascade) c.countdown = c.lag;
       }
       acc += dt;
       const step = 1 / SAMPLE_HZ;
