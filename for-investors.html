@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIND Neuro - Investor Deck</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; base-uri 'self'; object-src 'none'; upgrade-insecure-requests;">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0c14;
+  --text:#e8eaf0;
+  --text-dim:rgba(232,234,240,0.55);
+  --accent:#00d4ff;
+  --danger:#ff4d4d;
+}
+html,body{
+  width:100vw;height:100vh;overflow:hidden;
+  /* dvh tracks the visible viewport as mobile browser chrome shows and hides;
+     100vh is the taller "URL bar retracted" height and clips the bottom. */
+  height:100dvh;
+  background:var(--bg);color:var(--text);
+  font-family:'Inter',system-ui,sans-serif;
+  cursor:pointer;
+  -webkit-user-select:none;user-select:none;
+}
+#brain-canvas{
+  position:fixed;top:0;left:0;
+  width:100vw;height:100vh;height:100dvh;
+  z-index:1;
+  transition:opacity 0.5s ease;
+}
+/* The video slide hands the whole screen to the player: no brain, no text,
+   no logo, just the dots. */
+body.is-video #brain-canvas{opacity:0}
+body.is-video #logo{opacity:0}
+body.is-video #slides{width:100vw;padding:0}
+#logo{
+  position:fixed;top:5vh;left:6vw;z-index:20;
+  height:7vh;
+  transition:opacity 0.4s ease;
+}
+#slides{
+  position:fixed;top:0;left:0;
+  width:50vw;height:100vh;height:100dvh;
+  z-index:10;
+  display:flex;align-items:center;justify-content:center;
+  /* Top band is reserved for the logo, bottom for the dots: content centres
+     between them, so a tall slide can never ride up under the wordmark. */
+  padding:15vh 6vw 11vh;
+}
+.slide{
+  position:absolute;
+  opacity:0;
+  transform:translateY(30px);
+  transition:opacity 0.7s ease,transform 0.7s ease;
+  width:calc(100% - 12vw);
+  pointer-events:none;
+}
+.slide.active{
+  opacity:1;
+  transform:translateY(0);
+}
+.slide.exit{
+  opacity:0;
+  transform:translateY(-30px);
+}
+.slide__heading{
+  font-weight:800;
+  font-size:3.2vw;
+  line-height:1.15;
+  letter-spacing:-0.03em;
+  margin-bottom:2vh;
+}
+/* Three sentences instead of two, so it needs to sit a little smaller */
+.slide__heading--tight{
+  font-size:2.6vw;
+}
+/* Space between sentences, but not between the wrapped lines of one */
+.slide__heading-line{
+  display:block;
+}
+.slide__heading-line + .slide__heading-line{
+  margin-top:1.4vh;
+}
+.slide__sub{
+  font-size:1.4vw;
+  color:var(--text-dim);
+  line-height:1.6;
+  max-width:36vw;
+}
+.slide__find{
+  font-weight:800;
+  font-size:4.5vw;
+  line-height:1.15;
+  letter-spacing:-0.03em;
+}
+.slide__find-rest{
+  color:var(--text-dim);
+}
+.slide__find--accent{
+  background:linear-gradient(135deg,var(--accent),#38bdf8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.slide__find--accent .slide__find-rest{
+  background:linear-gradient(135deg,var(--accent),#38bdf8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.slide__outcome{
+  margin-top:3vh;
+  padding:1.5vh 1.5vw;
+  background:rgba(0,212,255,0.04);
+  border-left:2px solid var(--accent);
+  border-radius:0 8px 8px 0;
+  font-weight:600;
+  font-size:1.35vw;
+  line-height:1.45;
+}
+.slide__outcome-label{
+  display:block;
+  font-family:'JetBrains Mono',monospace;
+  font-weight:400;
+  font-size:0.65vw;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  margin-bottom:0.4vh;
+}
+/* All four figures stay on one line - nowrap, with the sizes and labels
+   trimmed to fit the 38vw column rather than letting the last one drop. */
+.slide__stats{
+  display:flex;flex-wrap:nowrap;gap:0 1.9vw;margin-top:3vh;
+}
+.slide__stat-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.95vw;font-weight:700;color:var(--accent);
+  line-height:1.1;
+  white-space:nowrap;
+}
+.slide__stat-num--danger{
+  color:var(--danger);
+}
+.slide__award{
+  display:inline-block;
+  margin-top:0.5vh;
+  padding:0.9vh 1.3vw;
+  border:1px solid rgba(0,212,255,0.4);
+  background:rgba(0,212,255,0.08);
+  border-radius:999px;
+  font-size:1.05vw;
+  font-weight:600;
+  color:var(--accent);
+}
+.slide__award-mark{
+  font-family:'JetBrains Mono',monospace;
+  font-weight:400;
+  font-size:0.75vw;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  opacity:0.8;
+  margin-right:0.5vw;
+}
+.slide__facts{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2.4vh 2.6vw;margin-top:2.6vh;max-width:38vw;
+}
+.slide__fact-title{
+  font-size:1.55vw;font-weight:700;color:var(--accent);
+  line-height:1.15;letter-spacing:-0.01em;
+}
+.slide__fact-title--lead{
+  font-size:1.9vw;
+}
+.slide__fact-detail{
+  font-size:0.95vw;color:var(--text-dim);
+  margin-top:0.6vh;line-height:1.45;
+}
+.slide__fact-detail strong{
+  color:var(--text);
+  font-weight:600;
+}
+.slide__fact-conj{
+  color:var(--text-dim);
+  font-weight:400;
+}
+.slide__fact-names{
+  display:block;
+  color:var(--text);
+  font-weight:600;
+  font-size:0.9vw;
+  margin-top:0.7vh;
+  line-height:1.4;
+}
+.slide__stat-label{
+  font-size:0.75vw;color:var(--text-dim);margin-top:0.5vh;line-height:1.4;
+}
+.slide__seeg{
+  display:block;
+  width:100%;
+  height:17vh;
+  margin-top:3vh;
+}
+.slide--video{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.slide__video-frame{
+  display:inline-block;
+  line-height:0;
+  border:1px solid rgba(0,212,255,0.16);
+  border-radius:10px;
+  overflow:hidden;
+  background:#000;
+  box-shadow:0 24px 90px rgba(0,0,0,0.6);
+}
+.slide__video{
+  display:block;
+  height:84vh;height:84dvh;
+  width:auto;
+  max-width:94vw;   /* 1904x918 after the crop, so width binds on 16:9 */
+  pointer-events:auto;
+}
+.slide__proof{
+  font-size:0.95vw;
+  color:var(--text-dim);
+  margin-top:3vh;
+  max-width:36vw;
+  line-height:1.5;
+  font-style:italic;
+}
+.slide__proof strong{
+  color:var(--text);
+  font-weight:600;
+}
+/* Pipeline steps (the problem slide) */
+.slide__steps{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2.2vh 2.4vw;margin-top:2.6vh;max-width:38vw;
+}
+.slide__step-n{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7vw;color:var(--accent);
+  letter-spacing:0.14em;
+}
+.slide__step-t{
+  font-size:1.2vw;font-weight:700;
+  line-height:1.2;margin-top:0.4vh;
+}
+.slide__step-when{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.65vw;color:var(--accent);
+  opacity:0.75;margin-top:0.3vh;
+}
+.slide__step-d{
+  font-size:0.82vw;color:var(--text-dim);
+  margin-top:0.5vh;line-height:1.45;
+}
+.slide__step-flag{
+  display:block;margin-top:0.6vh;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.6vw;color:var(--danger);
+  text-transform:uppercase;letter-spacing:0.12em;
+}
+/* Price ladder (the business model slide) */
+.slide__tiers{display:flex;gap:1.5vw;margin-top:2.6vh;max-width:38vw}
+.slide__tier{
+  flex:1;
+  border-left:2px solid rgba(0,212,255,0.3);
+  padding-left:0.9vw;
+}
+.slide__tier-price{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.8vw;font-weight:700;color:var(--accent);
+  line-height:1.1;
+}
+.slide__tier-name{font-size:0.95vw;font-weight:600;margin-top:0.5vh;line-height:1.25}
+.slide__tier-when{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.62vw;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:0.1em;margin-top:0.4vh;
+}
+.slide__tier-note{font-size:0.78vw;color:var(--text-dim);margin-top:0.7vh;line-height:1.4}
+.slide__tier-note strong{color:var(--text);font-weight:600}
+/* Progress dots + hint */
+#nav{
+  position:fixed;left:6vw;bottom:5vh;z-index:20;
+  display:flex;align-items:center;gap:1.2vw;
+}
+#dots{display:flex;gap:0.7vw}
+.dot{
+  cursor:pointer;
+  width:0.55vw;height:0.55vw;min-width:6px;min-height:6px;
+  border-radius:50%;
+  background:rgba(232,234,240,0.2);
+  transition:background 0.4s ease,transform 0.4s ease;
+}
+.dot.on{background:var(--accent);transform:scale(1.3)}
+#hint{
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7vw;
+  color:var(--text-dim);
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  opacity:0.7;
+  animation:hintPulse 2.6s ease-in-out infinite;
+  transition:opacity 0.5s ease;
+}
+/* animation:none matters - a running animation outranks the opacity here */
+#hint.gone{opacity:0;animation:none}
+@keyframes hintPulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
+/* Global fade overlay */
+#fade{
+  position:fixed;inset:0;z-index:100;
+  background:var(--bg);
+  opacity:1;
+  transition:opacity 0.35s ease;
+  pointer-events:none;
+}
+#fade.hidden{opacity:0}
+/* Narrow / portrait screens: brain fills the screen, text overlays it */
+@media (max-width:900px),(max-aspect-ratio:1/1){
+  #brain-canvas{opacity:0.5}
+  body.is-particles #brain-canvas{opacity:1}   /* 2D field is already subtle */
+  #logo{height:34px;top:24px}
+  #slides{
+    width:100vw;padding:88px 8vw 84px;   /* logo band above, dots below */
+    background:linear-gradient(to right,rgba(10,12,20,0.92),rgba(10,12,20,0.6));
+  }
+  .slide{width:calc(100% - 16vw)}
+  .slide__heading{font-size:30px}
+  .slide__heading--tight{font-size:23px}
+  .slide__sub{font-size:15px;max-width:none}
+  .slide__find{font-size:38px}
+  .slide__outcome{font-size:15px;padding:12px 14px}
+  .slide__outcome-label{font-size:9px}
+  .slide__stats{flex-wrap:wrap;gap:16px 22px}   /* narrow screens may wrap */
+  .slide__stat-num{font-size:24px}
+  .slide__stat-label{font-size:11px}
+  .slide__award{font-size:12px;padding:6px 12px;margin-top:2px}
+  .slide__award-mark{font-size:9px;margin-right:6px}
+  /* Two 155px columns cannot hold these titles and the hospital list */
+  .slide__facts{grid-template-columns:1fr;gap:14px;max-width:none}
+  .slide__steps{grid-template-columns:1fr 1fr;gap:14px 16px;max-width:none}
+  .slide__step-n{font-size:9px}
+  .slide__step-t{font-size:13px}
+  .slide__step-when{font-size:9px}
+  .slide__step-d{font-size:10.5px}
+  .slide__step-flag{font-size:8.5px}
+  .slide__tiers{gap:12px;max-width:none}
+  .slide__tier{padding-left:9px}
+  .slide__tier-price{font-size:19px}
+  .slide__tier-name{font-size:11.5px}
+  .slide__tier-when{font-size:8.5px}
+  .slide__tier-note{font-size:10px}
+  .slide__fact-title{font-size:16px}
+  .slide__fact-title--lead{font-size:19px}
+  .slide__fact-detail{font-size:11.5px}
+  .slide__fact-names{font-size:11px}
+  .slide__seeg{height:90px;margin-top:18px}
+  .slide__proof{font-size:12px}
+  #nav{left:8vw;gap:14px;bottom:26px}
+  #hint{font-size:10px}
+  /* 6px dots are far below a usable tap target */
+  #dots{gap:14px}
+  .dot{width:11px;height:11px;min-width:11px;min-height:11px}
+}
+
+/* Landscape phone: ~390px of height total, so the logo and dot bands and the
+   type all have to give or slide 3 simply does not fit. */
+@media (max-height:520px){
+  #logo{height:24px;top:12px}
+  #slides{padding:42px 6vw 38px}
+  #nav{bottom:12px;left:6vw}
+  .slide__heading{font-size:20px}
+  .slide__heading-line + .slide__heading-line{margin-top:5px}
+  .slide__find{font-size:26px}
+  .slide__sub{font-size:12.5px}
+  .slide__outcome{font-size:12.5px;padding:8px 10px;margin-top:12px}
+  .slide__stats{gap:8px 16px;margin-top:12px}
+  .slide__stat-num{font-size:17px}
+  .slide__stat-label{font-size:9px}
+  .slide__facts{gap:9px;margin-top:12px}
+  .slide__fact-title{font-size:13px}
+  .slide__fact-detail{font-size:10px}
+  .slide__seeg{height:54px;margin-top:10px}
+  .slide__proof{font-size:9.5px;margin-top:12px}
+  .slide__heading--tight{font-size:17px}
+  .slide__fact-title--lead{font-size:14px}
+  .slide__fact-names{font-size:9.5px}
+  .slide__award{font-size:10px;padding:4px 9px}
+  .slide__steps{gap:9px 14px;margin-top:12px}
+  .slide__step-t{font-size:11.5px}
+  .slide__step-d{font-size:9.5px}
+  .slide__step-flag{font-size:8px}
+  .slide__tiers{gap:10px;margin-top:12px}
+  .slide__tier-price{font-size:16px}
+  .slide__tier-name{font-size:10.5px}
+  .slide__tier-note{font-size:9.5px}
+}
+/* Landscape phone has the width even though it lacks the height, so the
+   single-column facts of portrait would overflow: put them back side by side. */
+@media (max-height:520px) and (min-width:600px){
+  .slide__facts{grid-template-columns:1fr 1fr;gap:9px 16px}
+}
+</style>
+</head>
+<body>
+
+<div id="fade"></div>
+
+<canvas id="brain-canvas"></canvas>
+
+<img id="logo" src="./assets/White_500px.png" alt="FIND Neuro">
+
+<div id="slides">
+  <!-- Slide 0: The Problem -->
+  <div class="slide" id="s0">
+    <div class="slide__heading slide__heading--tight">
+      <span class="slide__heading-line">Epilepsy surgery saves lives.</span>
+      <span class="slide__heading-line">Too often, it never happens.</span>
+      <span class="slide__heading-line">When it does, it fails to stop the seizures half the time.</span>
+    </div>
+    <div class="slide__stats">
+      <div>
+        <div class="slide__stat-num">~1M</div>
+        <div class="slide__stat-label">Drug-resistant<br>patients in the U.S.</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">~50k</div>
+        <div class="slide__stat-label">New cases<br>a year</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">~8k</div>
+        <div class="slide__stat-label">Epilepsy surgeries<br>in 2026</div>
+      </div>
+      <div>
+        <div class="slide__stat-num slide__stat-num--danger">~50%</div>
+        <div class="slide__stat-label">Success<br>rate</div>
+      </div>
+    </div>
+    <div class="slide__outcome">
+      <span class="slide__outcome-label">The question</span>
+      How do we help clinicians serve more patients, with higher confidence and better outcomes?
+    </div>
+  </div>
+
+  <!-- Slide 1: Today's pipeline -->
+  <div class="slide" id="s1">
+    <div class="slide__heading slide__heading--tight">
+      <span class="slide__heading-line">Today's pipeline is slow,</span>
+      <span class="slide__heading-line">manual, and fragmented.</span>
+    </div>
+    <div class="slide__steps">
+      <div>
+        <div class="slide__step-n">01</div>
+        <div class="slide__step-t">Implant &amp; monitor</div>
+        <div class="slide__step-when">~10 days inpatient</div>
+        <div class="slide__step-d">~100 sEEG channels implanted, then the patient waits in hospital for spontaneous seizures.</div>
+        <div class="slide__step-flag">Long, costly stay</div>
+      </div>
+      <div>
+        <div class="slide__step-n">02</div>
+        <div class="slide__step-t">Manual review</div>
+        <div class="slide__step-when">Channel by channel</div>
+        <div class="slide__step-d">A neurologist inspects every channel by eye to work out where the seizures start.</div>
+        <div class="slide__step-flag">Slow &amp; subjective</div>
+      </div>
+      <div>
+        <div class="slide__step-n">03</div>
+        <div class="slide__step-t">Discharge &amp; conference</div>
+        <div class="slide__step-when">Patient sent home</div>
+        <div class="slide__step-d">The surgical team convenes separately, later, to debate the case.</div>
+        <div class="slide__step-flag">Care fragmented</div>
+      </div>
+      <div>
+        <div class="slide__step-n">04</div>
+        <div class="slide__step-t">Recall for surgery</div>
+        <div class="slide__step-when">Weeks to months later</div>
+        <div class="slide__step-d">If surgery is indicated, the patient returns for a second, separate admission.</div>
+        <div class="slide__step-flag">Treatment delayed</div>
+      </div>
+    </div>
+    <div class="slide__outcome">
+      <span class="slide__outcome-label">The result</span>
+      Two admissions, every channel read by hand, and months between monitoring and treatment.
+    </div>
+  </div>
+
+  <!-- Slide 2: What We Do -->
+  <div class="slide" id="s2">
+    <div class="slide__find">FIND<span class="slide__find-rest"> the drivers of the seizures</span></div>
+    <div class="slide__sub" style="margin-top:2vh">We map the seizure network and tell the surgical team where to target - validated with a ~100-patient retrospective study from 7 hospitals.</div>
+    <div class="slide__outcome">
+      <span class="slide__outcome-label">The outcome</span>
+      Where to target, and what to spare.
+    </div>
+    <canvas id="seeg-canvas" class="slide__seeg" aria-hidden="true"></canvas>
+  </div>
+
+  <!-- Slide 3: Business model -->
+  <div class="slide" id="s3">
+    <div class="slide__heading slide__heading--tight">
+      <span class="slide__heading-line">Fee per surgery.</span>
+      <span class="slide__heading-line">No new reimbursement code.</span>
+    </div>
+    <div class="slide__tiers">
+      <div class="slide__tier">
+        <div class="slide__tier-price">$6.5K</div>
+        <div class="slide__tier-name">Critical Nodes</div>
+        <div class="slide__tier-when">V1 &middot; at clearance</div>
+        <div class="slide__tier-note">Paid from the OR budget. <strong>~30 hours</strong> of manual review becomes about one.</div>
+      </div>
+      <div class="slide__tier">
+        <div class="slide__tier-price">$24K</div>
+        <div class="slide__tier-name">+ EMU optimisation</div>
+        <div class="slide__tier-when">V2 &middot; Q1 2028</div>
+        <div class="slide__tier-note">Shorter monitoring stays: <strong>$31.5-45K</strong> of bed-day savings per case.</div>
+      </div>
+      <div class="slide__tier">
+        <div class="slide__tier-price">$39K</div>
+        <div class="slide__tier-name">+ Surgery simulation</div>
+        <div class="slide__tier-when">V3 &middot; Q3 2028</div>
+        <div class="slide__tier-note">Better outcomes, <strong>fewer redo</strong> surgeries.</div>
+      </div>
+    </div>
+    <div class="slide__stats">
+      <div>
+        <div class="slide__stat-num">$2.0B</div>
+        <div class="slide__stat-label">U.S. TAM<br>drug-resistant epilepsy</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">$390M</div>
+        <div class="slide__stat-label">SAM<br>U.S. epilepsy surgeries</div>
+      </div>
+      <div>
+        <div class="slide__stat-num">$39.8M</div>
+        <div class="slide__stat-label">FY2031 exit-revenue<br>metric, plan of record</div>
+      </div>
+    </div>
+    <div class="slide__proof">~<strong>84%</strong> modelled gross margin. A V2 case creates about <strong>$17.4K</strong> of hospital contribution margin under fee-for-service, so the price sits inside the value it creates. Payer ROI <strong>3.65x</strong> on V1, pending prospective validation.</div>
+  </div>
+
+  <!-- Slide 4: Where We Are -->
+  <div class="slide" id="s4">
+    <div class="slide__heading">FDA decision in days.<br>Going live this month.</div>
+    <div class="slide__award"><span class="slide__award-mark">Winner</span>2026 Harvard President's Innovation Challenge</div>
+    <div class="slide__facts">
+      <div>
+        <div class="slide__fact-title slide__fact-title--lead">FDA</div>
+        <!-- fda_status (asOf 2026-08-09) is a VERIFIED not-yet-cleared: K260563 is
+             absent from openFDA, which lists cleared devices only. Decision window
+             is founder knowledge and stales fast - re-confirm, and rewrite this the
+             day it lands. Standing check:
+             curl 'https://api.fda.gov/device/510k.json?search=k_number:K260563&limit=1' -->
+        <div class="slide__fact-detail">510(k) <strong>K260563</strong> under review on a cleared predicate. Decision expected <strong>by 18 August</strong>.</div>
+      </div>
+      <div>
+        <div class="slide__fact-title">Going Live</div>
+        <div class="slide__fact-detail">At <strong>Boston Children's</strong> and <strong>Ichilov</strong> in August 2026</div>
+      </div>
+      <div>
+        <div class="slide__fact-title">Data Access Secured</div>
+        <div class="slide__fact-detail"><strong>7</strong> centers, <strong>10+</strong> on the wait list
+          <span class="slide__fact-names"><span class="slide__fact-conj">Including</span> Massachusetts General Hospital, Boston Children's Hospital <span class="slide__fact-conj">&amp;</span> Texas Children's Hospital</span>
+        </div>
+      </div>
+      <div>
+        <div class="slide__fact-title">4 Patent Applications</div>
+        <div class="slide__fact-detail">3 FIND-owned, 1 exclusively licensed from <strong>Mass General Brigham</strong></div>
+      </div>
+    </div>
+    <div class="slide__proof">Spun out of <strong>Massachusetts General Hospital</strong> &amp; <strong>Harvard Medical School</strong>, where the research was funded by <strong>DARPA</strong>.</div>
+  </div>
+
+  <!-- Slide 3: The platform -->
+  <div class="slide slide--video" id="s5">
+    <div class="slide__video-frame">
+      <video class="slide__video" id="demo-video" controls playsinline preload="none"
+             poster="./assets/video/cn-suite-demo-crop-poster.jpg"
+             aria-label="FIND Neuro CN-Suite platform walkthrough">
+        <source src="./assets/video/cn-suite-demo-v3.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</div>
+
+<div id="nav">
+  <div id="dots">
+    <div class="dot" data-dot="0"></div>
+    <div class="dot" data-dot="1"></div>
+    <div class="dot" data-dot="2"></div>
+    <div class="dot" data-dot="3"></div>
+    <div class="dot" data-dot="4"></div>
+    <div class="dot" data-dot="5"></div>
+  </div>
+  <div id="hint">Click to continue</div>
+</div>
+
+<!-- three.js (0.59 MB) and brain_data.js (2.78 MB) are injected at runtime,
+     and only on large screens - see the loader below. These two are small. -->
+<script src="./assets/js/brain-viz.js"></script>
+<script src="./assets/js/particles.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  /* Brain state per slide. 'seeg' shows the trace panel under the text,
+     'video' hands the whole screen to the player. */
+  const SLIDES = [
+    { mode: 'chaos',   cortex: false },               /* The problem      */
+    { mode: 'chaos',   cortex: false },               /* Today's pipeline */
+    { mode: 'targets', cortex: true, seeg: true },    /* What we do       */
+    { mode: 'targets', cortex: true },                /* Business model   */
+    { mode: 'treat',   cortex: true },                /* Where we are     */
+    { mode: 'treat',   cortex: true, video: true },   /* The platform     */
+  ];
+  const NUM_SLIDES = SLIDES.length;
+
+  /* Shareable deep links: /for-investors.html#demo, or #1 .. #4 */
+  const SLUGS = ['problem', 'today', 'solution', 'model', 'traction', 'demo'];
+  const HINTS = [
+    'Click to continue',
+    'Click to continue',
+    'Click to continue',
+    'Click to continue',
+    'Click to watch our demo',
+    '',
+  ];
+  /* Nobody clicks on a phone */
+  if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+    for (let i = 0; i < HINTS.length; i++) HINTS[i] = HINTS[i].replace('Click', 'Tap');
+  }
+
+  function slideFromUrl() {
+    let raw = location.hash.replace(/^#/, '');
+    if (!raw) {
+      const q = location.search.match(/[?&]slide=([^&]+)/);
+      raw = q ? q[1] : '';
+    }
+    raw = decodeURIComponent(raw).trim().toLowerCase();
+    if (!raw) return 0;
+    const bySlug = SLUGS.indexOf(raw);
+    if (bySlug >= 0) return bySlug;
+    const n = parseInt(raw, 10);
+    if (n >= 1 && n <= NUM_SLIDES) return n - 1;
+    return 0;
+  }
+
+  /* The 3D brain costs 3.4 MB of script plus a 7.3M-iteration precompute and
+     ~109k colour floats per frame. A phone should not pay that for a backdrop
+     at half opacity behind a text scrim, so small screens get a 2D neural
+     field instead and never fetch three.js or the mesh at all. Decided once
+     at load: re-deciding on resize would mean tearing down a live scene. */
+  const BIG_SCREEN = !window.matchMedia('(max-width:900px), (max-aspect-ratio:1/1)').matches;
+  let viz = null;
+
+  function inject(src, integrity) {
+    return new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = src;
+      if (integrity) { s.integrity = integrity; s.crossOrigin = 'anonymous'; }
+      s.onload = resolve;
+      s.onerror = () => reject(new Error(src));
+      document.head.appendChild(s);
+    });
+  }
+
+  function startBrain() {
+    return inject('https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js',
+                  'sha384-9EQoUIJYrv09/oYhSxnw1VpLcfPw3BM9dE7+D/3wGUPeLLa7F9Z6OAoD+i/M6FK9')
+      .then(() => inject('./brain_data.js'))
+      .then(() => {
+        viz = window.FINDBrain && window.FINDBrain.create({
+    canvas: document.getElementById('brain-canvas'),
+    leftFraction: 0.45,
+    /* Neutral subcortex here: this deck's hues carry the story, and the
+       anatomical palette pulled attention off the critical node. The clinician
+       deck keeps the anatomical colours on purpose. */
+    subcorticalGray: true,
+  });
+        if (!viz) return;
+        viz.fit();
+        applyBrain();          /* the deck may already be past slide 1 */
+      })
+      .catch(() => { /* offline or blocked: the deck still reads fine */ });
+  }
+  const seeg = window.FINDBrain && window.FINDBrain.createSeeg({
+    canvas: document.getElementById('seeg-canvas'),
+  });
+
+  const dots = Array.from(document.querySelectorAll('.dot'));
+  const hint = document.getElementById('hint');
+  const video = document.getElementById('demo-video');
+  const VIDEO_SLIDE = SLIDES.findIndex(s => s.video);
+  let slideIdx = -1;
+  let videoSlide = false;
+  let seegAlpha = 0;
+  let seegDrawn = false;
+
+  /* Brain state for the current slide. Called from goTo, and again when the
+     brain finishes loading, since by then the deck may have moved on. */
+  function applyBrain() {
+    if (!viz || slideIdx < 0) return;
+    const cfg = SLIDES[slideIdx];
+    viz.setMode(cfg.mode);
+    viz.setCortexFaded(!!cfg.cortex);
+    viz.resetCriticalRing();
+    viz.setPaused(!!cfg.video);
+  }
+
+  function goTo(next) {
+    if (next < 0 || next >= NUM_SLIDES || next === slideIdx) return;
+    const prev = slideIdx;
+    if (prev >= 0) {
+      const prevEl = document.getElementById('s' + prev);
+      prevEl.classList.remove('active');
+      prevEl.classList.add('exit');
+    }
+    slideIdx = next;
+    setTimeout(() => {
+      const el = document.getElementById('s' + slideIdx);
+      el.classList.remove('exit');
+      el.classList.add('active');
+    }, prev >= 0 ? 220 : 0);
+
+    const cfg = SLIDES[slideIdx];
+    dots.forEach((d, i) => d.classList.toggle('on', i === slideIdx));
+    if (HINTS[slideIdx]) hint.textContent = HINTS[slideIdx];
+    hint.classList.toggle('gone', !HINTS[slideIdx]);
+
+    applyBrain();
+    if (viz) {
+      if (cfg.mode === 'chaos') {
+        for (let i = 0; i < 6; i++) setTimeout(() => viz.triggerFocusSpike(), i * 400);
+      }
+    }
+
+    /* Video slide: hand the screen over. Playback waits for a deliberate
+       press - no autoplay - but leaving the slide stops it. */
+    videoSlide = !!cfg.video;
+    document.body.classList.toggle('is-video', videoSlide);
+
+    /* Warm the file one slide early so the player does not stall on open */
+    if (video && slideIdx === VIDEO_SLIDE - 1 && video.preload !== 'auto') {
+      video.preload = 'auto';
+      video.load();
+    }
+    if (video && !videoSlide) video.pause();
+
+    /* Keep the URL on the current slide so it can be copied and shared.
+       replaceState, so this never fires hashchange back at us. Search before
+       the fragment - the other order buries the query inside the hash. */
+    try {
+      history.replaceState(null, '', location.search + '#' + SLUGS[slideIdx]);
+    } catch (e) {
+      /* file:// in some browsers - not worth breaking navigation over */
+    }
+  }
+
+  function next() { goTo(slideIdx + 1); }
+  function back() { goTo(slideIdx - 1); }
+
+  document.addEventListener('click', next);
+  dots.forEach((d, i) => d.addEventListener('click', (e) => {
+    e.stopPropagation();   /* otherwise the document handler advances too */
+    goTo(i);
+  }));
+  /* Clicks on the player drive the player, not the deck */
+  const videoFrame = document.querySelector('.slide__video-frame');
+  if (videoFrame) videoFrame.addEventListener('click', (e) => e.stopPropagation());
+
+  document.addEventListener('keydown', (e) => {
+    /* On the video slide, space belongs to the player */
+    if (videoSlide && video && (e.key === ' ' || e.key === 'k')) {
+      e.preventDefault();
+      if (video.paused) video.play().catch(() => {}); else video.pause();
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') {
+      e.preventDefault(); next();
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') {
+      e.preventDefault(); back();
+    } else if (e.key === 'Home') {
+      e.preventDefault(); goTo(0);
+    }
+  });
+
+  /* Someone editing the hash by hand, or using back/forward */
+  window.addEventListener('hashchange', () => goTo(slideFromUrl()));
+  window.addEventListener('resize', () => { if (viz) viz.fit(); });
+
+  let lastFrame = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min((now - lastFrame) / 1000, 0.1);
+    lastFrame = now;
+
+    /* sEEG panel only runs while its slide is up */
+    if (seeg) {
+      const want = (slideIdx >= 0 && SLIDES[slideIdx].seeg) ? 1 : 0;
+      seegAlpha += (want - seegAlpha) * Math.min(1, dt * 4);
+      if (seegAlpha > 0.01) {
+        seeg.advance(dt);
+        seeg.draw(seegAlpha);
+        seegDrawn = true;
+      } else if (seegDrawn) {
+        seeg.draw(0);
+        seegDrawn = false;
+      }
+    }
+
+    if (viz) viz.render();
+  }
+
+  if (BIG_SCREEN) {
+    startBrain();
+  } else if (window.FINDParticles) {
+    document.body.classList.add('is-particles');
+    window.FINDParticles.create({ canvas: document.getElementById('brain-canvas') });
+  }
+
+  setTimeout(() => document.getElementById('fade').classList.add('hidden'), 300);
+  setTimeout(() => goTo(slideFromUrl()), 400);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
