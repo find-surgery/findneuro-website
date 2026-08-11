@@ -145,11 +145,6 @@ body.is-video #slides{width:100vw;padding:0}
 .slide__stat-num--danger{
   color:var(--danger);
 }
-/* Second row of figures: smaller and white, so the cyan funnel row leads
-   and these read as the supporting detail. */
-.slide__stats--sub{margin-top:1.8vh}
-.slide__stats--sub .slide__stat-num{font-size:1.5vw;color:var(--text)}
-.slide__stats--sub .slide__stat-label{font-size:0.72vw}
 .slide__award{
   display:inline-block;
   margin-top:0.5vh;
@@ -348,9 +343,6 @@ body.is-video #slides{width:100vw;padding:0}
   .slide__stats{flex-wrap:wrap;gap:16px 22px}   /* narrow screens may wrap */
   .slide__stat-num{font-size:24px}
   .slide__stat-label{font-size:11px}
-  .slide__stats--sub{margin-top:10px}
-  .slide__stats--sub .slide__stat-num{font-size:18px}
-  .slide__stats--sub .slide__stat-label{font-size:10px}
   .slide__award{font-size:12px;padding:6px 12px;margin-top:2px}
   .slide__award-mark{font-size:9px;margin-right:6px}
   /* Two 155px columns cannot hold these titles and the hospital list */
@@ -394,9 +386,6 @@ body.is-video #slides{width:100vw;padding:0}
   .slide__stats{gap:8px 16px;margin-top:12px}
   .slide__stat-num{font-size:17px}
   .slide__stat-label{font-size:9px}
-  .slide__stats--sub{margin-top:7px}
-  .slide__stats--sub .slide__stat-num{font-size:13px}
-  .slide__stats--sub .slide__stat-label{font-size:8.5px}
   .slide__facts{gap:9px;margin-top:12px}
   .slide__fact-title{font-size:13px}
   .slide__fact-detail{font-size:10px}
@@ -448,26 +437,12 @@ body.is-video #slides{width:100vw;padding:0}
         <div class="slide__stat-label">In presurgical<br>monitoring a year</div>
       </div>
       <div>
-        <div class="slide__stat-num slide__stat-num--danger">14-29%</div>
+        <div class="slide__stat-num slide__stat-num--danger">~21%</div>
         <div class="slide__stat-label">Reach any<br>procedure</div>
       </div>
       <div>
         <div class="slide__stat-num slide__stat-num--danger">40%</div>
-        <div class="slide__stat-label">Seizure-free<br>after evaluation</div>
-      </div>
-    </div>
-    <div class="slide__stats slide__stats--sub">
-      <div>
-        <div class="slide__stat-num">2 in 3</div>
-        <div class="slide__stat-label">Surgeries decided<br>without intracranial data</div>
-      </div>
-      <div>
-        <div class="slide__stat-num">75-83%</div>
-        <div class="slide__stat-label">Of monitored patients<br>eventually treated</div>
-      </div>
-      <div>
-        <div class="slide__stat-num">54.5%</div>
-        <div class="slide__stat-label">Seizure-free among<br>those resected</div>
+        <div class="slide__stat-label">Seizure-free after<br>evaluation (Jha 2024)</div>
       </div>
     </div>
     <div class="slide__outcome">
@@ -478,12 +453,6 @@ body.is-video #slides{width:100vw;padding:0}
          phase_ii_conversion: Phase I to any procedure measured 13.6% (Ontario) - 29% (IOM).
          engel_i_phase2_pathway: 40.1%, ATTRIBUTE it, status OPEN - the paper's own
          numerator and denominator do not reconcile. -->
-    <!-- Denominators, and the facts layer treats mixing them as an antivalue:
-         40.1% is the PATHWAY yield from Phase II entry (Jha, engel_i_phase2_pathway);
-         54.5% is Engel 1a among RESECTED sEEG patients (Muthiah, denominator A).
-         Two-thirds = 986 of 2,952 resective/ablative came via Phase II
-         (phase_ii_conversion, reproducing Schuele 2025). -->
-    <div class="slide__proof">Phase I volume is an estimate, not a count - no registry isolates presurgical admissions. Conversion measured at <strong>13.6%</strong> (Ontario) to <strong>29%</strong> (population studies). Say which denominator: <strong>40.1%</strong> seizure-free measured from intracranial evaluation (<strong>Jha 2024</strong>, n=329), <strong>54.5%</strong> among those actually resected (<strong>Muthiah 2025</strong>, 81 studies).</div>
   </div>
 
   <!-- Slide 1: Today's pipeline -->
