@@ -231,13 +231,23 @@ body.is-video #slides{width:100vw;padding:0}
   font-size:0.95vw;
   color:var(--text-dim);
   margin-top:3vh;
-  max-width:36vw;
+  max-width:38vw;
   line-height:1.5;
   font-style:italic;
 }
 .slide__proof strong{
   color:var(--text);
   font-weight:600;
+}
+/* Own line, white, and held to one line - it reads as a claim, not a caption.
+   Sized to fit 38vw at ~68 characters; narrow screens wrap it instead. */
+.slide__proof-line{
+  display:block;
+  margin-top:0.9vh;
+  font-size:0.88vw;
+  color:var(--text);
+  font-weight:600;
+  white-space:nowrap;
 }
 /* Pipeline steps (the problem slide) */
 .slide__steps{
@@ -365,6 +375,7 @@ body.is-video #slides{width:100vw;padding:0}
   .slide__fact-names{font-size:11px}
   .slide__seeg{height:90px;margin-top:18px}
   .slide__proof{font-size:12px}
+  .slide__proof-line{font-size:11.5px;white-space:normal;margin-top:8px}
   #nav{left:8vw;gap:14px;bottom:26px}
   #hint{font-size:10px}
   /* 6px dots are far below a usable tap target */
@@ -391,6 +402,7 @@ body.is-video #slides{width:100vw;padding:0}
   .slide__fact-detail{font-size:10px}
   .slide__seeg{height:54px;margin-top:10px}
   .slide__proof{font-size:9.5px;margin-top:12px}
+  .slide__proof-line{font-size:9.5px;white-space:normal;margin-top:6px}
   .slide__heading--tight{font-size:17px}
   .slide__fact-title--lead{font-size:14px}
   .slide__fact-names{font-size:9.5px}
@@ -563,7 +575,7 @@ body.is-video #slides{width:100vw;padding:0}
         <div class="slide__stat-label">Year-5 reachable depth<br>within existing centers</div>
       </div>
     </div>
-    <div class="slide__proof">~<strong>84%</strong> gross margin &nbsp;&bull;&nbsp; <strong>The Double Multiplier:</strong> more centers &times; higher price &times; smarter modules</div>
+    <div class="slide__proof">~<strong>84%</strong> gross margin<span class="slide__proof-line">The Double Multiplier: more centers &times; higher price &times; smarter modules</span></div>
   </div>
 
   <!-- Slide 4: Where We Are -->
