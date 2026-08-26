@@ -91,14 +91,6 @@ export function initBrainClickHandlers(
         if (d < bestD) { bestD = d; best = i; }
       }
       triggerSpikeAt(net, best, s.clock, s.isMobile);
-
-      /* Fade hint after first click */
-      const hint = document.getElementById('brain-hint');
-      if (hint) {
-        hint.style.transition = 'opacity 0.5s';
-        hint.style.opacity = '0';
-        setTimeout(() => hint.remove(), 600);
-      }
     }
   }
 

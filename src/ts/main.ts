@@ -4,7 +4,7 @@ import './analytics.ts';
 import { CN } from './constants.ts';
 import { initScene } from './scene.ts';
 import { buildRealBrain, buildFallbackBrain, makeElectrodes } from './brain.ts';
-import { buildEpiNetwork, setupNetworkHint } from './network.ts';
+import { buildEpiNetwork, scheduleFirstSpike } from './network.ts';
 import { initDragHandlers, initMouseAndScroll, initBrainClickHandlers } from './interaction.ts';
 import { initAliceObservers, initSolCardInteractions, stopAliceVisualization } from './alice.ts';
 import { initCNData, initCNObservers, stopCNVisualization } from './cn.ts';
@@ -96,7 +96,7 @@ import type { DragState, AliceState, CNState, AnimationState } from './types.ts'
     initMouseAndScroll(animState);
     if (net) {
       initBrainClickHandlers(s, net);
-      setupNetworkHint(net, s.clock, isMobile);
+      scheduleFirstSpike(net, s.clock, isMobile);
     }
 
     /* Start animation loop */

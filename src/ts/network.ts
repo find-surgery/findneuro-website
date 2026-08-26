@@ -302,18 +302,7 @@ export function updateEpiNetwork(
   net.spikes = net.spikes.filter(s => (elapsed - s.start) < NETWORK.SPIKE_CLEANUP_AGE);
 }
 
-/** Setup interaction hint and auto-trigger first spike */
-export function setupNetworkHint(net: NetworkState, clock: THREE.Clock, isMobile: boolean): void {
-  const hint = document.createElement('div');
-  hint.id = 'brain-hint';
-  hint.textContent = '\u25C6 Click brain to trigger seizure network \u25C6';
-  hint.style.cssText = 'position:absolute;bottom:11%;left:50%;transform:translateX(-50%);color:rgba(0,212,255,0.3);font-family:var(--font-body);font-size:0.8rem;letter-spacing:0.07em;pointer-events:none;z-index:5;text-transform:uppercase;animation:hintPulse 3s ease-in-out infinite;';
-  const hero = document.getElementById('hero');
-  if (hero) { hero.style.position = 'relative'; hero.appendChild(hint); }
-
-  const style = document.createElement('style');
-  style.textContent = '@keyframes hintPulse{0%,100%{opacity:0.3}50%{opacity:0.6}}';
-  document.head.appendChild(style);
-
+/** Auto-trigger the first spike */
+export function scheduleFirstSpike(net: NetworkState, clock: THREE.Clock, isMobile: boolean): void {
   setTimeout(() => triggerSpike(net, clock, isMobile), NETWORK.INITIAL_SPIKE_DELAY);
 }
