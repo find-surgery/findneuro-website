@@ -174,6 +174,16 @@ body.is-figure #brain-canvas{opacity:0}
   margin-top:0.6vh;line-height:1.45;
 }
 .slide__fact-detail strong{color:var(--text);font-weight:600}
+/* The only link in the deck: the FDA clearance record */
+.slide__fact-link{
+  color:var(--accent);
+  text-decoration:none;
+  border-bottom:1px solid rgba(0,212,255,0.35);
+  transition:border-color 0.3s ease;
+}
+.slide__fact-link:hover{border-bottom-color:var(--accent)}
+/* Beats .slide__fact-detail strong on source order, not specificity */
+.slide__fact-link strong{color:inherit}
 .slide__proof{
   font-size:0.85vw;
   color:var(--text-dim);
@@ -532,9 +542,10 @@ body.is-figure #figure{opacity:1}
     </div>
     <div class="slide__facts">
       <div>
-        <div class="slide__fact-title">No IRB once cleared</div>
-        <!-- fda_status: never "cleared", never Q3 2026 uncaveated. Update on decision. -->
-        <div class="slide__fact-detail" id="clearance-line">510(k) <strong>K260563</strong> is under FDA review, decision expected Q3 2026. After clearance, IRB is only needed to join a research study.</div>
+        <div class="slide__fact-title">No IRB needed</div>
+        <!-- fda_status: K260563 cleared 2026-08-16, so the IRB line is unconditional now.
+             Revisit if the second (enhanced-algorithm) 510(k) changes the marketed config. -->
+        <div class="slide__fact-detail" id="clearance-line">510(k) <a class="slide__fact-link" href="https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K260563" target="_blank" rel="noopener"><strong>K260563</strong></a> cleared <strong>August 16, 2026</strong>. IRB is only needed to join a research study.</div>
       </div>
       <div>
         <div class="slide__fact-title">Data sharing</div>
@@ -896,6 +907,9 @@ body.is-figure #figure{opacity:1}
   }));
   const videoFrame = document.querySelector('.slide__video-frame');
   if (videoFrame) videoFrame.addEventListener('click', (e) => e.stopPropagation());
+  /* Same for the FDA record link: follow it, do not advance */
+  document.querySelectorAll('.slide__fact-link').forEach(
+    (a) => a.addEventListener('click', (e) => e.stopPropagation()));
 
   document.addEventListener('keydown', (e) => {
     if (videoSlide && video && (e.key === ' ' || e.key === 'k')) {

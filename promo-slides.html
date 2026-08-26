@@ -184,6 +184,16 @@ body.is-video #slides{width:100vw;padding:0}
   color:var(--text);
   font-weight:600;
 }
+/* The only link in the deck: the FDA clearance record */
+.slide__fact-link{
+  color:var(--accent);
+  text-decoration:none;
+  border-bottom:1px solid rgba(0,212,255,0.35);
+  transition:border-color 0.3s ease;
+}
+.slide__fact-link:hover{border-bottom-color:var(--accent)}
+/* Beats .slide__fact-detail strong on source order, not specificity */
+.slide__fact-link strong{color:inherit}
 .slide__fact-conj{
   color:var(--text-dim);
   font-weight:400;
@@ -395,17 +405,18 @@ body.is-video #slides{width:100vw;padding:0}
 
   <!-- Slide 2: Where We Are -->
   <div class="slide" id="s2">
-    <div class="slide__heading">This month:<br>FDA clearance<br>Going live</div>
+    <div class="slide__heading">FDA cleared.<br>Going live.</div>
     <div class="slide__award"><span class="slide__award-mark">Winner</span>2026 Harvard President's Innovation Challenge</div>
     <div class="slide__facts">
       <div>
-        <div class="slide__fact-title slide__fact-title--lead">FDA</div>
-        <!-- fda_status: never "cleared" as a done fact. Update on decision. -->
-        <div class="slide__fact-detail">510(k) clearance anticipated in <strong>mid-August</strong></div>
+        <div class="slide__fact-title slide__fact-title--lead">FDA Cleared</div>
+        <!-- fda_status: K260563 cleared 2026-08-16. This is the FIRST of two clearances;
+             it does not open commercial sale, so never pair it with a revenue date here. -->
+        <div class="slide__fact-detail">510(k) <a class="slide__fact-link" href="https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K260563" target="_blank" rel="noopener"><strong>K260563</strong></a>, cleared <strong>August 16, 2026</strong></div>
       </div>
       <div>
         <div class="slide__fact-title">Going Live</div>
-        <div class="slide__fact-detail">At <strong>Boston Children's</strong> and <strong>Ichilov</strong> in August 2026</div>
+        <div class="slide__fact-detail">At <strong>Boston Children's</strong> and <strong>Ichilov</strong> in September 2026</div>
       </div>
       <div>
         <div class="slide__fact-title">Data Access Secured</div>
@@ -606,6 +617,9 @@ body.is-video #slides{width:100vw;padding:0}
   /* Clicks on the player drive the player, not the deck */
   const videoFrame = document.querySelector('.slide__video-frame');
   if (videoFrame) videoFrame.addEventListener('click', (e) => e.stopPropagation());
+  /* Same for the FDA record link: follow it, do not advance */
+  document.querySelectorAll('.slide__fact-link').forEach(
+    (a) => a.addEventListener('click', (e) => e.stopPropagation()));
 
   document.addEventListener('keydown', (e) => {
     /* On the video slide, space belongs to the player */
