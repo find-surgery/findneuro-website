@@ -71,6 +71,9 @@ body::after {
 .footer__legal-link { color: var(--text-muted); text-decoration: none; }
 .footer__legal-link:hover { color: var(--text-dim); }
 .hero__badge--inline { margin: 0 auto 24px; }
+/* Badge used as a link (the FDA clearance record) */
+.hero__badge--link { text-decoration: none; transition: border-color 0.3s var(--ease); }
+.hero__badge--link:hover { border-color: rgba(0,212,255,0.45); }
 
 /* ===================================================
    LOADER
