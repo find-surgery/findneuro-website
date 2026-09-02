@@ -49,10 +49,35 @@ html,body{
   transition:opacity 0.4s ease;
 }
 #prepared:empty{display:none}
+/* The clearance, carried on every slide rather than only on the ask. Bottom
+   right because the text column runs up under the logo on the dense slides,
+   and the dots own the bottom left. Hidden on the compressed breakpoints,
+   where nothing is spare. */
+#cleared{
+  position:fixed;bottom:5vh;right:4vw;z-index:20;
+  display:inline-flex;align-items:center;gap:0.5vw;
+  padding:0.6vh 0.9vw;
+  border:1px solid rgba(0,212,255,0.3);
+  border-radius:2vh;
+  font-family:'JetBrains Mono',monospace;
+  font-size:0.7vw;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--accent);
+  text-decoration:none;
+  transition:opacity 0.4s ease,border-color 0.3s ease;
+}
+#cleared:hover{border-color:var(--accent)}
+#cleared::before{
+  content:'';
+  width:0.4vw;height:0.4vw;min-width:5px;min-height:5px;
+  border-radius:50%;background:var(--accent);
+}
 /* The video slide hands the whole screen to the player */
 body.is-video #brain-canvas{opacity:0}
 body.is-video #logo{opacity:0}
 body.is-video #prepared{opacity:0}
+body.is-video #cleared{opacity:0}
 body.is-video #slides{width:100vw;padding:0}
 /* The evidence slide swaps the brain for the published figure */
 body.is-figure #brain-canvas{opacity:0}
@@ -61,7 +86,10 @@ body.is-figure #brain-canvas{opacity:0}
   width:50vw;height:100vh;height:100dvh;
   z-index:10;
   display:flex;align-items:center;justify-content:center;
-  padding:0 6vw;
+  /* Centered in the band between the logo and the dots, not in the raw
+     viewport: the dense slides are tall enough to ride up under the logo
+     otherwise. The compact blocks below do the same thing in px. */
+  padding:12vh 6vw 7vh;
 }
 .slide{
   position:absolute;
@@ -324,11 +352,21 @@ body.is-figure #figure{opacity:1}
   pointer-events:none;
 }
 #fade.hidden{opacity:0}
+/* Slide 3 is the dense one: stats, five bullets and a citation. Its gaps run
+   tighter than the rest of the deck so it stays clear of the logo band above
+   and the dots below. Guarded to the desktop layout, because the compact
+   blocks below set these by class and an ID would beat them. */
+@media (min-width:901px) and (min-aspect-ratio:1/1) and (min-height:521px){
+  #s3 .slide__stats,#s3 .slide__list{margin-top:2.1vh}
+  #s3 .slide__cite{margin-top:1.8vh}
+}
 @media (max-width:900px),(max-aspect-ratio:1/1){
   #brain-canvas{opacity:0.45}
   body.is-particles #brain-canvas{opacity:1}   /* 2D field is already subtle */
   #logo{height:34px;top:24px}
   #prepared{font-size:10px;top:26px}
+  /* No room for it here: slide 5 still carries the clearance in full */
+  #cleared{display:none}
   #slides{
     width:100vw;padding:78px 8vw 76px;   /* logo band above, dots below */
     background:linear-gradient(to right,rgba(10,12,20,0.93),rgba(10,12,20,0.66));
@@ -344,9 +382,9 @@ body.is-figure #figure{opacity:1}
   .slide__stat-num{font-size:20px}
   .slide__stat-label{font-size:10.5px}
   .slide__list{max-width:none}
-  .slide__list li{font-size:12px;padding-left:14px;margin-bottom:8px}
+  .slide__list li{font-size:12px;padding-left:14px;margin-bottom:7px}
   .slide__list li::before{width:4px;height:4px}
-  .slide__cite{font-size:10px;max-width:none}
+  .slide__cite{font-size:10px;max-width:none;margin-top:12px}
   .slide__facts{grid-template-columns:1fr;gap:13px;max-width:none}
   .slide__fact-title{font-size:15px}
   .slide__fact-detail{font-size:11px}
@@ -379,11 +417,11 @@ body.is-figure #figure{opacity:1}
   #slides{padding:42px 6vw 38px}
   #nav{bottom:12px;left:6vw}
   .slide__heading{font-size:20px}
-  .slide__heading-line + .slide__heading-line{margin-top:5px}
+  .slide__heading-line + .slide__heading-line{margin-top:4px}
   .slide__find{font-size:26px}
   .slide__sub{font-size:12.5px}
   .slide__outcome{font-size:12.5px;padding:8px 10px;margin-top:12px}
-  .slide__stats{gap:8px 16px;margin-top:12px}
+  .slide__stats{gap:7px 16px;margin-top:8px}
   .slide__stat-num{font-size:17px}
   .slide__stat-label{font-size:9px}
   .slide__facts{gap:9px;margin-top:12px}
@@ -392,10 +430,10 @@ body.is-figure #figure{opacity:1}
   .slide__seeg{height:54px;margin-top:10px}
   .slide__proof{font-size:9.5px;margin-top:12px}
   #prepared{font-size:9px;top:14px}
-  .slide__eyebrow{font-size:9.5px;margin-bottom:6px}
-  .slide__list{margin-top:12px}
-  .slide__list li{font-size:10.5px;margin-bottom:5px}
-  .slide__cite{font-size:9px;margin-top:10px}
+  .slide__eyebrow{font-size:9.5px;margin-bottom:5px}
+  .slide__list{margin-top:8px}
+  .slide__list li{font-size:10.5px;margin-bottom:3px}
+  .slide__cite{font-size:9px;margin-top:6px}
   .slide__url{font-size:11px}
   #figure{height:52dvh;padding:0 5vw 12px}
   body.is-figure #slides{padding-bottom:54dvh}
@@ -425,6 +463,7 @@ body.is-figure #figure{opacity:1}
 <canvas id="brain-canvas"></canvas>
 
 <img id="logo" src="./assets/White_500px.png" alt="FIND Neuro">
+<a id="cleared" href="https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K260563" target="_blank" rel="noopener">FDA 510(k) cleared &middot; K260563</a>
 <div id="prepared"></div>
 
 <figure id="figure">
@@ -485,15 +524,15 @@ body.is-figure #figure{opacity:1}
 
   <!-- 3: The evidence -->
   <div class="slide" id="s3">
-    <div class="slide__eyebrow">Multicenter Validation</div>
+    <div class="slide__eyebrow">Cleared on This Evidence</div>
     <div class="slide__heading">
       <span class="slide__heading-line">Locked on 37 patients.</span>
       <span class="slide__heading-line">Tested once on 60.</span>
     </div>
     <div class="slide__stats">
       <div>
-        <div class="slide__stat-num">d = 0.74</div>
-        <div class="slide__stat-label">Effect size, 95% CI<br>0.39-1.06, p = 0.003</div>
+        <div class="slide__stat-num">1.00</div>
+        <div class="slide__stat-label">Cleared primary endpoint<br>95% CI 0.48-1.46, p = 0.002</div>
       </div>
       <div>
         <div class="slide__stat-num">0.82</div>
@@ -505,14 +544,13 @@ body.is-figure #figure{opacity:1}
       </div>
     </div>
     <ul class="slide__list">
-      <li>Model and threshold <strong>locked on an independent 37-patient cohort</strong> from separate centers, then evaluated once on the 60</li>
-      <li>The <strong>prespecified success criterion was met</strong>: the lower confidence bound exceeded the performance goal (one-sided p = 0.003)</li>
-      <li>Contact level, GEE: <strong>64.3% sensitivity, 84.3% specificity</strong> - a rule-out instrument, strongest when it tells you where the drivers are not</li>
+      <li>The <strong>prespecified success criterion was met</strong> - 1.00 against a performance goal of 0.205 - and that is what FDA cleared on</li>
+      <li>Contact level, GEE, favorable-outcome subjects (n=42): <strong>63.9% sensitivity, 84.4% specificity</strong> - a rule-out instrument, strongest when it tells you where the drivers are not</li>
       <li>Criticality enrichment inside the treatment zone <strong>4.64 in Engel I-II</strong> versus 1.83 in Engel III-IV</li>
       <li>In focal procedures sensitivity reaches <strong>80% at 10 or fewer treated contacts</strong> - see the figure</li>
       <li>Drivers are compact: <strong>8.96 mm</strong> nearest-neighbour versus 17.21 mm expected by chance, inside LITT targeting precision</li>
     </ul>
-    <div class="slide__cite">Ailion A, Rockhill AP, Farzaneh H, et al. <b>Causal Network Mapping of sEEG Identifies Compact Epileptogenic Targets Concordant with Seizure Freedom: Multicenter Validation in 60 Patients.</b> medRxiv 2026, <b>v1</b> (doi:10.64898/2026.05.21.26353792v1) - preprint, not yet peer reviewed. Figures on this page are v1; a later version restates several of them.</div>
+    <div class="slide__cite">Numbers above are the <b>cleared</b> ones, from the 510(k) K260563 Summary; the preprint's primary endpoint is a different measure (surgical-zone enrichment, d = 0.74, p = 0.003) and was also met. Ailion A, Rockhill AP, Farzaneh H, et al. <b>Causal Network Mapping of sEEG Identifies Compact Epileptogenic Targets Concordant with Seizure Freedom: Multicenter Validation in 60 Patients.</b> medRxiv 2026, <b>v1</b> (doi:10.64898/2026.05.21.26353792v1) - preprint, not yet peer reviewed. The plot is from v1, which a later version restates.</div>
   </div>
 
   <!-- 4: Limitations -->
@@ -523,14 +561,16 @@ body.is-figure #figure{opacity:1}
       <span class="slide__heading-line">rather than from you.</span>
     </div>
     <ul class="slide__list slide__list--caveat">
-      <li><strong>Retrospective.</strong> Whether it changes decisions in a live surgical conference is exactly the open question.</li>
+      <li><strong>Adjunctive by label.</strong> CN-Suite does not determine the epileptogenic zone or recommend surgery. Read it with the recordings, the imaging and your own judgment.</li>
+      <li><strong>Retrospective.</strong> The cleared study was non-interventional. Whether it changes decisions in a live surgical conference is exactly the open question.</li>
+      <li><strong>No head-to-head.</strong> The 1.00 and the predicate's reported 0.627 are separate cohorts; contact-level concordance was not evaluated.</li>
       <li>Penn contributed <strong>78%</strong> of the validation cohort. Excluding it, d = 0.68 (CI 0.12-1.24) - suggestive that the effect is not driven by one site, but underpowered.</li>
       <li>Mixed sEEG and ECoG. Criticality is <strong>not yet validated separately</strong> by recording type.</li>
       <li>About half the training cohort was labelled with the annotated SOZ rather than a segmented treatment zone.</li>
       <li>The 0.15 threshold was pre-locked. <strong>Adaptive thresholding is unstudied.</strong></li>
       <li>U.S. Level-4 centers only. Neuromodulation targets were not evaluated.</li>
     </ul>
-    <div class="slide__cite">Every one of these is stated in the preprint. We would rather you heard them from us first.</div>
+    <div class="slide__cite">Every one of these is stated in the preprint or in the cleared 510(k) Summary. We would rather you heard them from us first.</div>
   </div>
 
   <!-- 5: The ask -->
@@ -543,9 +583,11 @@ body.is-figure #figure{opacity:1}
     <div class="slide__facts">
       <div>
         <div class="slide__fact-title">No IRB needed</div>
-        <!-- fda_status: K260563 cleared 2026-08-16, so the IRB line is unconditional now.
+        <!-- fda_status: K260563 cleared 2026-08-16. The IRB line is unconditional, and the
+             cleared population is stated here so nobody has to guess whether their patient
+             is in scope. Boundary lives on slide 4: adjunctive, does not determine the EZ.
              Revisit if the second (enhanced-algorithm) 510(k) changes the marketed config. -->
-        <div class="slide__fact-detail" id="clearance-line">510(k) <a class="slide__fact-link" href="https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K260563" target="_blank" rel="noopener"><strong>K260563</strong></a> cleared <strong>August 16, 2026</strong>. IRB is only needed to join a research study.</div>
+        <div class="slide__fact-detail" id="clearance-line">510(k) <a class="slide__fact-link" href="https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfpmn/pmn.cfm?ID=K260563" target="_blank" rel="noopener"><strong>K260563</strong></a> cleared <strong>August 16, 2026</strong> for trained clinicians, adult and pediatric patients <strong>aged 3 and older</strong>, focal or multifocal epilepsy, on iEEG. IRB is only needed to join a research study.</div>
       </div>
       <div>
         <div class="slide__fact-title">Data sharing</div>
@@ -553,7 +595,7 @@ body.is-figure #figure{opacity:1}
       </div>
       <div>
         <div class="slide__fact-title">Join the studies</div>
-        <div class="slide__fact-detail">Prospective use running at <strong>Boston Children's</strong> and <strong>Ichilov</strong> since July 2026.</div>
+        <div class="slide__fact-detail">Prospective use starting at <strong>Boston Children's</strong> and <strong>Ichilov</strong> in <strong>September 2026</strong>.</div>
       </div>
       <div>
         <div class="slide__fact-title">Your read matters most</div>
@@ -908,7 +950,7 @@ body.is-figure #figure{opacity:1}
   const videoFrame = document.querySelector('.slide__video-frame');
   if (videoFrame) videoFrame.addEventListener('click', (e) => e.stopPropagation());
   /* Same for the FDA record link: follow it, do not advance */
-  document.querySelectorAll('.slide__fact-link').forEach(
+  document.querySelectorAll('.slide__fact-link, #cleared').forEach(
     (a) => a.addEventListener('click', (e) => e.stopPropagation()));
 
   document.addEventListener('keydown', (e) => {
