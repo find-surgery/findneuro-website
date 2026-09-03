@@ -202,8 +202,11 @@ body.is-figure #brain-canvas{opacity:0}
   margin-top:0.6vh;line-height:1.45;
 }
 .slide__fact-detail strong{color:var(--text);font-weight:600}
-/* The only link in the deck: the FDA clearance record */
+/* Links inside a slide. .slide is pointer-events:none, and .slide.active does
+   not put it back, so a link has to re-enable it for itself the way
+   .slide__video does. */
 .slide__fact-link{
+  pointer-events:auto;
   color:var(--accent);
   text-decoration:none;
   border-bottom:1px solid rgba(0,212,255,0.35);
