@@ -550,31 +550,11 @@ body.is-figure #figure{opacity:1}
       <li>In focal procedures sensitivity reaches <strong>80% at 10 or fewer treated contacts</strong> - see the figure</li>
       <li>Drivers are compact: <strong>8.96 mm</strong> nearest-neighbour versus 17.21 mm expected by chance, inside LITT targeting precision</li>
     </ul>
-    <div class="slide__cite">Numbers above are the <b>cleared</b> ones, from the 510(k) K260563 Summary; the preprint's primary endpoint is a different measure (surgical-zone enrichment, d = 0.74, p = 0.003) and was also met. Ailion A, Rockhill AP, Farzaneh H, et al. <b>Causal Network Mapping of sEEG Identifies Compact Epileptogenic Targets Concordant with Seizure Freedom: Multicenter Validation in 60 Patients.</b> medRxiv 2026, <b>v1</b> (doi:10.64898/2026.05.21.26353792v1) - preprint, not yet peer reviewed. The plot is from v1, which a later version restates.</div>
+    <div class="slide__cite"><a class="slide__fact-link" href="https://www.medrxiv.org/content/10.64898/2026.05.21.26353792v2" target="_blank" rel="noopener">Ailion A, Rockhill AP, Farzaneh H, et al. <b>Causal Network Mapping of sEEG Identifies Compact Epileptogenic Targets Concordant with Seizure Freedom.</b> medRxiv 2026 - preprint</a></div>
   </div>
 
-  <!-- 4: Limitations -->
+  <!-- 4: The ask -->
   <div class="slide" id="s4">
-    <div class="slide__eyebrow">What We Do Not Claim</div>
-    <div class="slide__heading">
-      <span class="slide__heading-line">Limitations, from us</span>
-      <span class="slide__heading-line">rather than from you.</span>
-    </div>
-    <ul class="slide__list slide__list--caveat">
-      <li><strong>Adjunctive by label.</strong> CN-Suite does not determine the epileptogenic zone or recommend surgery. Read it with the recordings, the imaging and your own judgment.</li>
-      <li><strong>Retrospective.</strong> The cleared study was non-interventional. Whether it changes decisions in a live surgical conference is exactly the open question.</li>
-      <li><strong>No head-to-head.</strong> The 1.00 and the predicate's reported 0.627 are separate cohorts; contact-level concordance was not evaluated.</li>
-      <li>Penn contributed <strong>78%</strong> of the validation cohort. Excluding it, d = 0.68 (CI 0.12-1.24) - suggestive that the effect is not driven by one site, but underpowered.</li>
-      <li>Mixed sEEG and ECoG. Criticality is <strong>not yet validated separately</strong> by recording type.</li>
-      <li>About half the training cohort was labelled with the annotated SOZ rather than a segmented treatment zone.</li>
-      <li>The 0.15 threshold was pre-locked. <strong>Adaptive thresholding is unstudied.</strong></li>
-      <li>U.S. Level-4 centers only. Neuromodulation targets were not evaluated.</li>
-    </ul>
-    <div class="slide__cite">Every one of these is stated in the preprint or in the cleared 510(k) Summary. We would rather you heard them from us first.</div>
-  </div>
-
-  <!-- 5: The ask -->
-  <div class="slide" id="s5">
     <div class="slide__eyebrow">What We Are Asking</div>
     <div class="slide__heading">
       <span class="slide__heading-line">Use it on your next case.</span>
@@ -614,7 +594,6 @@ body.is-figure #figure{opacity:1}
     <div class="dot" data-dot="2"></div>
     <div class="dot" data-dot="3"></div>
     <div class="dot" data-dot="4"></div>
-    <div class="dot" data-dot="5"></div>
   </div>
   <div id="hint">Click to continue</div>
 </div>
@@ -634,15 +613,13 @@ body.is-figure #figure{opacity:1}
     { mode: 'targets', cortex: true, seeg: true },
     { mode: 'treat',   cortex: true, video: true },
     { mode: 'treat',   cortex: true, figure: true },
-    { mode: 'targets', cortex: true },
     { mode: 'treat',   cortex: true },
   ];
   const NUM_SLIDES = SLIDES.length;
-  const SLUGS = ['problem', 'method', 'demo', 'evidence', 'limits', 'next'];
+  const SLUGS = ['problem', 'method', 'demo', 'evidence', 'next'];
   const HINTS = [
     'Click to continue',
     'Click to see the platform',
-    'Click to continue',
     'Click to continue',
     'Click to continue',
     '',
@@ -871,7 +848,10 @@ body.is-figure #figure{opacity:1}
     canvas: document.getElementById('seeg-canvas'),
   });
 
-  const dots = Array.from(document.querySelectorAll('.dot'));
+  /* Scoped to the nav: the Figure 2 chart also draws circles classed 'dot',
+     and it sits earlier in the DOM, so a bare '.dot' grabs those first - which
+     left the progress dots dark and put goTo() on chart data points. */
+  const dots = Array.from(document.querySelectorAll('#dots .dot'));
   const hint = document.getElementById('hint');
   const video = document.getElementById('demo-video');
   let slideIdx = -1;
