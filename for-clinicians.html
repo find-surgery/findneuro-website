@@ -355,13 +355,13 @@ body.is-figure #figure{opacity:1}
   pointer-events:none;
 }
 #fade.hidden{opacity:0}
-/* Slide 3 is the dense one: stats, five bullets and a citation. Its gaps run
+/* The evidence slide is the dense one: stats, five bullets and a citation. Its gaps run
    tighter than the rest of the deck so it stays clear of the logo band above
    and the dots below. Guarded to the desktop layout, because the compact
    blocks below set these by class and an ID would beat them. */
 @media (min-width:901px) and (min-aspect-ratio:1/1) and (min-height:521px){
-  #s3 .slide__stats,#s3 .slide__list{margin-top:2.1vh}
-  #s3 .slide__cite{margin-top:1.8vh}
+  #s2 .slide__stats,#s2 .slide__list{margin-top:2.1vh}
+  #s2 .slide__cite{margin-top:1.8vh}
 }
 @media (max-width:900px),(max-aspect-ratio:1/1){
   #brain-canvas{opacity:0.45}
@@ -457,6 +457,33 @@ body.is-figure #figure{opacity:1}
   }
   body.is-figure #slides{padding-bottom:38px}
 }
+
+/* Portrait phones, evidence slide. Half the screen went to Figure 2 and the
+   other half could not hold the text, so the heading was clipped off the top
+   and the bullets ran down over the plot. The figure gets a third of the
+   screen and keeps the chart and its caption; the note below it goes, because
+   the bullet it explains already says "in focal procedures" itself. */
+@media (max-width:900px) and (max-aspect-ratio:1/1){
+  #figure{height:34dvh;padding:0 6vw 46px}   /* 46px keeps the caption off the dots */
+  body.is-figure #slides{padding-bottom:35dvh}
+  #figure .figure__note{display:none}
+  #figure figcaption{font-size:9px;margin-top:6px}
+  /* Sizing the chart by height rather than width pins how much of the band it
+     takes; at 100% width its viewBox ratio decides, and that is what pushed
+     the caption down onto the dots. */
+  #chart-surgery-bucket svg{width:auto;height:16dvh;max-width:100%}
+  #s2 .slide__heading{font-size:21px}
+  #s2 .slide__stats{margin-top:10px;gap:10px 18px}
+  #s2 .slide__list{margin-top:10px}
+  #s2 .slide__list li{font-size:11px;margin-bottom:4px}
+  #s2 .slide__cite{font-size:9.5px;margin-top:8px}
+}
+/* Narrow portrait wraps another line into most bullets, so the figure gives
+   back a little more of the band. */
+@media (max-width:380px) and (max-aspect-ratio:1/1){
+  #figure{height:30dvh}
+  body.is-figure #slides{padding-bottom:31dvh}
+}
 </style>
 </head>
 <body>
@@ -514,19 +541,8 @@ body.is-figure #figure{opacity:1}
     <canvas id="seeg-canvas" class="slide__seeg" aria-hidden="true"></canvas>
   </div>
 
-  <!-- 2: The platform -->
-  <div class="slide slide--video" id="s2">
-    <div class="slide__video-frame">
-      <video class="slide__video" id="demo-video" controls playsinline preload="none"
-             poster="./assets/video/cn-suite-demo-crop-poster.jpg"
-             aria-label="FIND Neuro CN-Suite walkthrough">
-        <source src="./assets/video/cn-suite-demo-v3.mp4" type="video/mp4">
-      </video>
-    </div>
-  </div>
-
-  <!-- 3: The evidence -->
-  <div class="slide" id="s3">
+  <!-- 2: The evidence -->
+  <div class="slide" id="s2">
     <div class="slide__eyebrow">Cleared on This Evidence</div>
     <div class="slide__heading">
       <span class="slide__heading-line">Locked on 37 patients.</span>
@@ -552,8 +568,8 @@ body.is-figure #figure{opacity:1}
     <div class="slide__cite"><a class="slide__fact-link" href="https://www.medrxiv.org/content/10.64898/2026.05.21.26353792v2" target="_blank" rel="noopener">Ailion A, Rockhill AP, Farzaneh H, et al. <b>Causal Network Mapping of sEEG Identifies Compact Epileptogenic Targets Concordant with Seizure Freedom.</b> medRxiv 2026 - preprint</a></div>
   </div>
 
-  <!-- 4: The ask -->
-  <div class="slide" id="s4">
+  <!-- 3: The ask -->
+  <div class="slide" id="s3">
     <div class="slide__eyebrow">What We Are Asking</div>
     <div class="slide__heading">
       <span class="slide__heading-line">Use it on your next case.</span>
@@ -584,6 +600,17 @@ body.is-figure #figure{opacity:1}
     <div class="slide__proof">Study data from <strong>Boston Children's Hospital</strong>, <strong>Texas Children's Hospital</strong>, <strong>Penn</strong>, <strong>Johns Hopkins</strong>, <strong>University of Miami</strong>, <strong>NIH</strong> and <strong>University of Maryland</strong>. IRB and data sharing executed at six Level-4 centers. Spun out of <strong>Massachusetts General Hospital</strong> &amp; <strong>Harvard Medical School</strong>, where the founding research was funded by <strong>DARPA</strong>.</div>
     <div class="slide__url">findneuro.com</div>
   </div>
+  <!-- 4: The platform -->
+  <div class="slide slide--video" id="s4">
+    <div class="slide__video-frame">
+      <video class="slide__video" id="demo-video" controls playsinline preload="none"
+             poster="./assets/video/cn-suite-demo-crop-poster.jpg"
+             aria-label="FIND Neuro CN-Suite walkthrough">
+        <source src="./assets/video/cn-suite-demo-v3.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+
 </div>
 
 <div id="nav">
@@ -610,17 +637,17 @@ body.is-figure #figure{opacity:1}
   const SLIDES = [
     { mode: 'chaos',   cortex: false },
     { mode: 'targets', cortex: true, seeg: true },
-    { mode: 'treat',   cortex: true, video: true },
     { mode: 'treat',   cortex: true, figure: true },
     { mode: 'treat',   cortex: true },
+    { mode: 'treat',   cortex: true, video: true },
   ];
   const NUM_SLIDES = SLIDES.length;
-  const SLUGS = ['problem', 'method', 'demo', 'evidence', 'next'];
+  const SLUGS = ['problem', 'method', 'evidence', 'next', 'demo'];
   const HINTS = [
     'Click to continue',
+    'Click to continue',
+    'Click to continue',
     'Click to see the platform',
-    'Click to continue',
-    'Click to continue',
     '',
   ];
   /* Nobody clicks on a phone */
