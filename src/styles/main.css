@@ -1727,14 +1727,6 @@ body::after {
     width: 5px; height: 5px; border-radius: 50%;
     background: var(--accent); opacity: 0.6;
 }
-.vuln__note {
-    font-size: 0.78rem; color: var(--text-muted); line-height: 1.7;
-}
-.vuln__note a {
-    color: var(--text-dim); text-decoration: none;
-    border-bottom: 1px solid var(--border);
-}
-.vuln__note a:hover { color: var(--accent); border-bottom-color: var(--border-accent); }
 
 /* ===================================================
    FOOTER
