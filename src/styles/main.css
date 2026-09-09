@@ -1682,6 +1682,52 @@ body::after {
 .fg select option { background: var(--bg-card); }
 .btn--full { width: 100%; justify-content: center; }
 
+/* Vulnerability disclosure */
+.vuln {
+    margin-top: 56px;
+    background: rgba(255,255,255,0.015);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 32px 36px;
+}
+.vuln__head {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 14px;
+}
+.vuln__icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: rgba(0,212,255,0.06);
+    border: 1px solid rgba(0,212,255,0.1);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.vuln__title {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: 1.15rem; letter-spacing: -0.01em;
+}
+.vuln__text {
+    color: var(--text-dim); font-size: 0.9rem;
+    line-height: 1.7; margin-bottom: 18px;
+}
+.vuln__text a {
+    color: var(--accent); text-decoration: none;
+    border-bottom: 1px solid var(--border-accent);
+}
+.vuln__text a:hover { border-bottom-color: var(--accent); }
+.vuln__list {
+    list-style: none; margin-bottom: 18px;
+}
+.vuln__list li {
+    position: relative; padding-left: 20px;
+    color: var(--text-dim); font-size: 0.86rem;
+    line-height: 1.7; margin-bottom: 8px;
+}
+.vuln__list li::before {
+    content: ''; position: absolute;
+    left: 4px; top: 0.68em;
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent); opacity: 0.6;
+}
+
 /* ===================================================
    FOOTER
    =================================================== */
@@ -1774,6 +1820,7 @@ body::after {
     .team__grid { grid-template-columns: repeat(2, 1fr); }
     .team__advisors-grid { grid-template-columns: 1fr; }
     .contact__grid { grid-template-columns: 1fr; }
+    .vuln { padding: 28px 24px; margin-top: 40px; }
     .problem__grid { grid-template-columns: 1fr; }
     .problem__big-number { font-size: clamp(4rem, 18vw, 8rem); }
     .quote { padding-left: 24px; }
