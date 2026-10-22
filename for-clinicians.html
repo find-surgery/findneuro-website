@@ -976,6 +976,12 @@ body.is-figure #figure{opacity:1}
   });
 
   window.addEventListener('hashchange', () => goTo(slideFromUrl()));
+  /* goTo() stops the demo on a slide change; this stops it when the reader leaves
+     the tab - another tab, or a link here that opens one - so the voice-over does
+     not keep talking from a page nobody is looking at. */
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && video) video.pause();
+  });
   window.addEventListener('resize', () => { if (viz) viz.fit(); });
 
   let lastFrame = performance.now();
