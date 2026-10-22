@@ -321,6 +321,14 @@ body.is-figure #figure{opacity:1}
   display:block;height:84vh;height:84dvh;width:auto;max-width:94vw;
   pointer-events:auto;
 }
+/* Every slide is stacked in the same box, and the two rules above re-enable
+   pointer events on a slide's links and video whether or not it is showing.
+   So a hidden slide still caught clicks: the demo video, last in the DOM,
+   sat over the citation, FDA and booking links and swallowed them, and the
+   hidden booking link would open from a click on an earlier slide. Only the
+   slide on screen may take a click. */
+.slide:not(.active) .slide__fact-link,
+.slide:not(.active) .slide__video{pointer-events:none}
 /* Progress dots + hint */
 #nav{
   position:fixed;left:6vw;bottom:5vh;z-index:20;
