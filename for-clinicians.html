@@ -424,11 +424,11 @@ body.is-figure #figure{opacity:1}
 /* Landscape phone: ~390px of height total, so the logo and dot bands and the
    type all have to give or slide 3 simply does not fit. */
 @media (max-height:520px){
-  #logo{height:24px;top:12px}
-  #slides{padding:42px 6vw 38px}
-  #nav{bottom:12px;left:6vw}
+  #logo{height:20px;top:8px}
+  #slides{padding:34px 6vw 30px}
+  #nav{bottom:8px;left:6vw}
   .slide__heading{font-size:20px}
-  .slide__heading-line + .slide__heading-line{margin-top:4px}
+  .slide__heading-line + .slide__heading-line{margin-top:3px}
   .slide__find{font-size:26px}
   .slide__sub{font-size:12.5px}
   .slide__outcome{font-size:12.5px;padding:8px 10px;margin-top:12px}
@@ -438,10 +438,10 @@ body.is-figure #figure{opacity:1}
   .slide__facts{gap:9px;margin-top:12px}
   .slide__fact-title{font-size:13px}
   .slide__fact-detail{font-size:10px}
-  .slide__seeg{height:54px;margin-top:10px}
+  .slide__seeg{height:48px;margin-top:8px}
   .slide__proof{font-size:9.5px;margin-top:12px}
   #prepared{font-size:9px;top:14px}
-  .slide__eyebrow{font-size:9.5px;margin-bottom:5px}
+  .slide__eyebrow{font-size:9.5px;margin-bottom:4px}
   .slide__list{margin-top:8px}
   .slide__list li{font-size:10.5px;margin-bottom:3px}
   .slide__cite{font-size:9px;margin-top:6px}
@@ -452,18 +452,33 @@ body.is-figure #figure{opacity:1}
   #figure .figure__note{font-size:9px;margin-top:8px}
 }
 /* Landscape phone: stacking text over figure leaves ~139px for each, so
-   restore the desktop side-by-side split at small type. */
-@media (max-width:900px) and (min-aspect-ratio:1/1){
-  #slides{width:54vw;padding:42px 4vw 38px}
+   restore the desktop side-by-side split at small type. Keyed on HEIGHT, not
+   width: a 932x430 phone is wider than 900 and used to match the short-screen
+   block without this one, which left it with the desktop figure parked in the
+   top right and a text column squashed under it. */
+@media (max-height:520px) and (min-aspect-ratio:1/1){
+  /* The text wraps every bullet; width is the cheapest line to save, and the
+     figure column has room to spare at this height. */
+  #slides{width:61vw;padding:34px 4vw 30px}
   .slide{width:calc(100% - 8vw)}
   .slide__facts{grid-template-columns:1fr 1fr;gap:9px 14px}
   #figure{
     top:0;bottom:auto;
-    width:46vw;height:100dvh;
+    width:39vw;height:100dvh;
     padding:5dvh 3vw;
     justify-content:center;
   }
-  body.is-figure #slides{padding-bottom:38px}
+  body.is-figure #slides{padding-bottom:30px}
+  /* The evidence slide carries stats, five bullets and a citation, and is the
+     only one that still does not fit this band at the type the others use. */
+  #s2 .slide__heading{font-size:17px}
+  #s2 .slide__stats{margin-top:5px;gap:5px 14px}
+  #s2 .slide__stat-num{font-size:15px}
+  #s2 .slide__eyebrow{margin-bottom:3px}
+  #s2 .slide__stat-label{font-size:8.5px}
+  #s2 .slide__list{margin-top:6px}
+  #s2 .slide__list li{font-size:9.5px;margin-bottom:1px}
+  #s2 .slide__cite{font-size:8.5px;margin-top:4px}
 }
 
 /* Portrait phones, evidence slide. Half the screen went to Figure 2 and the
