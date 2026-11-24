@@ -7,7 +7,10 @@ interface AnalyticsWindow extends Window {
 const w = window as AnalyticsWindow;
 
 w.dataLayer = w.dataLayer || [];
-function gtag(...args: unknown[]): void { w.dataLayer!.push(args); }
+function gtag(..._args: unknown[]): void {
+  // Google tag commands must be Arguments objects, not rest-parameter arrays.
+  w.dataLayer!.push(arguments);
+}
 gtag('js', new Date());
 gtag('config', 'G-RVD8TGQLHK');
 

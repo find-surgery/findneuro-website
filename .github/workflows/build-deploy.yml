@@ -23,6 +23,8 @@ jobs:
         run: npm ci
       - name: Type-check
         run: npm run lint
+      - name: Test analytics initialization
+        run: npm test
       - name: Build
         run: npm run build
       - name: Deploy to GitHub Pages

@@ -19,6 +19,8 @@ jobs:
         run: npm ci
       - name: Type-check (tsc --noEmit)
         run: npm run lint
+      - name: Test analytics initialization
+        run: npm test
       - name: Check accessibility (axe)
         continue-on-error: true
         run: |
